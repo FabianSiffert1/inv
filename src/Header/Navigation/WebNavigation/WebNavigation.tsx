@@ -7,9 +7,6 @@ export default function WebNavigation() {
     <div className={styles.webNavigation}>
       <nav>
         <ul>
-          <li key={'inventory'}>
-            <Link to={`inventory`}>Inventory</Link>
-          </li>
           <li key={'market'}>
             <Link to={`market`}>Market</Link>
           </li>

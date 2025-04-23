@@ -4,7 +4,7 @@ import styles from './Title.module.scss'
 export default function Title() {
   return (
     <div className={styles.title}>
-      <Link to={'/'}>INV</Link>
+      <Link to={'/'}>pokéINV</Link>
     </div>
   )
 }

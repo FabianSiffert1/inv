@@ -29,9 +29,6 @@ export default function MobileNavigation() {
       <div className={styles.burger} />
       <div className={styles.navigationMenu} style={{ display: hamburgerMenuOpen ? 'flex' : 'none' }}>
         <div className={styles.link}>
-          <Link to={`inventory`}>Inventory</Link>
-        </div>
-        <div className={styles.link}>
           <Link to={`market`}>Market</Link>
         </div>
         <div className={styles.linkImage}>

@@ -20,9 +20,9 @@
 
 .middleItem {
   display: flex;
+  border: var(--color) solid 0.2rem;
+  border-radius: 0.2rem;
   justify-content: center;
-  align-items: end;
-  height: 100%;
 }
 
 .navigation {
