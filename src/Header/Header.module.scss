@@ -20,9 +20,13 @@
 
 .middleItem {
   display: flex;
-  border: var(--color) solid 0.2rem;
+  border: var(--color) solid 0.1rem;
   border-radius: 0.2rem;
   justify-content: center;
+  @media (max-width: $smallScreen) {
+    margin-left: 2rem;
+    margin-top: 1rem;
+  }
 }
 
 .navigation {
