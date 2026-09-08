@@ -41,7 +41,7 @@
     "prettier": "^3.2.4",
     "sass": "^1.70.0",
     "typescript": "^5.3.3",
-    "vite": "^5.0.8"
+    "vite": "^8.2.2"
   },
   "husky": {
     "hooks": {
