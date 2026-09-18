@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import styles from './Dropdown.module.scss'
 import OptionGrid, { OptionGridItem } from './OptionGrid'
 
@@ -18,6 +18,8 @@ interface DropdownProps {
 export default function Dropdown(props: DropdownProps) {
   const wrapperRef = useRef<HTMLDivElement>(null)
   const triggerRef = useRef<HTMLButtonElement>(null)
+  const setOpenRef = useRef(props.setOpen)
+  setOpenRef.current = props.setOpen
   const selectedOption = props.options.find((option) => option.id == props.selectedId)
 
   useEffect(() => {
@@ -27,12 +29,12 @@ export default function Dropdown(props: DropdownProps) {
 
     const onPointerDown = (event: MouseEvent) => {
       if (wrapperRef.current != null && !wrapperRef.current.contains(event.target as Node)) {
-        props.setOpen(false)
+        setOpenRef.current(false)
       }
     }
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key == 'Escape') {
-        props.setOpen(false)
+        setOpenRef.current(false)
         triggerRef.current?.focus()
       }
     }
@@ -49,20 +51,20 @@ export default function Dropdown(props: DropdownProps) {
     <div className={styles.dropdown} ref={wrapperRef}>
       <button
         ref={triggerRef}
-        type="button"
+        type='button'
         className={props.isOpen ? `${styles.trigger} ${styles.triggerOpen}` : styles.trigger}
         aria-expanded={props.isOpen}
-        aria-haspopup="listbox"
+        aria-haspopup='listbox'
         aria-label={props.ariaLabel}
         disabled={props.disabled}
         onClick={() => props.setOpen(!props.isOpen)}
       >
-        {selectedOption?.imageUrl && <img className={styles.triggerImage} src={selectedOption.imageUrl} alt="" />}
+        {selectedOption?.imageUrl && <img className={styles.triggerImage} src={selectedOption.imageUrl} alt='' />}
         <span className={selectedOption ? styles.triggerLabel : `${styles.triggerLabel} ${styles.placeholder}`}>
           {selectedOption ? selectedOption.label : props.placeholder}
         </span>
-        <svg className={styles.chevron} viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+        <svg className={styles.chevron} viewBox='0 0 24 24' aria-hidden='true' focusable='false'>
+          <path d='m6 9 6 6 6-6' fill='none' stroke='currentColor' strokeWidth='2.5' strokeLinecap='round' strokeLinejoin='round' />
         </svg>
       </button>
       {props.isOpen && !props.disabled && (

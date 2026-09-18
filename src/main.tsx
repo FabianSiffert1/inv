@@ -14,6 +14,9 @@ import ThemeProvider from './util/ui/theme/ThemeProvider'
 
 pokemonTCGAPI.configure({ apiKey: import.meta.env.VITE_POKEMON_TCG_API_KEY })
 
+const cacheMaxAge = 1000 * 60 * 60 * 24 * 7
+const persistedCardSetLimit = 8
+
 const router = createBrowserRouter(
   [
     {
@@ -43,7 +46,7 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 1000 * 60 * 60 * 24,
-      cacheTime: 1000 * 60 * 60 * 24 * 7,
+      cacheTime: cacheMaxAge,
       refetchOnWindowFocus: false,
       refetchOnMount: false,
       refetchOnReconnect: false,
@@ -53,20 +56,43 @@ const queryClient = new QueryClient({
   }
 })
 
+const isCardSetQuery = (queryKey: unknown): boolean => Array.isArray(queryKey) && queryKey[0] == 'cards' && queryKey[1] == 'set'
+
 persistQueryClient({
   queryClient,
-  persistor: createWebStoragePersistor({ storage: window.localStorage }),
-  maxAge: 1000 * 60 * 60 * 24
+  persistor: createWebStoragePersistor({
+    storage: window.localStorage,
+    throttleTime: 2000
+  }),
+  maxAge: cacheMaxAge,
+  dehydrateOptions: {
+    shouldDehydrateQuery: (query) => {
+      if (query.state.data == undefined || query.state.status != 'success') {
+        return false
+      }
+      if (!isCardSetQuery(query.queryKey)) {
+        return true
+      }
+      const cardSetQueries = queryClient
+        .getQueryCache()
+        .getAll()
+        .filter((cached) => isCardSetQuery(cached.queryKey) && cached.state.data != undefined)
+        .sort((a, b) => b.state.dataUpdatedAt - a.state.dataUpdatedAt)
+        .slice(0, persistedCardSetLimit)
+
+      return cardSetQueries.some((cached) => cached.queryHash == query.queryHash)
+    }
+  }
 })
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 
 root.render(
-  <QueryClientProvider client={queryClient}>
-    <React.StrictMode>
+  <React.StrictMode>
+    <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <RouterProvider router={router} />
       </ThemeProvider>
-    </React.StrictMode>
-  </QueryClientProvider>
+    </QueryClientProvider>
+  </React.StrictMode>
 )

@@ -1,29 +1,47 @@
-@import '../../../../../util/ui/globalDesignElements.module';
+@use 'globalDesignElements.module' as *;
 
 .cardWrapper {
   box-sizing: border-box;
   min-width: 0;
 }
 
-.cardContainer {
-}
-
 .card {
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-color: var(--card-background-color);
-  @include cardImageStyle;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: none;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+  border-radius: 0.3rem;
 }
 
 .card:hover {
   transform: translateY(-0.25rem) scale(1.02);
   box-shadow: 0 0.6rem 1.4rem rgba(0, 0, 0, 0.3);
+}
+
+.card:focus-visible {
+  outline: 0.1rem solid var(--primary-color);
+  outline-offset: 0.2rem;
+}
+
+.cardImage {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  background-color: var(--card-background-color);
+  @include cardImageStyle;
+}
+
+.missingImage {
+  display: block;
+  width: 100%;
+  background-color: var(--card-background-color);
+  @include cardImageStyle;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -39,57 +57,27 @@
 .cardInformationWrapper {
   display: flex;
   flex-direction: column;
+  align-items: center;
   padding-top: 0.5rem;
-
-  * {
-    @include centeredFlexRow;
-  }
+  min-width: 0;
 }
-
 
 .cardName {
   @include cardNameStyle;
   text-align: center;
-}
-
-
-.cardAdditionalInformation {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding-top: 0.2rem;
-  text-align: center;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  overflow-wrap: anywhere;
 }
 
 .cardPrice {
+  padding-top: 0.2rem;
   font-size: 0.8rem;
+  text-align: center;
 }
 
 .noPrice {
   color: var(--secondary-color);
 }
-
-.setNameAndSymbol {
-  display: flex;
-  height: auto;
-  width: 100%;
-  text-align: center;
-  padding-top: 1rem;
-
-  img {
-    margin-left: 0.3rem;
-    max-height: 1rem;
-  }
-
-}
-
-.setReleaseDate {
-  padding-top: 0.3rem;
-}
-
-.tcgPlayerPricesContainer {
-  padding-top: 0.3rem;
-  text-align: center;
-}
-

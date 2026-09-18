@@ -1,39 +1,14 @@
-@import '../../util/ui/globalDesignElements.module';
+@use 'globalDesignElements.module' as *;
 
 .home {
-  @media (min-width: $bigScreen) {
-    max-width: $bigScreen;
-  }
-  margin: auto;
+  margin: 0 auto;
   padding: 2rem;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-  overflow-y: scroll;
-}
 
-
-.footer {
-  position: fixed;
-  z-index: $zTopLevel;
-  bottom: 0;
-  right: 0;
-}
-
-.header {
   @media (min-width: $bigScreen) {
     max-width: $bigScreen;
   }
 }
-
 
 .pageContainer {
-  left: 0;
-  right: 0;
-  @media (min-width: $bigScreen) {
-    max-width: $bigScreen;
-  }
+  min-width: 0;
 }

@@ -1,4 +1,4 @@
-@use 'util/ui/theme/themes' as *;
+@use 'theme/themes' as *;
 
 body {
   background-color: var(--background-color);
@@ -9,7 +9,6 @@ body {
   font-family: 'Roboto', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
 }
 
 :root::-webkit-scrollbar {

@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useRef, useState } from 'react'
+import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { LoadingSpinner } from '../../Components/LoadingSpinner/LoadingSpinner'
 import { HeaderContext } from '../../Header/HeaderProvider'
 import { PokemonSetName, PokemonTCGSeries } from '../../util/api/pokemonTGC/model/PokemonSet'
@@ -16,7 +16,7 @@ const maximumManualRetries = 3
 const retryCooldownMilliseconds = 5000
 
 export default function Market() {
-  const headerContext = useContext(HeaderContext)
+  const { setHeaderItem } = useContext(HeaderContext)
 
   const [currentlySelectedPokemonSeries, setCurrentlySelectedPokemonSeries] = useState<PokemonTCGSeries | undefined>(undefined)
   const [currentlySelectedPokemonSet, setCurrentlySelectedPokemonSet] = useState<PokemonSetName | undefined>(undefined)
@@ -27,12 +27,7 @@ export default function Market() {
   const cooldownTimeout = useRef<number | undefined>(undefined)
 
   const { data: sets, isFetching: areSetsFetching, error: setsError, refetch: refetchSets } = useAllSets()
-  const {
-    data: cards,
-    isFetching: areCardsFetching,
-    error: cardsError,
-    refetch: refetchCards
-  } = useCardsOfSet(currentlySelectedPokemonSet)
+  const { data: cards, isFetching: areCardsFetching, error: cardsError, refetch: refetchCards } = useCardsOfSet(currentlySelectedPokemonSet)
 
   const isFetching = areSetsFetching || areCardsFetching
   const isMobile = useIsMobile()
@@ -47,7 +42,7 @@ export default function Market() {
   }, [])
 
   const selectSet = useCallback((set: PokemonSetName) => {
-    scroll(0, 0)
+    window.scrollTo(0, 0)
     setCurrentlySelectedPokemonSet(set)
     setManualRetryCount(0)
   }, [])
@@ -67,7 +62,7 @@ export default function Market() {
   }, [])
 
   useEffect(() => {
-    headerContext.setHeaderItem(
+    setHeaderItem(
       <div className={selectorStyles.selector}>
         <EraStrip
           pokemonSets={sets}
@@ -95,7 +90,7 @@ export default function Market() {
       </div>
     )
   }, [
-    headerContext.setHeaderItem,
+    setHeaderItem,
     sets,
     currentlySelectedPokemonSeries,
     currentlySelectedPokemonSet,
@@ -116,7 +111,7 @@ export default function Market() {
     if (isRetryCoolingDown || manualRetryCount >= maximumManualRetries) {
       return
     }
-    setManualRetryCount(manualRetryCount + 1)
+    setManualRetryCount((previous) => previous + 1)
     setRetryCoolingDown(true)
     cooldownTimeout.current = window.setTimeout(() => setRetryCoolingDown(false), retryCooldownMilliseconds)
     if (setsError != null) {

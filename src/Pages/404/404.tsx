@@ -11,13 +11,11 @@ export default function ErrorPage() {
 
   return (
     <div className={styles.errorPage}>
-      Well that didnt work! <br />
-      <br />
-      <Link to={'/'}>return to base</Link> <br />
-      <p>
-        Error: &nbsp;
-        <i>{messageForRouteError(error)}</i>
-      </p>
+      <h1 className={styles.headline}>Well, that didn&apos;t work.</h1>
+      <p className={styles.detail}>{messageForRouteError(error)}</p>
+      <Link className={styles.homeLink} to='/'>
+        Return to base
+      </Link>
     </div>
   )
 }

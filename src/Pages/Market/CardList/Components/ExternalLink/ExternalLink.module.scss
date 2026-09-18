@@ -1,34 +1,55 @@
-@import '../../../../../util/ui/globalDesignElements.module';
-
 .externalLink {
   display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  color: var(--primary-color);
+  align-items: baseline;
+  color: var(--link-color);
   text-decoration: none;
   cursor: pointer;
 }
 
-.externalLink:hover .label {
-  text-decoration: underline;
+.externalLink::before,
+.externalLink::after {
+  color: var(--secondary-color);
+  opacity: 0.55;
+  transition:
+    opacity 0.15s ease,
+    color 0.15s ease;
+}
+
+.externalLink::before {
+  content: '[';
+  padding-right: 0.15em;
+}
+
+.externalLink::after {
+  content: ']';
+  padding-left: 0.15em;
+}
+
+.externalLink:hover::before,
+.externalLink:hover::after,
+.externalLink:focus-visible::before,
+.externalLink:focus-visible::after {
+  opacity: 1;
+  color: var(--link-color);
 }
 
 .externalLink:focus-visible {
-  outline: 0.1rem solid var(--primary-color);
+  outline: 0.1rem solid var(--link-color);
   outline-offset: 0.15rem;
+  border-radius: 0.15rem;
 }
 
 .plain {
   color: inherit;
 }
 
-.plain:hover .label {
-  text-decoration: none;
+.plain:hover {
+  color: var(--link-color);
 }
 
-.icon {
-  width: 0.7em;
-  height: 0.7em;
-  flex: 0 0 auto;
-  opacity: 0.8;
+@media (prefers-reduced-motion: reduce) {
+  .externalLink::before,
+  .externalLink::after {
+    transition: none;
+  }
 }

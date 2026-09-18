@@ -1,11 +1,9 @@
-@import '../../util/ui/globalDesignElements.module';
-
 .inventory {
-  margin-top: 15rem;
+  margin: 6rem auto 0 auto;
+  max-width: 32rem;
   padding: 2rem;
-  border: solid black 1px;
-  border-radius: 2rem;
-  
-  display: flex;
-  justify-content: center;
+  border: 0.05rem solid var(--card-border-color);
+  border-radius: 1rem;
+  background-color: var(--card-background-color);
+  text-align: center;
 }

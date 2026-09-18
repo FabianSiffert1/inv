@@ -1,10 +1,7 @@
-@import '../../../../../util/ui/globalDesignElements.module';
+@use 'globalDesignElements.module' as *;
 
 .cardDetailsWrapper {
-  display: none;
-  @media (min-width: $smallScreen) {
-    display: block;
-  }
+  display: block;
 }
 
 .overlay {

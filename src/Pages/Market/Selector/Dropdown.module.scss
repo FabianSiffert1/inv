@@ -1,4 +1,4 @@
-@import '../../../util/ui/globalDesignElements.module';
+@use 'globalDesignElements.module' as *;
 
 .dropdown {
   position: relative;

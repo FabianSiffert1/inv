@@ -3,41 +3,63 @@ import qs from 'qs'
 
 import configuration from './configuration'
 
-const getOptions = () => {
-  const options = {
-    headers: {}
-  }
-  if (configuration.apiKey) options.headers['X-Api-Key'] = configuration.apiKey
+const pageSize = 250
+const maximumPages = 40
 
-  return options
+export interface QueryArgs {
+  q?: string
+  orderBy?: string
+  page?: number
+  pageSize?: number
 }
 
-const get = async (type, args) => {
-  const response = await axios.get(`${configuration.host}/${type}${args && '?' + qs.stringify(args)}`, getOptions())
+interface PaginatedResponse<TResource> {
+  data: TResource[]
+  page?: number
+  pageSize?: number
+  count?: number
+  totalCount?: number
+}
+
+interface SingleResponse<TResource> {
+  data: TResource
+}
+
+const requestConfiguration = (signal?: AbortSignal) => ({
+  headers: configuration.apiKey ? { 'X-Api-Key': configuration.apiKey } : {},
+  signal
+})
+
+const get = async <TResponse,>(type: string, args: QueryArgs, signal?: AbortSignal): Promise<TResponse> => {
+  const query = qs.stringify(args)
+  const url = query.length > 0 ? `${configuration.host}/${type}?${query}` : `${configuration.host}/${type}`
+  const response = await axios.get<TResponse>(url, requestConfiguration(signal))
   return response.data
 }
 
-export default (type: string) => ({
-  find: (id: string) => {
-    return axios(`${configuration.host}/${type}/${id}`, getOptions()).then((response) => response.data.data)
+export default <TResource,>(type: string) => ({
+  find: async (id: string, signal?: AbortSignal): Promise<TResource> => {
+    const response = await axios.get<SingleResponse<TResource>>(`${configuration.host}/${type}/${id}`, requestConfiguration(signal))
+    return response.data.data
   },
-  where: (args) => get(type, args),
-  all: (args = {}) => {
-    const data: unknown[] = []
-    const getAll = (type, args) => {
-      const page = args.page ? args.page + 1 : 1
 
-      return get(type, { ...args, page })
-        .then((response) => {
-          data.push(...response.data)
+  where: (args: QueryArgs, signal?: AbortSignal): Promise<PaginatedResponse<TResource>> =>
+    get<PaginatedResponse<TResource>>(type, args, signal),
 
-          if (!response.totalCount || response.pageSize * response.page >= response.totalCount) {
-            return data
-          }
+  all: async (args: QueryArgs = {}, signal?: AbortSignal): Promise<TResource[]> => {
+    const collected: TResource[] = []
 
-          return getAll(type, { ...args, page })
-        })
+    for (let page = 1; page <= maximumPages; page++) {
+      const response = await get<PaginatedResponse<TResource>>(type, { ...args, page, pageSize }, signal)
+      collected.push(...response.data)
+
+      const totalCount = response.totalCount
+      const receivedPageSize = response.pageSize ?? pageSize
+      if (totalCount == undefined || totalCount == 0 || receivedPageSize * page >= totalCount) {
+        break
+      }
     }
-    return getAll(type, args)
+
+    return collected
   }
 })

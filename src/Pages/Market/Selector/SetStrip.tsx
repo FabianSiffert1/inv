@@ -16,7 +16,7 @@ interface SetStripProps {
 
 export const setOptionsOfSeries = (pokemonSets?: PokemonSet[], series?: PokemonTCGSeries): OptionGridItem[] =>
   (pokemonSets ?? [])
-    .filter((pokemonSet) => pokemonSet.series == (series as unknown as string))
+    .filter((pokemonSet) => pokemonSet.series == series)
     .sort((a, b) => a.releaseDate.localeCompare(b.releaseDate))
     .map((pokemonSet) => ({
       id: pokemonSet.name,
@@ -27,32 +27,29 @@ export const setOptionsOfSeries = (pokemonSets?: PokemonSet[], series?: PokemonT
 export default function SetStrip(props: SetStripProps) {
   const options = setOptionsOfSeries(props.pokemonSets, props.currentlySelectedPokemonSeries)
 
-  const selectedId = props.currentlySelectedPokemonSet as unknown as string
-  const onSelect = (setName: string) => props.setCurrentlySelectedPokemonSet(setName as unknown as PokemonSetName)
-
   return (
     <>
       <Dropdown
-        variant="set"
-        ariaLabel="Set"
-        placeholder="Select set"
+        variant='set'
+        ariaLabel='Set'
+        placeholder='Select set'
         options={options}
         cachedIds={props.cachedSetNames}
         disabled={options.length == 0}
         isOpen={props.isOpen && !props.isMobile}
         setOpen={props.setOpen}
-        selectedId={selectedId}
-        onSelect={onSelect}
+        selectedId={props.currentlySelectedPokemonSet}
+        onSelect={props.setCurrentlySelectedPokemonSet}
       />
       {props.isMobile && props.isOpen && options.length > 0 && (
         <MobileSheet
-          title="Set"
+          title='Set'
           options={options}
           cachedIds={props.cachedSetNames}
-          selectedId={selectedId}
+          selectedId={props.currentlySelectedPokemonSet}
           onClose={() => props.setOpen(false)}
           onSelect={(setName) => {
-            onSelect(setName)
+            props.setCurrentlySelectedPokemonSet(setName)
             props.setOpen(false)
           }}
         />

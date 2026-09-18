@@ -1,6 +1,6 @@
 $smallScreen: 1180px;
 $bigScreen: 1536px;
-$standardBottomPadding: 2rem;
+
 $zBaseLayer: 0;
 $zSecondLevel: 1;
 $zThirdLevel: 2;
@@ -20,41 +20,6 @@ $zOverlay: 5;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-}
-
-@mixin horizontalMargins {
-  margin-left: 3rem;
-  margin-right: 3rem;
-}
-
-@mixin verticalMargins {
-  margin-top: 3rem;
-  margin-bottom: 3rem;
-}
-
-@mixin paddingTopBottom {
-  padding-top: 2rem;
-  padding-bottom: 2rem;
-}
-
-@mixin paddingLeftRight {
-  padding-left: 3rem;
-  padding-right: 3rem;
-}
-
-@mixin button {
-  cursor: pointer;
-  width: 196px;
-  padding: 12px 16px;
-
-  font-size: 1.2rem;
-
-  border-radius: 4px;
-  border: 1px solid var(--primary-color);
-  outline: none;
-
-  color: var(--primary-color);
-  background-color: transparent;
 }
 
 @mixin cardNameStyle {

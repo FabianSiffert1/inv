@@ -29,30 +29,27 @@ export const eraOptions = (pokemonSets?: PokemonSet[]): OptionGridItem[] => {
 export default function EraStrip(props: EraStripProps) {
   const options = eraOptions(props.pokemonSets)
 
-  const selectedId = props.currentlySelectedPokemonSeries as unknown as string
-  const onSelect = (series: string) => props.setCurrentlySelectedPokemonSeries(series as unknown as PokemonTCGSeries)
-
   return (
     <>
       <Dropdown
-        variant="era"
-        ariaLabel="Era"
-        placeholder="Select era"
+        variant='era'
+        ariaLabel='Era'
+        placeholder='Select era'
         options={options}
         disabled={options.length == 0}
         isOpen={props.isOpen && !props.isMobile}
         setOpen={props.setOpen}
-        selectedId={selectedId}
-        onSelect={onSelect}
+        selectedId={props.currentlySelectedPokemonSeries}
+        onSelect={props.setCurrentlySelectedPokemonSeries}
       />
       {props.isMobile && props.isOpen && options.length > 0 && (
         <MobileSheet
-          title="Era"
+          title='Era'
           options={options}
-          selectedId={selectedId}
+          selectedId={props.currentlySelectedPokemonSeries}
           onClose={() => props.setOpen(false)}
           onSelect={(series) => {
-            onSelect(series)
+            props.setCurrentlySelectedPokemonSeries(series)
             props.setOpen(false)
           }}
         />

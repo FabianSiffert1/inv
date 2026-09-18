@@ -1,23 +1,31 @@
 @use 'colors' as *;
 
-html[data-theme="dark"] {
+html[data-theme='dark'] {
   --background-color: #{$neutral-900};
   --color: #{$neutral-0};
 
-  --primary-color: #{$primary-500};
-  --secondary-color: #{$neutral-500};
+  --primary-color: #{$primary-400};
+  --secondary-color: #{$neutral-400};
 
   --card-background-color: #{$dark-overlay-8};
   --card-border-color: #{$neutral-700};
+
+  --link-color: #{$link-sage};
+
+  color-scheme: dark;
 }
 
-html[data-theme="light"] {
+html[data-theme='light'] {
   --background-color: #{$white-2};
   --color: #{$black-1};
 
-  --primary-color: #{$blue-1};
-  --secondary-color: #{$grey-3};
+  --primary-color: #{$violet-1};
+  --secondary-color: #{$grey-4};
 
   --card-background-color: #{$white-1};
   --card-border-color: #{$grey-2};
+
+  --link-color: #{$link-sage-dark};
+
+  color-scheme: light;
 }

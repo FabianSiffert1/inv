@@ -1,110 +1,74 @@
-@import '../../../../../util/ui/globalDesignElements.module';
+@use 'globalDesignElements.module' as *;
 
-.mobileCardDetailsContainer {
-  display: none;
-  @media (max-width: $smallScreen - 1px) {
-    display: flex;
-  }
-
-  overflow: clip;
-
+.mobileCardDetailsWrapper {
+  position: fixed;
+  inset: 0;
+  z-index: $zOverlay;
 }
 
 .overlay {
-  background-color: rgba(0, 0, 0, 0.5);
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: $zOverlay;
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.55);
+}
+
+.cardDetailsContainer {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--background-color);
 }
 
 .mobileCardDetailsHeader {
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  padding: 0.5rem 0.5rem 0 0.5rem;
+  flex: 0 0 auto;
 }
 
-.closeOverlayButton {
+.closeButton {
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  line-height: 1;
   cursor: pointer;
-  border-radius: 1rem;
-  padding: 0.5rem;
-  font-weight: bold;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  color: var(--secondary-color);
+  font-family: inherit;
 }
 
-.cardDetailsContainer {
+.closeButton:focus-visible {
+  outline: 0.1rem solid var(--primary-color);
+  outline-offset: 0.1rem;
+}
+
+.scrollArea {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
   display: flex;
   flex-direction: column;
-  margin: 1rem;
-  background-color: var(--background-color);
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  border-radius: 0.3rem;
-  z-index: $zOverlay;
-  padding: 1rem;
+  gap: 1.5rem;
+  padding: 0 1.25rem 2rem 1.25rem;
 }
 
 .cardImageAndBaseInfo {
   display: flex;
-  height: 40%;
-  padding-bottom: 0.5rem;
-
-  img {
-    @include cardImageStyle;
-    padding-right: 1rem;
-  }
+  gap: 1rem;
+  align-items: flex-start;
 }
 
-.setHeader {
-  margin-bottom: 0.5rem;
-  border-bottom: solid var(--color) 0.1rem;
-  font-weight: bold;
-}
-
-.cardSetInformationContainer {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.3rem;
-  padding-bottom: 1rem;
-
-  img {
-    width: 1.5rem;
-    height: 1.5rem;
-  }
-}
-
-.cardPrices {
-
-  img {
-    width: 15%;
-  }
-}
-
-.cardMarketLink {
-  margin-bottom: 0.5rem;
-  border-bottom: solid var(--color) 0.1rem;
-}
-
-.cardMarketPricesContainer {
-  padding-bottom: 2rem;
-
-  * {
-    padding-bottom: 0.3rem;
-  }
-
-}
-
-.tcgPlayerLink {
-  margin-bottom: 0.5rem;
-  border-bottom: solid var(--color) 0.1rem;
-}
-
-.tcgPlayerPriceList {
-  * {
-    padding-bottom: 0.1rem !important;
-  }
+.cardImage {
+  flex: 0 0 40%;
+  max-width: 40%;
+  height: auto;
+  @include cardImageStyle;
 }

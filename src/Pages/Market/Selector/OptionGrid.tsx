@@ -16,26 +16,43 @@ interface OptionGridProps {
   cachedIds?: string[]
 }
 
+const navigationKeys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End']
+
 export default function OptionGrid(props: OptionGridProps) {
   const containerRef = useRef<HTMLDivElement>(null)
 
+  const focusOptionAt = (index: number) => {
+    containerRef.current?.querySelectorAll('button')[index]?.focus()
+  }
+
   const handleKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>, index: number) => {
-    if (event.key != 'ArrowLeft' && event.key != 'ArrowRight') {
+    if (!navigationKeys.includes(event.key)) {
       return
     }
     event.preventDefault()
-    const nextIndex = index + (event.key == 'ArrowRight' ? 1 : -1)
+
+    if (event.key == 'Home') {
+      focusOptionAt(0)
+      return
+    }
+    if (event.key == 'End') {
+      focusOptionAt(props.options.length - 1)
+      return
+    }
+
+    const step = event.key == 'ArrowRight' || event.key == 'ArrowDown' ? 1 : -1
+    const nextIndex = index + step
     if (nextIndex < 0 || nextIndex >= props.options.length) {
       return
     }
-    containerRef.current?.querySelectorAll('button')[nextIndex]?.focus()
+    focusOptionAt(nextIndex)
   }
 
   return (
     <div
       className={props.variant == 'set' ? `${styles.grid} ${styles.setGrid}` : `${styles.grid} ${styles.eraGrid}`}
       ref={containerRef}
-      role="tablist"
+      role='listbox'
       aria-label={props.ariaLabel}
     >
       {props.options.map((option, index) => {
@@ -43,16 +60,16 @@ export default function OptionGrid(props: OptionGridProps) {
         return (
           <button
             key={option.id}
-            type="button"
-            role="tab"
+            type='button'
+            role='option'
             aria-selected={isSelected}
             className={isSelected ? `${styles.item} ${styles.selected}` : styles.item}
             onClick={() => props.onSelect(option.id)}
             onKeyDown={(event) => handleKeyDown(event, index)}
           >
-            {option.imageUrl && <img className={styles.itemImage} src={option.imageUrl} alt="" loading="lazy" />}
+            {option.imageUrl && <img className={styles.itemImage} src={option.imageUrl} alt='' loading='lazy' />}
             <span className={styles.itemLabel}>{option.label}</span>
-            {props.cachedIds?.includes(option.id) && <span className={styles.cachedDot} title="Stored offline" />}
+            {props.cachedIds?.includes(option.id) && <span className={styles.cachedDot} role='img' aria-label='Stored offline' />}
           </button>
         )
       })}

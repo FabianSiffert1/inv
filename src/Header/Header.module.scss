@@ -1,27 +1,29 @@
-@import '../util/ui/globalDesignElements.module';
+@use 'globalDesignElements.module' as *;
 
 .header {
+  position: fixed;
+  z-index: $zHeader;
+  top: 0;
+  left: 0;
+  right: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0.5rem 2rem;
+  background-color: var(--background-color);
+
+  @media (min-width: $bigScreen) {
+    max-width: $bigScreen;
+  }
+
   @media (max-width: $smallScreen - 1px) {
     flex-wrap: wrap;
     gap: 0.4rem 0.75rem;
     padding: 0.5rem 1rem;
   }
-  position: fixed;
-  z-index: $zHeader;
-  background-color: var(--background-color);
-  top: 0;
-  left: 0;
-  right: 0;
-  @media (min-width: $bigScreen) {
-    max-width: $bigScreen;
-  }
-  margin-left: auto;
-  margin-right: auto;
-  padding: 0.5rem 2rem;
 }
 
 .middleItem {
@@ -29,6 +31,7 @@
   align-items: center;
   min-width: 0;
   flex: 1 1 auto;
+
   @media (max-width: $smallScreen - 1px) {
     order: 3;
     flex: 1 0 100%;
@@ -41,6 +44,7 @@
   align-items: center;
   gap: 1rem;
   margin-left: auto;
+
   @media (max-width: $smallScreen - 1px) {
     order: 2;
   }
@@ -50,6 +54,7 @@
   display: flex;
   align-items: center;
   flex: 0 0 auto;
+
   @media (max-width: $smallScreen - 1px) {
     order: 1;
   }

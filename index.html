@@ -4,7 +4,33 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/inv.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>INV</title>
+    <meta name="description" content="Browse Pokemon TCG sets and current card market prices." />
+    <meta name="theme-color" content="#1A1A1C" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#F8F8F8" media="(prefers-color-scheme: light)" />
+    <meta property="og:title" content="pokeINV" />
+    <meta property="og:description" content="Browse Pokemon TCG sets and current card market prices." />
+    <meta property="og:type" content="website" />
+    <title>pokeINV</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://api.pokemontcg.io" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+    <script>
+      (function () {
+        try {
+          var stored = window.localStorage.getItem('inv-theme')
+          var theme =
+            stored === 'dark' || stored === 'light'
+              ? stored
+              : window.matchMedia('(prefers-color-scheme: dark)').matches
+                ? 'dark'
+                : 'light'
+          document.documentElement.setAttribute('data-theme', theme)
+        } catch (error) {
+          document.documentElement.setAttribute('data-theme', 'dark')
+        }
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>

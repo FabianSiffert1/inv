@@ -1,33 +1,20 @@
-export interface PokemonTCGSeries {
-  series: string
-}
+export type PokemonTCGSeries = string
+export type PokemonSetName = string
 
-export interface PokemonSetName {
-  name: string
-}
-
-export interface PokemonSetLogo {
-  logo: string
-}
-
-export interface PokemonSetSymbol {
-  symbol: string
-}
-
-export interface PokemonSet extends PokemonTCGSeries, PokemonSetName, PokemonSetSymbol, PokemonSetLogo {
+export interface PokemonSet {
   id: string
-  name: PokemonSetName & string
-  series: PokemonTCGSeries & string
+  name: PokemonSetName
+  series: PokemonTCGSeries
   printedTotal: number
   total: number
-  legalities: {
-    unlimited: string
+  legalities?: {
+    unlimited?: string
   }
-  ptcgoCode: string
+  ptcgoCode?: string
   releaseDate: string
-  updatedAt: string
+  updatedAt?: string
   images: {
-    symbol: PokemonSetSymbol & string
-    logo: PokemonSetLogo & string
+    symbol: string
+    logo: string
   }
 }
