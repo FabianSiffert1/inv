@@ -5,6 +5,9 @@ interface CardListStatusProps {
   isFetching: boolean
   error: unknown
   cardCount: number
+  onRetry: () => void
+  retriesLeft: number
+  isRetryCoolingDown: boolean
 }
 
 const messageForError = (error: unknown): string => {
@@ -24,6 +27,17 @@ const messageForError = (error: unknown): string => {
   return 'Could not load cards from the Pokémon TCG API.'
 }
 
+function RetryControl(props: CardListStatusProps) {
+  if (props.retriesLeft <= 0) {
+    return <div className={styles.detail}>No retries left. Reload the page to try again.</div>
+  }
+  return (
+    <button type="button" className={styles.retryButton} disabled={props.isRetryCoolingDown} onClick={props.onRetry}>
+      {props.isRetryCoolingDown ? 'Retrying…' : `Try again (${props.retriesLeft} left)`}
+    </button>
+  )
+}
+
 export default function CardListStatus(props: CardListStatusProps) {
   if (props.isFetching) {
     return undefined
@@ -34,6 +48,7 @@ export default function CardListStatus(props: CardListStatusProps) {
       <div className={styles.status} role="alert">
         <div className={styles.headline}>Cards could not be loaded</div>
         <div className={styles.detail}>{messageForError(props.error)}</div>
+        <RetryControl {...props} />
       </div>
     )
   }
@@ -51,6 +66,7 @@ export default function CardListStatus(props: CardListStatusProps) {
       <div className={styles.status}>
         <div className={styles.headline}>No cards found</div>
         <div className={styles.detail}>The API returned no cards for this set.</div>
+        <RetryControl {...props} />
       </div>
     )
   }

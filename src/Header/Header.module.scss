@@ -1,11 +1,12 @@
 @import '../util/ui/globalDesignElements.module';
 
 .header {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  align-items: start;
+  display: flex;
+  align-items: center;
   justify-content: space-between;
+  gap: 1rem;
   position: fixed;
+  z-index: $zThirdLevel;
   background-color: var(--background-color);
   top: 0;
   left: 0;
@@ -15,17 +16,27 @@
   }
   margin-left: auto;
   margin-right: auto;
-  padding: 2rem 2rem 1rem 2rem;
+  padding: 0.5rem 2rem;
 }
 
 .middleItem {
   display: flex;
-  justify-content: center;
   align-items: center;
-  min-height: 1.6rem;
+  min-width: 0;
+  flex: 1 1 auto;
 }
 
 .navigation {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-left: auto;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
 }
 
 .webNavigation {

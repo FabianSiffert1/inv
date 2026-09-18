@@ -1,10 +1,7 @@
 @import '../../util/ui/globalDesignElements.module';
 
 .market {
-  padding-top: 7rem;
-  @media (min-width: $smallScreen) {
-    padding-top: 8rem;
-  }
+  padding-top: 3.5rem;
 }
 
 .cardListWrapper {

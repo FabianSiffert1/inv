@@ -19,3 +19,30 @@
   color: var(--secondary-color);
   max-width: 32rem;
 }
+
+.retryButton {
+  margin-top: 0.5rem;
+  cursor: pointer;
+  padding: 0.4rem 1rem;
+  font-family: inherit;
+  font-size: 0.9rem;
+  color: var(--color);
+  border: 0.05rem solid var(--card-border-color);
+  border-radius: 1.4rem;
+  background-color: var(--card-background-color);
+  transition: border-color 0.15s ease;
+}
+
+.retryButton:hover:not(:disabled) {
+  border-color: var(--primary-color);
+}
+
+.retryButton:focus-visible {
+  outline: 0.1rem solid var(--primary-color);
+  outline-offset: 0.2rem;
+}
+
+.retryButton:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
