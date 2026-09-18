@@ -10,13 +10,3 @@
     width: 100%;
   }
 }
-
-.selectorSpinner {
-  display: flex;
-  align-items: center;
-  flex: 0 0 auto;
-  @media (max-width: $smallScreen - 1px) {
-    margin-left: auto;
-    padding-right: 0.25rem;
-  }
-}

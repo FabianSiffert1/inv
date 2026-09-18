@@ -1,5 +1,4 @@
 import { useCallback, useContext, useEffect, useRef, useState } from 'react'
-import { LoadingSpinner } from '../../Components/LoadingSpinner/LoadingSpinner'
 import { HeaderContext } from '../../Header/HeaderProvider'
 import { PokemonSetName, PokemonTCGSeries } from '../../util/api/pokemonTGC/model/PokemonSet'
 import { useAllSets, useCardsOfSet } from '../../util/api/pokemonTGC/hooks'
@@ -16,7 +15,7 @@ const maximumManualRetries = 3
 const retryCooldownMilliseconds = 5000
 
 export default function Market() {
-  const { setHeaderItem } = useContext(HeaderContext)
+  const { setHeaderItem, setBusy } = useContext(HeaderContext)
 
   const [currentlySelectedPokemonSeries, setCurrentlySelectedPokemonSeries] = useState<PokemonTCGSeries | undefined>(undefined)
   const [currentlySelectedPokemonSet, setCurrentlySelectedPokemonSet] = useState<PokemonSetName | undefined>(undefined)
@@ -82,11 +81,6 @@ export default function Market() {
           cachedSetNames={cachedSetNames}
           isMobile={isMobile}
         />
-        {isFetching && (
-          <div className={selectorStyles.selectorSpinner}>
-            <LoadingSpinner small />
-          </div>
-        )}
       </div>
     )
   }, [
@@ -96,7 +90,6 @@ export default function Market() {
     currentlySelectedPokemonSet,
     isEraDropdownOpen,
     isSetDropdownOpen,
-    isFetching,
     isMobile,
     cachedSetNames,
     selectEra,
@@ -104,6 +97,12 @@ export default function Market() {
     openEraDropdown,
     openSetDropdown
   ])
+
+  useEffect(() => {
+    setBusy(isFetching)
+  }, [setBusy, isFetching])
+
+  useEffect(() => () => setBusy(false), [setBusy])
 
   useEffect(() => () => window.clearTimeout(cooldownTimeout.current), [])
 

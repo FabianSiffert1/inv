@@ -33,9 +33,21 @@
   flex: 1 1 auto;
 
   @media (max-width: $smallScreen - 1px) {
-    order: 3;
+    order: 4;
     flex: 1 0 100%;
     padding-bottom: 0.15rem;
+  }
+}
+
+.headerSpinner {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  margin-left: auto;
+
+  @media (max-width: $smallScreen - 1px) {
+    order: 2;
+    margin-left: auto;
   }
 }
 
@@ -46,7 +58,8 @@
   margin-left: auto;
 
   @media (max-width: $smallScreen - 1px) {
-    order: 2;
+    order: 3;
+    margin-left: 0;
   }
 }
 
