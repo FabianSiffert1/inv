@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import { PokemonCard } from '../../../../../util/api/pokemonTGC/model/PokemonCard'
 import { CardBaseDetails, TcgPlayerComponent } from '../CardDetails/CardDetails'
 import { ExternalLink } from '../ExternalLink/ExternalLink'
@@ -10,6 +10,24 @@ interface MobileCardDetails {
 }
 
 export function MobileCardDetails(props: MobileCardDetails) {
+  const closeRef = useRef(props.toggleCardDetailsPopUp)
+  closeRef.current = props.toggleCardDetailsPopUp
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key == 'Escape') {
+        closeRef.current(false)
+      }
+    }
+    const previousOverflow = document.body.style.overflow
+    document.addEventListener('keydown', onKeyDown)
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.removeEventListener('keydown', onKeyDown)
+      document.body.style.overflow = previousOverflow
+    }
+  }, [])
+
   const setReleaseDate = new Date(props.card?.set?.releaseDate)
   const setReleaseMonth = setReleaseDate.toLocaleString('default', { month: 'long' })
   const setReleaseString = setReleaseMonth.concat(' ').concat(setReleaseDate.getFullYear().toString())
@@ -36,7 +54,7 @@ export function MobileCardDetails(props: MobileCardDetails) {
           <span className={styles.setReleaseDate}>{setReleaseString}</span>
           <span>Total Cards: {props.card.set.total}</span>
           <span>Series: {props.card.set.series}</span>
-          <span>{props.card.set.legalities.unlimited}</span>
+          <span>{props.card.set.legalities?.unlimited}</span>
           <span className={styles.setSymbol}>
             {props.card?.set?.images?.symbol ? <img src={props.card.set.images.symbol} alt={'setSymbol'} /> : null}
           </span>

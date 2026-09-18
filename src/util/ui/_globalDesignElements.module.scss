@@ -5,6 +5,8 @@ $zBaseLayer: 0;
 $zSecondLevel: 1;
 $zThirdLevel: 2;
 $zTopLevel: 3;
+$zHeader: 4;
+$zOverlay: 5;
 
 @mixin centeredFlexRow {
   display: flex;

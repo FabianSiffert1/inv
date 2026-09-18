@@ -83,7 +83,9 @@
   max-width: min(46rem, calc(100vw - 4rem));
   max-height: 60vh;
   overflow-y: auto;
+  overscroll-behavior: contain;
   scrollbar-width: none;
+  -ms-overflow-style: none;
   padding: 0.85rem 1rem;
   background-color: var(--background-color);
   border: 0.05rem solid var(--card-border-color);

@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect } from 'react'
+import React, { ReactElement, useEffect, useRef } from 'react'
 import { PokemonCard, PokemonCardProp, TcgPlayer, TcgPlayerPriceSet } from '../../../../../util/api/pokemonTGC/model/PokemonCard'
 import { formatPrice } from '../../../../../util/format/price'
 import { ExternalLink } from '../ExternalLink/ExternalLink'
@@ -20,10 +20,13 @@ interface PriceRowProps {
 }
 
 export function CardDetails(props: CardDetailsProps) {
+  const closeRef = useRef(props.toggleCardDetailsPopUp)
+  closeRef.current = props.toggleCardDetailsPopUp
+
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key == 'Escape') {
-        props.toggleCardDetailsPopUp(false)
+        closeRef.current(false)
       }
     }
     document.addEventListener('keydown', onKeyDown)

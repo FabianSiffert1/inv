@@ -1,12 +1,12 @@
-import React, { createContext, ReactElement, useMemo, useState } from 'react'
+import React, { createContext, ReactNode, useCallback, useMemo, useState } from 'react'
 
 interface ContextProps {
-  headerItem?: ReactElement
-  setHeaderItem: (newHeaderMiddleItem: ReactElement) => void
+  headerItem?: ReactNode
+  setHeaderItem: (newHeaderMiddleItem: ReactNode) => void
 }
 
 export const HeaderContext = createContext<ContextProps>({
-  headerItem: <>HeaderMiddle</>,
+  headerItem: undefined,
   setHeaderItem: () => {}
 })
 
@@ -15,18 +15,18 @@ interface Props {
 }
 
 const HeaderProvider: React.FC<Props> = ({ children }) => {
-  const [headerMiddleItem, setHeaderMiddleItem] = useState<ReactElement>(<>MiddleItem</>)
+  const [headerMiddleItem, setHeaderMiddleItem] = useState<ReactNode>(undefined)
 
-  const setNewHeaderMiddleItem = (newHeaderMiddleItem: ReactElement) => {
-    setHeaderMiddleItem(newHeaderMiddleItem)
-  }
+  const setHeaderItem = useCallback((newHeaderMiddleItem: ReactNode) => {
+    setHeaderMiddleItem(() => newHeaderMiddleItem)
+  }, [])
 
   const contextValue = useMemo(
     () => ({
       headerItem: headerMiddleItem,
-      setHeaderItem: setNewHeaderMiddleItem
+      setHeaderItem
     }),
-    [headerMiddleItem]
+    [headerMiddleItem, setHeaderItem]
   )
 
   return <HeaderContext.Provider value={contextValue}>{children}</HeaderContext.Provider>

@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build --base=/inv",
+    "build": "vite build",
     "lint": "eslint . --ext js,jsx,ts,tsx --report-unused-disable-directives --max-warnings 0",
     "lintFix": "eslint . --ext js,jsx,ts,tsx --report-unused-disable-directives --max-warnings 0  --fix",
     "format": "prettier src/**/*.tsx --write --config ./.prettierrc",

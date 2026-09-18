@@ -62,3 +62,12 @@
   text-align: left;
   overflow-wrap: anywhere;
 }
+
+.cachedDot {
+  flex: 0 0 auto;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: linear-gradient(to bottom, #e83e35 0%, #e83e35 50%, #ffffff 50%, #ffffff 100%);
+  border: 0.05rem solid #3f3f3f;
+}

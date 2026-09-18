@@ -2,10 +2,7 @@
 
 .cardWrapper {
   box-sizing: border-box;
-  width: 25%;
-  @media (min-width: $smallScreen) {
-    width: 15%;
-  }
+  min-width: 0;
 }
 
 .cardContainer {
@@ -13,12 +10,30 @@
 
 .card {
   background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
   background-color: var(--card-background-color);
   @include cardImageStyle;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card:hover {
+  transform: translateY(-0.25rem) scale(1.02);
+  box-shadow: 0 0.6rem 1.4rem rgba(0, 0, 0, 0.3);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    transition: none;
+  }
+
+  .card:hover {
+    transform: none;
+  }
 }
 
 .cardInformationWrapper {

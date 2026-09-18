@@ -1,8 +1,10 @@
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { LoadingSpinner } from '../../Components/LoadingSpinner/LoadingSpinner'
 import { HeaderContext } from '../../Header/HeaderProvider'
 import { PokemonSetName, PokemonTCGSeries } from '../../util/api/pokemonTGC/model/PokemonSet'
 import { useAllSets, useCardsOfSet } from '../../util/api/pokemonTGC/hooks'
+import { useCachedSetNames } from '../../util/api/pokemonTGC/useCachedSetNames'
+import { useIsMobile } from '../../util/ui/useIsMobile'
 import CardList from './CardList/CardList'
 import CardListStatus from './CardListStatus'
 import styles from './Market.module.scss'
@@ -33,59 +35,82 @@ export default function Market() {
   } = useCardsOfSet(currentlySelectedPokemonSet)
 
   const isFetching = areSetsFetching || areCardsFetching
+  const isMobile = useIsMobile()
+  const cachedSetNames = useCachedSetNames()
 
-  useEffect(() => {
-    headerContext.setHeaderItem(
-    <div className={selectorStyles.selector}>
-      <EraStrip
-        pokemonSets={sets}
-        currentlySelectedPokemonSeries={currentlySelectedPokemonSeries}
-        setCurrentlySelectedPokemonSeries={selectEra}
-        isOpen={isEraDropdownOpen}
-        setOpen={(isOpen) => {
-          setEraDropdownOpen(isOpen)
-          if (isOpen) {
-            setSetDropdownOpen(false)
-          }
-        }}
-      />
-      <SetStrip
-        pokemonSets={sets}
-        currentlySelectedPokemonSeries={currentlySelectedPokemonSeries}
-        currentlySelectedPokemonSet={currentlySelectedPokemonSet}
-        setCurrentlySelectedPokemonSet={selectSet}
-        isOpen={isSetDropdownOpen}
-        setOpen={(isOpen) => {
-          setSetDropdownOpen(isOpen)
-          if (isOpen) {
-            setEraDropdownOpen(false)
-          }
-        }}
-      />
-      {isFetching && (
-        <div className={selectorStyles.selectorSpinner}>
-          <LoadingSpinner small />
-        </div>
-      )}
-    </div>
-    )
-  }, [sets, currentlySelectedPokemonSeries, currentlySelectedPokemonSet, isEraDropdownOpen, isSetDropdownOpen, isFetching])
-
-  useEffect(() => () => window.clearTimeout(cooldownTimeout.current), [])
-
-  const selectEra = (series: PokemonTCGSeries) => {
+  const selectEra = useCallback((series: PokemonTCGSeries) => {
     setCurrentlySelectedPokemonSeries(series)
     setCurrentlySelectedPokemonSet(undefined)
     setEraDropdownOpen(false)
     setSetDropdownOpen(true)
     setManualRetryCount(0)
-  }
+  }, [])
 
-  const selectSet = (set: PokemonSetName) => {
+  const selectSet = useCallback((set: PokemonSetName) => {
     scroll(0, 0)
     setCurrentlySelectedPokemonSet(set)
     setManualRetryCount(0)
-  }
+  }, [])
+
+  const openEraDropdown = useCallback((isOpen: boolean) => {
+    setEraDropdownOpen(isOpen)
+    if (isOpen) {
+      setSetDropdownOpen(false)
+    }
+  }, [])
+
+  const openSetDropdown = useCallback((isOpen: boolean) => {
+    setSetDropdownOpen(isOpen)
+    if (isOpen) {
+      setEraDropdownOpen(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    headerContext.setHeaderItem(
+      <div className={selectorStyles.selector}>
+        <EraStrip
+          pokemonSets={sets}
+          currentlySelectedPokemonSeries={currentlySelectedPokemonSeries}
+          setCurrentlySelectedPokemonSeries={selectEra}
+          isOpen={isEraDropdownOpen}
+          setOpen={openEraDropdown}
+          isMobile={isMobile}
+        />
+        <SetStrip
+          pokemonSets={sets}
+          currentlySelectedPokemonSeries={currentlySelectedPokemonSeries}
+          currentlySelectedPokemonSet={currentlySelectedPokemonSet}
+          setCurrentlySelectedPokemonSet={selectSet}
+          isOpen={isSetDropdownOpen}
+          setOpen={openSetDropdown}
+          cachedSetNames={cachedSetNames}
+          isMobile={isMobile}
+        />
+        {isFetching && (
+          <div className={selectorStyles.selectorSpinner}>
+            <LoadingSpinner small />
+          </div>
+        )}
+      </div>
+    )
+  }, [
+    headerContext.setHeaderItem,
+    sets,
+    currentlySelectedPokemonSeries,
+    currentlySelectedPokemonSet,
+    isEraDropdownOpen,
+    isSetDropdownOpen,
+    isFetching,
+    isMobile,
+    cachedSetNames,
+    selectEra,
+    selectSet,
+    openEraDropdown,
+    openSetDropdown
+  ])
+
+  useEffect(() => () => window.clearTimeout(cooldownTimeout.current), [])
 
   const retryFetch = () => {
     if (isRetryCoolingDown || manualRetryCount >= maximumManualRetries) {

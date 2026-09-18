@@ -17,7 +17,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: $zSecondLevel;
+  z-index: $zOverlay;
 }
 
 .mobileCardDetailsHeader {
@@ -44,7 +44,7 @@
   bottom: 0;
   right: 0;
   border-radius: 0.3rem;
-  z-index: $zTopLevel;
+  z-index: $zOverlay;
   padding: 1rem;
 }
 

@@ -5,7 +5,6 @@ import { createWebStoragePersistor } from 'react-query/createWebStoragePersistor
 import { persistQueryClient } from 'react-query/persistQueryClient-experimental'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import './index.scss'
-import HeaderProvider from './Header/HeaderProvider'
 import ErrorPage from './Pages/404/404'
 import Home from './Pages/Home/Home'
 import Inventory from './Pages/Inventory/Inventory'
@@ -15,27 +14,30 @@ import ThemeProvider from './util/ui/theme/ThemeProvider'
 
 pokemonTCGAPI.configure({ apiKey: import.meta.env.VITE_POKEMON_TCG_API_KEY })
 
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <Home />,
-    errorElement: <ErrorPage />,
-    children: [
-      {
-        element: <Market />,
-        index: true
-      },
-      {
-        path: 'inventory',
-        element: <Inventory />
-      },
-      {
-        path: 'market',
-        element: <Market />
-      }
-    ]
-  }
-])
+const router = createBrowserRouter(
+  [
+    {
+      path: '/',
+      element: <Home />,
+      errorElement: <ErrorPage />,
+      children: [
+        {
+          element: <Market />,
+          index: true
+        },
+        {
+          path: 'inventory',
+          element: <Inventory />
+        },
+        {
+          path: 'market',
+          element: <Market />
+        }
+      ]
+    }
+  ],
+  { basename: import.meta.env.BASE_URL }
+)
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -63,9 +65,7 @@ root.render(
   <QueryClientProvider client={queryClient}>
     <React.StrictMode>
       <ThemeProvider>
-        <HeaderProvider>
-          <RouterProvider router={router} />
-        </HeaderProvider>
+        <RouterProvider router={router} />
       </ThemeProvider>
     </React.StrictMode>
   </QueryClientProvider>

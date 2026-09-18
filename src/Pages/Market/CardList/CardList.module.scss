@@ -1,13 +1,11 @@
 @import '../../../util/ui/globalDesignElements.module';
 
 .cardList {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(7.5rem, 1fr));
+  gap: 2rem 1.25rem;
   @media (min-width: $smallScreen) {
-    column-gap: 9rem;
-    row-gap: 7rem;
+    grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+    gap: 2.5rem 1.5rem;
   }
-  column-gap: 3rem;
-  row-gap: 2rem;
-  justify-content: center;
 }

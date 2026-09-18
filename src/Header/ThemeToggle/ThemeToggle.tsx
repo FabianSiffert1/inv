@@ -1,17 +1,21 @@
 import { useContext } from 'react'
-import { iconMoon, iconSun } from '../../util/ui/_globalAssetImports'
 import { ThemeContext } from '../../util/ui/theme/ThemeProvider'
+import { EspeonIcon, UmbreonIcon } from './ThemeIcons'
 import styles from './ThemeToggle.module.scss'
 
 export default function ThemeToggle() {
   const themeContext = useContext(ThemeContext)
+  const switchesToLightTheme = themeContext.darkTheme
+
   return (
-    <div className={styles.themeToggle} onClick={themeContext.toggleTheme}>
-      <img
-        src={themeContext.darkTheme ? iconSun : iconMoon}
-        alt={'Theme Toggle'}
-        style={{ filter: themeContext.darkTheme ? 'invert(1)' : 'none' }}
-      />
-    </div>
+    <button
+      type="button"
+      className={styles.themeToggle}
+      onClick={themeContext.toggleTheme}
+      aria-label={switchesToLightTheme ? 'Switch to light theme' : 'Switch to dark theme'}
+      title={switchesToLightTheme ? 'Switch to light theme' : 'Switch to dark theme'}
+    >
+      {switchesToLightTheme ? <EspeonIcon /> : <UmbreonIcon />}
+    </button>
   )
 }

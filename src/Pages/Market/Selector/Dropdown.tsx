@@ -12,6 +12,7 @@ interface DropdownProps {
   isOpen: boolean
   setOpen: (isOpen: boolean) => void
   disabled?: boolean
+  cachedIds?: string[]
 }
 
 export default function Dropdown(props: DropdownProps) {
@@ -70,6 +71,7 @@ export default function Dropdown(props: DropdownProps) {
             variant={props.variant}
             ariaLabel={props.ariaLabel}
             options={props.options}
+            cachedIds={props.cachedIds}
             selectedId={props.selectedId}
             onSelect={(id) => {
               props.onSelect(id)

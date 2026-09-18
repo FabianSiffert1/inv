@@ -1,6 +1,11 @@
 import { Link, useRouteError } from 'react-router-dom'
 import styles from './404.module.scss'
 
+const messageForRouteError = (error: unknown): string => {
+  const routeError = error as { statusText?: string; message?: string }
+  return routeError?.statusText ?? routeError?.message ?? 'Unknown error'
+}
+
 export default function ErrorPage() {
   const error = useRouteError()
 
@@ -11,7 +16,7 @@ export default function ErrorPage() {
       <Link to={'/'}>return to base</Link> <br />
       <p>
         Error: &nbsp;
-        <i>{error.statusText || error.message}</i>
+        <i>{messageForRouteError(error)}</i>
       </p>
     </div>
   )

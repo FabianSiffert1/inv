@@ -1,5 +1,6 @@
 import { PokemonSet, PokemonSetName, PokemonTCGSeries } from '../../../util/api/pokemonTGC/model/PokemonSet'
 import Dropdown from './Dropdown'
+import MobileSheet from './MobileSheet'
 import { OptionGridItem } from './OptionGrid'
 
 interface SetStripProps {
@@ -9,6 +10,8 @@ interface SetStripProps {
   setCurrentlySelectedPokemonSet: (set: PokemonSetName) => void
   isOpen: boolean
   setOpen: (isOpen: boolean) => void
+  cachedSetNames: string[]
+  isMobile: boolean
 }
 
 export const setOptionsOfSeries = (pokemonSets?: PokemonSet[], series?: PokemonTCGSeries): OptionGridItem[] =>
@@ -24,17 +27,36 @@ export const setOptionsOfSeries = (pokemonSets?: PokemonSet[], series?: PokemonT
 export default function SetStrip(props: SetStripProps) {
   const options = setOptionsOfSeries(props.pokemonSets, props.currentlySelectedPokemonSeries)
 
+  const selectedId = props.currentlySelectedPokemonSet as unknown as string
+  const onSelect = (setName: string) => props.setCurrentlySelectedPokemonSet(setName as unknown as PokemonSetName)
+
   return (
-    <Dropdown
-      variant="set"
-      ariaLabel="Set"
-      placeholder="Select set"
-      options={options}
-      disabled={options.length == 0}
-      isOpen={props.isOpen}
-      setOpen={props.setOpen}
-      selectedId={props.currentlySelectedPokemonSet as unknown as string}
-      onSelect={(setName) => props.setCurrentlySelectedPokemonSet(setName as unknown as PokemonSetName)}
-    />
+    <>
+      <Dropdown
+        variant="set"
+        ariaLabel="Set"
+        placeholder="Select set"
+        options={options}
+        cachedIds={props.cachedSetNames}
+        disabled={options.length == 0}
+        isOpen={props.isOpen && !props.isMobile}
+        setOpen={props.setOpen}
+        selectedId={selectedId}
+        onSelect={onSelect}
+      />
+      {props.isMobile && props.isOpen && options.length > 0 && (
+        <MobileSheet
+          title="Set"
+          options={options}
+          cachedIds={props.cachedSetNames}
+          selectedId={selectedId}
+          onClose={() => props.setOpen(false)}
+          onSelect={(setName) => {
+            onSelect(setName)
+            props.setOpen(false)
+          }}
+        />
+      )}
+    </>
   )
 }

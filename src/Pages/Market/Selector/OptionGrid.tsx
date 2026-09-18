@@ -13,6 +13,7 @@ interface OptionGridProps {
   onSelect: (id: string) => void
   ariaLabel: string
   variant: 'era' | 'set'
+  cachedIds?: string[]
 }
 
 export default function OptionGrid(props: OptionGridProps) {
@@ -51,6 +52,7 @@ export default function OptionGrid(props: OptionGridProps) {
           >
             {option.imageUrl && <img className={styles.itemImage} src={option.imageUrl} alt="" loading="lazy" />}
             <span className={styles.itemLabel}>{option.label}</span>
+            {props.cachedIds?.includes(option.id) && <span className={styles.cachedDot} title="Stored offline" />}
           </button>
         )
       })}
