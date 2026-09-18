@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port 3030",
-    "start": "vite --host --port 3030",
+    "start": "vite preview --host --port 3030",
     "build": "tsc --noEmit && vite build",
     "lint": "eslint . --ext js,jsx,ts,tsx --report-unused-disable-directives --max-warnings 0",
     "lintFix": "npm run lint -- --fix",

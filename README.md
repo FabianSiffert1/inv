@@ -32,13 +32,28 @@ behind. Only use a free key here, and rotate it if it gets abused.
 
 ```
 npm run dev      # dev server on :3030
-npm run build    # production build, served under /inv/
-npm run preview  # preview the production build
+npm run build    # production build into dist/
+npm run start    # serve dist/ on 0.0.0.0:3030 (what the server runs)
+npm run preview  # serve dist/ on localhost only
 npm run lint     # eslint
 npm run format   # prettier
 ```
 
 A pre-commit hook runs the formatter and linter.
+
+## Deploying
+
+The server runs `npm start`, which serves the **built** output from `dist/`. Build before
+restarting, or there will be nothing to serve:
+
+```
+npm install
+npm run build
+pm2 restart inv
+```
+
+`npm run dev` is for local work only. Do not run it as the public server: it ships unbundled source,
+and its hot-reload WebSocket makes phones prompt for local network access.
 
 ## How it works
 
