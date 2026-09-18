@@ -1,3 +1,4 @@
 export default {
-  host: 'https://api.pokemontcg.io/v2'
+  host: 'https://api.pokemontcg.io/v2',
+  apiKey: undefined as string | undefined
 }

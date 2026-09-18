@@ -7,8 +7,7 @@ const getOptions = () => {
   const options = {
     headers: {}
   }
-  const apiKey = import.meta.env.POKEMON_TCG_API_KEY
-  if (configuration.apiKey) options.headers['X-Api-Key'] = apiKey
+  if (configuration.apiKey) options.headers['X-Api-Key'] = configuration.apiKey
 
   return options
 }
@@ -23,7 +22,8 @@ export default (type: string) => ({
     return axios(`${configuration.host}/${type}/${id}`, getOptions()).then((response) => response.data.data)
   },
   where: (args) => get(type, args),
-  all: (args = {}, data = []) => {
+  all: (args = {}) => {
+    const data: unknown[] = []
     const getAll = (type, args) => {
       const page = args.page ? args.page + 1 : 1
 

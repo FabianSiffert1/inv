@@ -4,7 +4,7 @@ import styles from './CardList.module.scss'
 import {Card} from './Components/Card/Card'
 
 export interface CardListProps {
-    cards: PokemonCard[]
+    cards?: PokemonCard[]
 }
 
 export default function CardList(props: CardListProps) {

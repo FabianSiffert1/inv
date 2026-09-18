@@ -1,22 +1,19 @@
-import React, {ReactElement, useEffect, useState} from 'react'
-import {PokemonCard} from '../../../../util/api/pokemonTGC/model/PokemonCard'
+import React, { ReactElement } from 'react'
 import {
     PokemonSet,
     PokemonSetLogo,
     PokemonSetName,
     PokemonTCGSeries
 } from '../../../../util/api/pokemonTGC/model/PokemonSet'
-import {fetchAllSetsOfASeries} from '../../../../util/api/pokemonTGC/querys'
+import { useSetsOfSeries } from '../../../../util/api/pokemonTGC/hooks'
 import styles from './SetMenu.module.scss'
 import SetMenuItem from './SetMenuItem/SetMenuItem'
 
 interface SetMenuProps {
     currentlySelectedPokemonSeries: PokemonTCGSeries
     areCardsLoading: boolean
-    setCardsLoading: (areCardsLoading: boolean) => void
     toggleSetMenu: (setOpen: boolean) => void
     setMenuIsOpen: boolean
-    setCardList: (newCardList: PokemonCard[]) => void
     currentlySelectedPokemonSet?: PokemonSetName
     setCurrentlySelectedPokemonSet: (set: PokemonSetName) => void
     currentlySelectedPokemonSetLogoUrl?: PokemonSetLogo
@@ -24,23 +21,7 @@ interface SetMenuProps {
 }
 
 export default function SetMenu(props: SetMenuProps) {
-    const [allSetsFromASeries, setAllSetsFromASeries] = useState<PokemonSet[]>([])
-
-    useEffect(() => {
-        props.setCardsLoading(true)
-        setAllSetsFromASeries([])
-        const getSetData = async () => {
-            try {
-                const result = await fetchAllSetsOfASeries(props.currentlySelectedPokemonSeries)
-                setAllSetsFromASeries(result)
-                props.setCardsLoading(false)
-            } catch (error) {
-                console.error('Error in Market - getSetData useEffect:', error)
-            }
-        }
-
-        getSetData().then(() => props.setCardsLoading(false))
-    }, [props.currentlySelectedPokemonSeries])
+    const { data: allSetsFromASeries } = useSetsOfSeries(props.currentlySelectedPokemonSeries)
 
     const setArray: ReactElement<PokemonSet>[] = []
     if (allSetsFromASeries != null) {
@@ -51,8 +32,6 @@ export default function SetMenu(props: SetMenuProps) {
                     setName={set.name}
                     setSymbol={set.images.symbol}
                     setLogo={set.images.logo}
-                    setContentOfCardList={props.setCardList}
-                    setCardsLoading={props.setCardsLoading}
                     areCardsLoading={props.areCardsLoading}
                     toggleSetMenu={props.toggleSetMenu}
                     currentlySelectedPokemonSet={props.currentlySelectedPokemonSet}

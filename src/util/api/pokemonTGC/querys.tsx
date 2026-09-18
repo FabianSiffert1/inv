@@ -69,14 +69,3 @@ export const fetchSpecies = async (speciesName: string, setName?: string): Promi
     return []
   }
 }
-export const fetchAllCardsFromASeries = async (pokemonSeries: string): Promise<PokemonCard[]> => {
-  try {
-    return await pokemonTCGAPI.card.all({
-      q: `!set.series:"${pokemonSeries}"`,
-      orderBy: '-cardmarket.prices.trendPrice'
-    })
-  } catch (error) {
-    console.error('Error fetching cards:', error)
-    return []
-  }
-}

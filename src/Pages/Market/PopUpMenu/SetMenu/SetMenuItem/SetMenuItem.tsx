@@ -1,6 +1,4 @@
-import { PokemonCard } from '../../../../../util/api/pokemonTGC/model/PokemonCard'
 import { PokemonSetLogo, PokemonSetName, PokemonSetSymbol } from '../../../../../util/api/pokemonTGC/model/PokemonSet'
-import { fetchAllCardsOfASet } from '../../../../../util/api/pokemonTGC/querys'
 import styles from './SetMenuItem.module.scss'
 
 interface SetMenuItemProps {
@@ -9,31 +7,16 @@ interface SetMenuItemProps {
   setLogo: PokemonSetLogo
   areCardsLoading: boolean
   currentlySelectedPokemonSet?: PokemonSetName
-  setContentOfCardList: (newCardList: PokemonCard[]) => void
-  setCardsLoading: (newState: boolean) => void
   toggleSetMenu: (setMenuOpen: boolean) => void
   setCurrentlySelectedPokemonSet: (set: PokemonSetName) => void
   setCurrentlySelectedPokemonSetLogoUrl: (logoUrl: PokemonSetLogo) => void
 }
 
 export default function SetMenuItem(props: SetMenuItemProps) {
-  function fetchAllCardsFromASet(setName: PokemonSetName) {
-    if (
-      (setName != props.currentlySelectedPokemonSet && setName != undefined) ||
-      (props.currentlySelectedPokemonSet == undefined && setName != undefined)
-    ) {
-      props.setCardsLoading(true)
-      fetchAllCardsOfASet(setName)
-        .then((pokemonCards) => {
-          scroll(0, 0)
-          props.setCurrentlySelectedPokemonSet(setName)
-          props.setContentOfCardList(pokemonCards)
-          props.setCardsLoading(false)
-        })
-        .catch((error) => {
-          console.error('SetMenuItem: Error fetching cards:', error)
-          return []
-        })
+  function selectSet(setName: PokemonSetName) {
+    if (setName != undefined && setName != props.currentlySelectedPokemonSet) {
+      scroll(0, 0)
+      props.setCurrentlySelectedPokemonSet(setName)
     }
   }
 
@@ -42,8 +25,8 @@ export default function SetMenuItem(props: SetMenuItemProps) {
       className={styles.setMenuItemContainer}
       onClick={
         !props.areCardsLoading
-          ? async () => {
-              fetchAllCardsFromASet(props.setName)
+          ? () => {
+              selectSet(props.setName)
               props.setCurrentlySelectedPokemonSetLogoUrl(props.setLogo)
               props.toggleSetMenu(false)
             }
