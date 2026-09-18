@@ -37,7 +37,6 @@ export default (type: string) => ({
 
           return getAll(type, { ...args, page })
         })
-        .catch((error) => console.error(error))
     }
     return getAll(type, args)
   }

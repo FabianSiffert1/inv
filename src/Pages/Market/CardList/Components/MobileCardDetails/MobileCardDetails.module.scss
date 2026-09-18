@@ -2,7 +2,7 @@
 
 .mobileCardDetailsContainer {
   display: none;
-  @media (max-width: $bigScreen) {
+  @media (max-width: $smallScreen - 1px) {
     display: flex;
   }
 

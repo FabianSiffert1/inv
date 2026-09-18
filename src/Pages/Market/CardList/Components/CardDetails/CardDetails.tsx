@@ -1,6 +1,7 @@
-import React, { ReactElement } from 'react'
-import { Link } from 'react-router-dom'
+import React, { ReactElement, useEffect } from 'react'
 import { PokemonCard, PokemonCardProp, TcgPlayer, TcgPlayerPriceSet } from '../../../../../util/api/pokemonTGC/model/PokemonCard'
+import { formatPrice } from '../../../../../util/format/price'
+import { ExternalLink } from '../ExternalLink/ExternalLink'
 import styles from './CardDetails.module.scss'
 
 interface CardDetailsProps {
@@ -13,21 +14,46 @@ interface PriceSetProps {
   priceSet?: TcgPlayerPriceSet
 }
 
+interface PriceRowProps {
+  label: string
+  price?: number
+}
+
 export function CardDetails(props: CardDetailsProps) {
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key == 'Escape') {
+        props.toggleCardDetailsPopUp(false)
+      }
+    }
+    document.addEventListener('keydown', onKeyDown)
+    return () => document.removeEventListener('keydown', onKeyDown)
+  }, [])
+
   return (
     <div className={styles.cardDetailsWrapper} key={props.card.id}>
       <div className={styles.overlay} onClick={() => props.toggleCardDetailsPopUp(false)} />
-      <div className={styles.cardDetailsContainer}>
+      <div className={styles.cardDetailsPositioner}>
+        <div className={styles.cardDetailsContainer} role="dialog" aria-modal="true" aria-label={props.card.name}>
+        <button
+          type="button"
+          className={styles.closeButton}
+          aria-label="Close"
+          onClick={() => props.toggleCardDetailsPopUp(false)}
+        >
+          ×
+        </button>
         <div className={styles.cardLargeImage}>
           {props.card.images.large && <img src={props.card.images.large} alt={props.card.name} />}
         </div>
-        <div className={styles.cardPrices}>
-          <div className={styles.cardDetailsInformation}>
-            <CardBaseDetails card={props.card} />
-            <SetInformation card={props.card} />
+        <div className={styles.detailsColumn}>
+          <CardBaseDetails card={props.card} />
+          <SetInformation card={props.card} />
+          <div className={styles.panelRow}>
             <CardMarketPrices card={props.card} />
+            <TcgPlayerPrices card={props.card} />
           </div>
-          <TcgPlayerPrices card={props.card} />
+          </div>
         </div>
       </div>
     </div>
@@ -37,15 +63,14 @@ export function CardDetails(props: CardDetailsProps) {
 export function CardBaseDetails(card: PokemonCardProp) {
   return (
     <div className={styles.cardBaseInformationContainer}>
-      <div className={styles.cardDetailsColumnTitle}>{card.card.name}</div>
-      <div className={styles.cardBaseInformation}>
-        <span className={styles.cardBaseInformationRarity}>{card.card.rarity}</span>
-        <div className={styles.cardBaseInformationNumber}>
+      <h2 className={styles.cardTitle}>{card.card.name}</h2>
+      <div className={styles.metaRow}>
+        {card.card.rarity && <span className={styles.metaChip}>{card.card.rarity}</span>}
+        <span className={styles.metaChip}>
           {card.card.number}/{card.card.set.printedTotal}
-        </div>
-        {card.card.evolvesTo}
-        {card.card.evolvesFrom && <div className={styles.cardBaseInformationEvolvesFrom}>Evolves from: {card.card.evolvesFrom}</div>}
-        <div className={styles.cardBaseInformationIllustrator}>Illus: {card.card.artist}</div>
+        </span>
+        {card.card.evolvesFrom && <span className={styles.metaMuted}>Evolves from {card.card.evolvesFrom}</span>}
+        {card.card.artist && <span className={styles.metaMuted}>Illus. {card.card.artist}</span>}
       </div>
     </div>
   )
@@ -55,101 +80,126 @@ export function SetInformation(card: PokemonCardProp) {
   const setReleaseDate = new Date(card.card?.set?.releaseDate)
   const setReleaseMonth = setReleaseDate.toLocaleString('default', { month: 'long' })
   const setReleaseString = setReleaseMonth.concat(' ').concat(setReleaseDate.getFullYear().toString())
+
   return (
-    <div className={styles.setInformation}>
-      <span className={styles.cardDetailsColumnTitle}> {card.card?.set?.name ? card.card.set.name : null}</span>
-      <span className={styles.setReleaseDate}>{setReleaseString}</span>
-      <span>Total Cards: {card.card.set.total}</span>
-      <span>Series: {card.card.set.series}</span>
-      <span>{card.card.set.legalities.unlimited}</span>
-      <span className={styles.setSymbol}>
-        {card.card?.set?.images?.symbol ? <img src={card.card.set.images.symbol} alt={'setSymbol'} /> : null}
-      </span>
+    <section className={`${styles.panel} ${styles.setPanel}`}>
+      <div className={styles.panelHeader}>
+        <span className={styles.panelTitle}>{card.card?.set?.name}</span>
+        {card.card?.set?.images?.symbol && <img className={styles.setSymbol} src={card.card.set.images.symbol} alt="" />}
+      </div>
+      <dl className={styles.definitionList}>
+        <div className={styles.definitionRow}>
+          <dt>Released</dt>
+          <dd>{setReleaseString}</dd>
+        </div>
+        <div className={styles.definitionRow}>
+          <dt>Cards</dt>
+          <dd>{card.card.set.total}</dd>
+        </div>
+        <div className={styles.definitionRow}>
+          <dt>Series</dt>
+          <dd>{card.card.set.series}</dd>
+        </div>
+        {card.card.set.legalities?.unlimited && (
+          <div className={styles.definitionRow}>
+            <dt>Legality</dt>
+            <dd>{card.card.set.legalities.unlimited}</dd>
+          </div>
+        )}
+      </dl>
+    </section>
+  )
+}
+
+export function PriceRow(props: PriceRowProps) {
+  const formatted = formatPrice(props.price)
+  if (formatted == undefined) {
+    return <></>
+  }
+  return (
+    <div className={styles.definitionRow}>
+      <dt>{props.label}</dt>
+      <dd className={styles.priceValue}>{formatted}</dd>
     </div>
   )
 }
 
 export function CardMarketPrices(card: PokemonCardProp) {
+  const prices = card.card.cardmarket?.prices
+
   return (
-    <div className={styles.cardMarketPricesContainer}>
-      <div className={styles.cardMarketHeader}>
+    <section className={styles.panel}>
+      <div className={styles.panelHeader}>
         {card.card.cardmarket?.url ? (
-          <Link to={card.card.cardmarket.url} target='_blank' rel='noopener noreferrer'>
-            Cardmarket
-          </Link>
+          <ExternalLink href={card.card.cardmarket.url}>
+            <span className={styles.panelTitle}>Cardmarket</span>
+          </ExternalLink>
         ) : (
-          <> Cardmarket </>
+          <span className={styles.panelTitle}>Cardmarket</span>
         )}
       </div>
-      <div className={styles.trendPrice}>Trend price: {card?.card?.cardmarket?.prices?.trendPrice?.toString().concat('€')}</div>
-      <div className={styles.trendPrice}>Avg: {card?.card?.cardmarket?.prices?.averageSellPrice?.toString().concat('€')}</div>
-      <div className={styles.trendPrice}>Avg last 30 days: {card?.card?.cardmarket?.prices?.avg30?.toString().concat('€')}</div>
-      {card?.card?.cardmarket?.prices?.suggestedPrice ? (
-        <div className={styles.trendPrice}>Suggested Price: {card?.card?.cardmarket?.prices?.suggestedPrice?.toString().concat('€')}</div>
-      ) : undefined}
-    </div>
+      {prices == undefined ? (
+        <div className={styles.emptyPanel}>No prices available.</div>
+      ) : (
+        <dl className={styles.definitionList}>
+          <PriceRow label="Trend" price={prices.trendPrice} />
+          <PriceRow label="Average" price={prices.averageSellPrice} />
+          <PriceRow label="Avg. 30 days" price={prices.avg30} />
+          <PriceRow label="Suggested" price={prices.suggestedPrice} />
+        </dl>
+      )}
+    </section>
   )
 }
 
 export function TcgPlayerPrices(props: PokemonCardProp) {
-  let tcgPlayerPriceList
-  if (props.card.tcgplayer != undefined) {
-    tcgPlayerPriceList = TcgPlayerComponent(props.card.tcgplayer)
-  }
   return (
-    <div className={styles.tcgPlayerPricesContainer}>
-      <div className={styles.tcgPlayer}>
+    <section className={styles.panel}>
+      <div className={styles.panelHeader}>
         {props.card.tcgplayer?.url ? (
-          <Link to={props.card.tcgplayer.url} target='_blank' rel='noopener noreferrer'>
-            TCGPlayer
-          </Link>
+          <ExternalLink href={props.card.tcgplayer.url}>
+            <span className={styles.panelTitle}>TCGPlayer</span>
+          </ExternalLink>
         ) : (
-          <> TCGPlayer </>
+          <span className={styles.panelTitle}>TCGPlayer</span>
         )}
       </div>
-      <div className={styles.tcgPlayerPriceListContainer}>{tcgPlayerPriceList}</div>
-    </div>
+      {props.card.tcgplayer == undefined ? (
+        <div className={styles.emptyPanel}>No prices available.</div>
+      ) : (
+        TcgPlayerComponent(props.card.tcgplayer)
+      )}
+    </section>
   )
 }
 
 export function TcgPlayerComponent(tcgPlayer: TcgPlayer) {
+  if (tcgPlayer.prices == undefined) {
+    return <div className={styles.emptyPanel}>No prices available.</div>
+  }
   return (
-    <div>
-      {tcgPlayer.prices && (
-        <div className={styles.tcgPlayerPriceList}>
-          <PriceSet cardType='Normal' priceSet={tcgPlayer.prices.normal} />
-          <PriceSet cardType='1st Edition Holofoil' priceSet={tcgPlayer.prices['1stEditionHolofoil']} />
-          <PriceSet cardType='1st Edition' priceSet={tcgPlayer.prices['1stEdition']} />
-          <PriceSet cardType='Unlimited Holofoil' priceSet={tcgPlayer.prices.unlimitedHolofoil} />
-          <PriceSet cardType='Unlimited' priceSet={tcgPlayer.prices.unlimited} />
-          <PriceSet cardType='Holofoil' priceSet={tcgPlayer.prices.holofoil} />
-          <PriceSet cardType='Reverse Holofoil' priceSet={tcgPlayer.prices.reverseHolofoil} />
-        </div>
-      )}
+    <div className={styles.tcgPlayerPriceList}>
+      <PriceSet cardType="Normal" priceSet={tcgPlayer.prices.normal} />
+      <PriceSet cardType="1st Edition Holofoil" priceSet={tcgPlayer.prices['1stEditionHolofoil']} />
+      <PriceSet cardType="1st Edition" priceSet={tcgPlayer.prices['1stEdition']} />
+      <PriceSet cardType="Unlimited Holofoil" priceSet={tcgPlayer.prices.unlimitedHolofoil} />
+      <PriceSet cardType="Unlimited" priceSet={tcgPlayer.prices.unlimited} />
+      <PriceSet cardType="Holofoil" priceSet={tcgPlayer.prices.holofoil} />
+      <PriceSet cardType="Reverse Holofoil" priceSet={tcgPlayer.prices.reverseHolofoil} />
     </div>
   )
 }
 
 export function PriceSet({ cardType, priceSet }: PriceSetProps): ReactElement {
-  if (priceSet != undefined) {
-    return (
-      <div className={styles.tcgPlayerPriceSet}>
-        <div className={styles.cardType}>
-          <strong>{cardType}</strong>
-        </div>
-        <ul>
-          {Object.entries(priceSet).map(
-            ([key, value]) =>
-              value && (
-                <li key={key}>
-                  {key}: {value}€
-                </li>
-              )
-          )}
-        </ul>
-      </div>
-    )
-  } else {
+  if (priceSet == undefined) {
     return <></>
   }
+  return (
+    <div className={styles.tcgPlayerPriceSet}>
+      <div className={styles.priceSetTitle}>{cardType}</div>
+      <dl className={styles.definitionList}>
+        {Object.entries(priceSet).map(([key, value]) => (value ? <PriceRow key={key} label={key} price={value} /> : undefined))}
+      </dl>
+    </div>
+  )
 }

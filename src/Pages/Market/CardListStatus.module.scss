@@ -1,0 +1,21 @@
+@import '../../util/ui/globalDesignElements.module';
+
+.status {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.headline {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: var(--color);
+}
+
+.detail {
+  color: var(--secondary-color);
+  max-width: 32rem;
+}

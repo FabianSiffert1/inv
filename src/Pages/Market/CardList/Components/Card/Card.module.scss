@@ -43,9 +43,16 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding-top: 0.3rem;
+  padding-top: 0.2rem;
   text-align: center;
+}
 
+.cardPrice {
+  font-size: 0.8rem;
+}
+
+.noPrice {
+  color: var(--secondary-color);
 }
 
 .setNameAndSymbol {

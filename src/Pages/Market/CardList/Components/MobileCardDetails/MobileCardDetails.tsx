@@ -1,7 +1,7 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
 import { PokemonCard } from '../../../../../util/api/pokemonTGC/model/PokemonCard'
 import { CardBaseDetails, TcgPlayerComponent } from '../CardDetails/CardDetails'
+import { ExternalLink } from '../ExternalLink/ExternalLink'
 import styles from './MobileCardDetails.module.scss'
 
 interface MobileCardDetails {
@@ -46,9 +46,9 @@ export function MobileCardDetails(props: MobileCardDetails) {
             <div className={styles.cardMarketLink}>
               {' '}
               {props.card.cardmarket?.url ? (
-                <Link to={props.card.cardmarket.url} target='_blank' rel='noopener noreferrer'>
-                  <strong> Cardmarket </strong>
-                </Link>
+                <ExternalLink href={props.card.cardmarket.url}>
+                  <strong>Cardmarket</strong>
+                </ExternalLink>
               ) : (
                 <strong> Cardmarket </strong>
               )}
@@ -58,9 +58,9 @@ export function MobileCardDetails(props: MobileCardDetails) {
           </div>
           <div className={styles.tcgPlayerLink}>
             {props.card.tcgplayer?.url ? (
-              <Link to={props.card.tcgplayer.url} target='_blank' rel='noopener noreferrer'>
-                <strong> TCGPlayer</strong>
-              </Link>
+              <ExternalLink href={props.card.tcgplayer.url}>
+                <strong>TCGPlayer</strong>
+              </ExternalLink>
             ) : (
               <strong> TCGPlayer </strong>
             )}

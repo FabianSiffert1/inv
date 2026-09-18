@@ -1,13 +1,19 @@
 @import '../../util/ui/globalDesignElements.module';
 
+.spinner {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.35rem;
+}
+
 .ball {
-  width: 5rem;
-  height: 5rem;
+  width: 1.1rem;
+  height: 1.1rem;
   border-radius: 50%;
-  background: white;
   position: relative;
-  box-shadow: -0.75rem 0 rgba(0, 0, 0, 0.1) inset;
-  animation: roll 1s ease-in-out infinite;
+  flex: 0 0 auto;
+  box-shadow: -0.165rem 0 rgba(0, 0, 0, 0.1) inset;
   background: linear-gradient(
                   to bottom,
                   #e83e35 0%,
@@ -15,52 +21,83 @@
                   #ffffff 50%,
                   #ffffff 100%
   );
+  animation: roll 1s ease-in-out infinite;
+}
+
+.bobber {
+  display: flex;
+  flex: 0 0 auto;
+  animation: bob 1s ease-in-out infinite;
+}
+
+.bobber:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.bobber:nth-child(3) {
+  animation-delay: 0.3s;
 }
 
 .ball:after {
   content: "";
-  position: fixed;
-  top: 2.5rem;
+  position: absolute;
+  top: 0.55rem;
   left: 0;
-  width: 5rem;
-  height: 0.28125rem;
+  width: 1.1rem;
+  height: 0.062rem;
   background: #3f3f3f;
 }
 
 .ball:before {
   content: "";
-  position: fixed;
-  top: 1.5rem;
-  left: 1.5rem;
-  width: 1.5rem;
-  height: 1.5rem;
-  border: solid 0.28125rem #3f3f3f;
+  position: absolute;
+  top: 0.33rem;
+  left: 0.33rem;
+  width: 0.33rem;
+  height: 0.33rem;
+  border: solid 0.062rem #3f3f3f;
   border-radius: 50%;
   background: white;
+  box-sizing: border-box;
   z-index: $zThirdLevel;
-  box-shadow: 0 0 5.625px -0.75px #c62828 inset;
-  animation: button 2.25s ease infinite;
 }
 
-@-webkit-keyframes roll {
+.small .ball {
+  width: 0.75rem;
+  height: 0.75rem;
+  box-shadow: -0.11rem 0 rgba(0, 0, 0, 0.1) inset;
+}
+
+.small .ball:after {
+  top: 0.375rem;
+  width: 0.75rem;
+  height: 0.05rem;
+}
+
+.small .ball:before {
+  top: 0.225rem;
+  left: 0.225rem;
+  width: 0.23rem;
+  height: 0.23rem;
+  border-width: 0.05rem;
+}
+
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-0.45rem);
+  }
+}
+
+@keyframes roll {
   from {
     transform: rotate(0deg);
   }
   90%,
   to {
     transform: rotate(720deg);
-  }
-}
-
-@-webkit-keyframes button {
-  from,
-  50%,
-  to {
-    box-shadow: 0 0 5.625px -0.75px #c62828 inset;
-  }
-
-  25%,
-  75% {
-    box-shadow: 0 0 3.75px -0.75px #1300ea inset;
   }
 }

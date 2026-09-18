@@ -1,32 +1,12 @@
 @import '../../util/ui/globalDesignElements.module';
 
 .market {
+  padding-top: 7rem;
+  @media (min-width: $smallScreen) {
+    padding-top: 8rem;
+  }
 }
-
-.header {
-}
-
 
 .cardListWrapper {
-  padding-top: 10rem;
-  @media (min-width: $smallScreen) {
-    padding-top: 14rem;
-  }
-}
-
-.loadingState {
-  display: flex;
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 10rem;
-  justify-content: center;
-  scale: 0.4;
-  @media (max-width: $smallScreen) {
-    top: 1.5rem;
-    left: 15rem;
-  }
-  @media (min-width: $smallScreen) {
-    scale: 1;
-  }
+  padding-top: 1.5rem;
 }

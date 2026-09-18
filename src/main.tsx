@@ -1,6 +1,8 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom/client'
 import { QueryClient, QueryClientProvider } from 'react-query'
+import { createWebStoragePersistor } from 'react-query/createWebStoragePersistor-experimental'
+import { persistQueryClient } from 'react-query/persistQueryClient-experimental'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import './index.scss'
 import HeaderProvider from './Header/HeaderProvider'
@@ -38,14 +40,21 @@ const router = createBrowserRouter([
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 60,
-      cacheTime: 1000 * 60 * 60 * 24,
+      staleTime: 1000 * 60 * 60 * 24,
+      cacheTime: 1000 * 60 * 60 * 24 * 7,
       refetchOnWindowFocus: false,
       refetchOnMount: false,
       refetchOnReconnect: false,
-      retry: 1
+      retry: 4,
+      retryDelay: (attempt: number) => Math.min(1000 * 2 ** attempt, 8000)
     }
   }
+})
+
+persistQueryClient({
+  queryClient,
+  persistor: createWebStoragePersistor({ storage: window.localStorage }),
+  maxAge: 1000 * 60 * 60 * 24
 })
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
