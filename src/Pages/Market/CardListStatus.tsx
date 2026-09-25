@@ -1,6 +1,7 @@
 import styles from './CardListStatus.module.scss'
 
 interface CardListStatusProps {
+  hasSelectedEra: boolean
   hasSelectedSet: boolean
   isFetching: boolean
   error: unknown
@@ -32,7 +33,7 @@ function RetryControl(props: CardListStatusProps) {
     return <div className={styles.detail}>No retries left. Reload the page to try again.</div>
   }
   return (
-    <button type="button" className={styles.retryButton} disabled={props.isRetryCoolingDown} onClick={props.onRetry}>
+    <button type='button' className={styles.retryButton} disabled={props.isRetryCoolingDown} onClick={props.onRetry}>
       {props.isRetryCoolingDown ? 'Retrying…' : `Try again (${props.retriesLeft} left)`}
     </button>
   )
@@ -45,7 +46,7 @@ export default function CardListStatus(props: CardListStatusProps) {
 
   if (props.error != null) {
     return (
-      <div className={styles.status} role="alert">
+      <div className={styles.status} role='alert'>
         <div className={styles.headline}>Cards could not be loaded</div>
         <div className={styles.detail}>{messageForError(props.error)}</div>
         <RetryControl {...props} />
@@ -56,7 +57,14 @@ export default function CardListStatus(props: CardListStatusProps) {
   if (!props.hasSelectedSet) {
     return (
       <div className={styles.status}>
-        <div className={styles.detail}>Pick an era, then a set to see its cards.</div>
+        <div className={styles.hint}>
+          <div className={styles.headline}>{props.hasSelectedEra ? 'Now pick a set' : 'Welcome, trainer'}</div>
+          <div className={styles.detail}>
+            {props.hasSelectedEra
+              ? 'Choose a set from the menu above to browse its cards and current market prices.'
+              : 'Start by choosing an era from the menu above, then pick a set to browse its cards and current market prices.'}
+          </div>
+        </div>
       </div>
     )
   }

@@ -19,7 +19,7 @@ export default function Market() {
 
   const [currentlySelectedPokemonSeries, setCurrentlySelectedPokemonSeries] = useState<PokemonTCGSeries | undefined>(undefined)
   const [currentlySelectedPokemonSet, setCurrentlySelectedPokemonSet] = useState<PokemonSetName | undefined>(undefined)
-  const [isEraDropdownOpen, setEraDropdownOpen] = useState(true)
+  const [isEraDropdownOpen, setEraDropdownOpen] = useState(false)
   const [isSetDropdownOpen, setSetDropdownOpen] = useState(false)
   const [manualRetryCount, setManualRetryCount] = useState(0)
   const [isRetryCoolingDown, setRetryCoolingDown] = useState(false)
@@ -124,6 +124,7 @@ export default function Market() {
   return (
     <div className={styles.market}>
       <CardListStatus
+        hasSelectedEra={currentlySelectedPokemonSeries != undefined}
         hasSelectedSet={currentlySelectedPokemonSet != undefined}
         isFetching={isFetching}
         error={cardsError ?? setsError}
