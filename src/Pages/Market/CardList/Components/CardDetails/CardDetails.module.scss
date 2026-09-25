@@ -5,7 +5,9 @@
 }
 
 .overlay {
-  background-color: rgba(0, 0, 0, 0.55);
+  background-color: var(--scrim-color);
+  backdrop-filter: blur(0.25rem);
+  -webkit-backdrop-filter: blur(0.25rem);
   position: fixed;
   top: 0;
   left: 0;
@@ -15,7 +17,9 @@
 }
 
 .cardDetailsContainer {
+  @include surface;
   position: relative;
+  box-sizing: border-box;
   width: 100%;
   max-height: calc(100vh - 6rem);
   overflow-y: auto;
@@ -23,13 +27,15 @@
   -ms-overflow-style: none;
   display: grid;
   grid-template-columns: minmax(14rem, 20rem) minmax(0, 1fr);
-  gap: 2rem;
-  padding: 2rem;
+  gap: 4rem;
+  padding: 2.5rem 1.5rem 2.5rem 2.5rem;
   isolation: isolate;
   background-color: var(--background-color);
-  border: 0.05rem solid var(--card-border-color);
-  border-radius: 0.75rem;
-  box-shadow: 0 1.5rem 3rem rgba(0, 0, 0, 0.35);
+  background-image: linear-gradient(
+    color-mix(in srgb, var(--elementPeach) 50%, transparent),
+    color-mix(in srgb, var(--elementPeach) 50%, transparent)
+  );
+  box-shadow: 0 1.5rem 3rem var(--shadow-color);
 }
 
 .cardDetailsPositioner {
@@ -46,20 +52,19 @@
 }
 
 .closeButton {
+  @include surfaceInteractive($surfaceRadiusSmall);
   position: absolute;
-  top: 0.6rem;
-  right: 0.6rem;
+  top: 0.75rem;
+  right: 0.75rem;
   z-index: $zSecondLevel;
-  width: 2rem;
-  height: 2rem;
+  width: 2.25rem;
+  height: 2.25rem;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.4rem;
   line-height: 1;
-  cursor: pointer;
   border: none;
-  border-radius: 50%;
   background: none;
   color: var(--secondary-color);
   font-family: inherit;
@@ -70,19 +75,25 @@
   background-color: var(--card-background-color);
 }
 
-.closeButton:focus-visible {
-  outline: 0.1rem solid var(--primary-color);
-  outline-offset: 0.1rem;
-}
-
 .cardLargeImage {
   grid-column: 1;
   grid-row: 1;
+  align-self: start;
+  overflow: hidden;
+  padding: 2.5rem 1.25rem 1.25rem 1.25rem;
+  border-radius: $archRadius;
+  @include pastel(var(--tint, var(--elementBlue)));
 
   img {
+    display: block;
     width: 100%;
     height: auto;
+    transition: transform 600ms $archEase;
     @include cardImageStyle;
+  }
+
+  &:hover img {
+    transform: scale(1.06);
   }
 }
 
@@ -96,25 +107,31 @@
   min-width: 0;
 }
 
+.cardBaseInformationContainer {
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--card-border-color);
+}
+
 .cardTitle {
-  margin: 0 0 0.5rem 0;
-  font-size: 1.6rem;
-  line-height: 1.2;
+  @include typoDisplay;
+  margin: 0 0 1.375rem 0;
+  font-size: clamp(1.25rem, 4vw, 2.375rem);
+  text-wrap: balance;
 }
 
 .metaRow {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.4rem 0.75rem;
+  gap: 0.5rem 0.75rem;
   font-size: 0.85rem;
 }
 
 .metaChip {
-  padding: 0.15rem 0.5rem;
-  border: 0.05rem solid var(--card-border-color);
-  border-radius: 1rem;
-  background-color: var(--card-background-color);
+  @include surface($surfaceRadiusSmall);
+  @include pastel(var(--elementPink), 45%);
+  @include typoFieldValue;
+  padding: 0.3rem 0.7rem;
 }
 
 .metaMuted {
@@ -133,10 +150,13 @@
 }
 
 .panel {
+  @include surface($surfaceRadiusSmall);
+  @include pastel(var(--elementGreen), 45%);
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
   min-width: 0;
+  padding: 0.8rem 0.9rem;
 }
 
 .panelHeader {
@@ -144,14 +164,11 @@
   align-items: center;
   gap: 0.5rem;
   padding-bottom: 0.4rem;
-  border-bottom: 0.05rem solid var(--card-border-color);
+  border-bottom: 1px solid var(--card-border-color);
 }
 
 .panelTitle {
-  font-size: 0.75rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  font-weight: bold;
+  @include typoFieldValue;
 }
 
 .setSymbol {
@@ -162,24 +179,24 @@
 
 .definitionList {
   margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
+  display: grid;
+  row-gap: 0.5625rem;
 }
 
 .definitionRow {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  font-size: 0.9rem;
+  display: grid;
+  grid-template-columns: 5.5rem 1fr;
+  column-gap: 0.875rem;
+  align-items: baseline;
 
   dt {
+    @include typoFieldLabel;
     color: var(--secondary-color);
   }
 
   dd {
+    @include typoFieldValue;
     margin: 0;
-    text-align: right;
     overflow-wrap: anywhere;
   }
 }
@@ -195,19 +212,18 @@
 
 .tcgPlayerPriceList {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
-  gap: 0.75rem 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 1rem;
 }
 
 .tcgPlayerPriceSet {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.5rem;
   min-width: 0;
 }
 
 .priceSetTitle {
-  font-size: 0.8rem;
-  font-weight: bold;
-  color: var(--secondary-color);
+  @include typoFieldLabel;
+  font-weight: 500;
 }

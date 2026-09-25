@@ -1,14 +1,39 @@
 @use 'globalDesignElements.module' as *;
 
 .home {
+  box-sizing: border-box;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 7rem 7rem 4rem 7rem;
 
   @media (min-width: $bigScreen) {
     max-width: $bigScreen;
+  }
+
+  @media (max-width: $smallScreen - 1px) {
+    padding: 7rem 2rem 4rem 2rem;
   }
 }
 
 .pageContainer {
   min-width: 0;
+}
+
+.spectrum {
+  @include spectrum;
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: $zHeader;
+  height: 0.25rem;
+  pointer-events: none;
+}
+
+.spectrumTop {
+  top: 0;
+  opacity: 0.55;
+}
+
+.spectrumBottom {
+  bottom: env(safe-area-inset-bottom, 0);
+  opacity: 0.85;
 }

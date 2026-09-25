@@ -1,14 +1,15 @@
+@use 'globalDesignElements.module' as *;
+
 .title {
+  @include typoDisplay;
   font-size: 1.15rem;
-  font-weight: bold;
-  letter-spacing: -0.01em;
 
   a {
-    color: inherit;
-    text-decoration: none;
+    font-size: inherit;
+    text-decoration-color: transparent;
   }
 
   a:hover {
-    color: var(--primary-color);
+    text-decoration-color: var(--marker);
   }
 }

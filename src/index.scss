@@ -1,14 +1,39 @@
 @use 'theme/themes' as *;
+@use 'globalDesignElements.module' as *;
 
 body {
   background-color: var(--background-color);
+  background-image: var(--background-gradient);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
   color: var(--color);
   overscroll-behavior: none;
 
   margin: 0;
-  font-family: 'Roboto', sans-serif;
+  font-family: sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: inherit;
+  font-family: $displayFont;
+  font-size: 0.7em;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  text-decoration-color: color-mix(in srgb, var(--color) 40%, transparent);
+  transition: text-decoration-color $surfaceTransition;
+
+  &:hover {
+    text-decoration-color: var(--marker);
+    text-decoration-thickness: 2px;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--marker);
+    outline-offset: 3px;
+  }
 }
 
 :root::-webkit-scrollbar {
@@ -18,4 +43,15 @@ body {
 :root {
   scrollbar-width: none;
   -ms-overflow-style: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

@@ -8,7 +8,7 @@ interface ContextProps {
 }
 
 export const ThemeContext = createContext<ContextProps>({
-  darkTheme: true,
+  darkTheme: false,
   toggleTheme: () => {}
 })
 
@@ -25,8 +25,7 @@ const readStoredTheme = (): 'dark' | 'light' | undefined => {
   }
 }
 
-const preferredTheme = (): boolean =>
-  readStoredTheme() ? readStoredTheme() == 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches
+const preferredTheme = (): boolean => readStoredTheme() == 'dark'
 
 const ThemeProvider: React.FC<Props> = ({ children }) => {
   const [darkTheme, setDarkTheme] = useState(preferredTheme)
@@ -39,16 +38,6 @@ const ThemeProvider: React.FC<Props> = ({ children }) => {
       return
     }
   }, [darkTheme])
-
-  useEffect(() => {
-    if (readStoredTheme() != undefined) {
-      return
-    }
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-    const onChange = (event: MediaQueryListEvent) => setDarkTheme(event.matches)
-    mediaQuery.addEventListener('change', onChange)
-    return () => mediaQuery.removeEventListener('change', onChange)
-  }, [])
 
   const toggleTheme = useCallback(() => setDarkTheme((previous) => !previous), [])
 

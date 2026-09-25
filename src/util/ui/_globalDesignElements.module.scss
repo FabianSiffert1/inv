@@ -8,6 +8,17 @@ $zTopLevel: 3;
 $zHeader: 4;
 $zOverlay: 5;
 
+$displayFont: 'Michroma', system-ui, sans-serif;
+$monoFont: 'IBM Plex Mono', ui-monospace, monospace;
+
+$surfaceRadius: 1.5rem 0.4rem 1.5rem 0.4rem;
+$surfaceRadiusSmall: 1rem 0.3rem 1rem 0.3rem;
+$surfaceTransition: 160ms ease;
+
+$archRadius: 6rem 6rem 1.5rem 1.5rem;
+$archRadiusSmall: 3rem 3rem 0.75rem 0.75rem;
+$archEase: cubic-bezier(0.22, 0.61, 0.36, 1);
+
 @mixin centeredFlexRow {
   display: flex;
   flex-direction: row;
@@ -22,12 +33,78 @@ $zOverlay: 5;
   align-items: center;
 }
 
-@mixin cardNameStyle {
-  font-size: 110%;
-  font-weight: bold;
-}
-
 @mixin cardImageStyle {
   border-radius: 0.3rem;
   aspect-ratio: 63 / 88;
+}
+
+@mixin surface($radius: $surfaceRadius) {
+  border-radius: $radius;
+  transition:
+    transform $surfaceTransition,
+    box-shadow $surfaceTransition;
+}
+
+@mixin surfaceInteractive($radius: $surfaceRadius) {
+  @include surface($radius);
+  cursor: pointer;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.4rem 1.2rem var(--shadow-color);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--marker);
+    outline-offset: 3px;
+  }
+}
+
+@mixin spectrum {
+  background: linear-gradient(
+    90deg,
+    var(--elementPeach) 0%,
+    var(--elementPink) 33%,
+    var(--elementGreenVariant) 66%,
+    var(--elementBlue) 100%
+  );
+}
+
+@mixin pastel($color, $amount: 35%) {
+  background-color: color-mix(in srgb, $color $amount, transparent);
+}
+
+@mixin typoHeadlineCaps {
+  font: small-caps 2rem $displayFont;
+}
+
+@mixin typoBodyCaps {
+  font: small-caps 1.2rem sans-serif;
+}
+
+@mixin typoBody {
+  font: 1.2rem sans-serif;
+}
+
+@mixin typoDisplay {
+  font-family: $displayFont;
+  font-weight: 400;
+  letter-spacing: -0.012em;
+  line-height: 1.18;
+}
+
+@mixin typoFieldLabel {
+  font-family: $monoFont;
+  font-weight: 400;
+  font-size: 0.625rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+@mixin typoFieldValue {
+  font-family: $monoFont;
+  font-weight: 500;
+  font-size: 0.8125rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }

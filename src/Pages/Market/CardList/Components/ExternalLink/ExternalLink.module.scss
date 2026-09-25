@@ -1,55 +1,13 @@
 .externalLink {
-  display: inline-flex;
-  align-items: baseline;
-  color: var(--link-color);
-  text-decoration: none;
   cursor: pointer;
 }
 
-.externalLink::before,
-.externalLink::after {
-  color: var(--secondary-color);
-  opacity: 0.55;
-  transition:
-    opacity 0.15s ease,
-    color 0.15s ease;
-}
-
-.externalLink::before {
-  content: '[';
-  padding-right: 0.15em;
-}
-
-.externalLink::after {
-  content: ']';
-  padding-left: 0.15em;
-}
-
-.externalLink:hover::before,
-.externalLink:hover::after,
-.externalLink:focus-visible::before,
-.externalLink:focus-visible::after {
-  opacity: 1;
-  color: var(--link-color);
-}
-
-.externalLink:focus-visible {
-  outline: 0.1rem solid var(--link-color);
-  outline-offset: 0.15rem;
-  border-radius: 0.15rem;
+.arrow {
+  display: inline-block;
+  margin-left: 0.3em;
 }
 
 .plain {
-  color: inherit;
-}
-
-.plain:hover {
-  color: var(--link-color);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .externalLink::before,
-  .externalLink::after {
-    transition: none;
-  }
+  font: inherit;
+  text-decoration-color: transparent;
 }

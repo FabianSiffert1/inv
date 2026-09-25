@@ -1,3 +1,5 @@
+@use 'globalDesignElements.module' as *;
+
 .status {
   display: flex;
   flex-direction: column;
@@ -8,8 +10,8 @@
 }
 
 .headline {
+  @include typoDisplay;
   font-size: 1.1rem;
-  font-weight: bold;
   color: var(--color);
 }
 
@@ -20,27 +22,17 @@
 
 .retryButton {
   margin-top: 0.5rem;
-  cursor: pointer;
-  padding: 0.4rem 1rem;
-  font-family: inherit;
-  font-size: 0.9rem;
+  @include surfaceInteractive($surfaceRadiusSmall);
+  @include pastel(var(--elementBlue));
+  padding: 0.8rem 1.4rem;
+  font: small-caps 1.1rem sans-serif;
   color: var(--color);
-  border: 0.05rem solid var(--card-border-color);
-  border-radius: 1.4rem;
-  background-color: var(--card-background-color);
-  transition: border-color 0.15s ease;
-}
-
-.retryButton:hover:not(:disabled) {
-  border-color: var(--primary-color);
-}
-
-.retryButton:focus-visible {
-  outline: 0.1rem solid var(--primary-color);
-  outline-offset: 0.2rem;
+  border: none;
+  box-shadow: 0 0.15rem 0.5rem color-mix(in srgb, var(--color) 10%, transparent);
 }
 
 .retryButton:disabled {
   cursor: default;
   opacity: 0.5;
+  transform: none;
 }

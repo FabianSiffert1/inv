@@ -12,8 +12,10 @@
   gap: 1rem;
   margin-left: auto;
   margin-right: auto;
-  padding: 0.5rem 2rem;
-  background-color: var(--background-color);
+  padding: 1.25rem 7rem 0.75rem 7rem;
+  background-color: color-mix(in srgb, var(--background-color) 85%, transparent);
+  backdrop-filter: blur(0.75rem);
+  -webkit-backdrop-filter: blur(0.75rem);
 
   @media (min-width: $bigScreen) {
     max-width: $bigScreen;
@@ -22,7 +24,7 @@
   @media (max-width: $smallScreen - 1px) {
     flex-wrap: wrap;
     gap: 0.4rem 0.75rem;
-    padding: 0.5rem 1rem;
+    padding: 1.25rem 2rem 0.75rem 2rem;
   }
 }
 

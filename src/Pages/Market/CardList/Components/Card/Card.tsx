@@ -11,6 +11,22 @@ interface CardProps {
   card: PokemonCard
 }
 
+const typeTintClassNames: Record<string, string> = {
+  Water: styles.tintBlue,
+  Grass: styles.tintMint,
+  Psychic: styles.tintPink,
+  Fairy: styles.tintPink,
+  Fire: styles.tintPeach,
+  Fighting: styles.tintPeach,
+  Lightning: styles.tintPeach,
+  Colorless: styles.tintPeach,
+  Darkness: styles.tintSlate,
+  Metal: styles.tintSlate,
+  Dragon: styles.tintTeal
+}
+
+const tintClassName = (card: PokemonCard): string => typeTintClassNames[card.types?.[0] ?? ''] ?? styles.tintBlue
+
 export function Card({ card }: CardProps) {
   const [areCardDetailsVisible, setCardDetailsVisible] = useState(false)
   const isMobile = useIsMobile()
@@ -18,7 +34,7 @@ export function Card({ card }: CardProps) {
   const closeCardDetails = () => setCardDetailsVisible(false)
 
   return (
-    <div className={styles.cardWrapper}>
+    <div className={`${styles.cardWrapper} ${tintClassName(card)}`}>
       {areCardDetailsVisible &&
         (isMobile ? <MobileCardDetails card={card} onClose={closeCardDetails} /> : <CardDetails card={card} onClose={closeCardDetails} />)}
       <button type='button' className={styles.card} onClick={() => setCardDetailsVisible(true)}>

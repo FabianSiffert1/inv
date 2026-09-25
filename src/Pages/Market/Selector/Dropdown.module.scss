@@ -14,37 +14,29 @@
   gap: 0.5rem;
   min-width: 0;
   max-width: 100%;
-  cursor: pointer;
-  padding: 0.4rem 0.75rem;
+  @include surfaceInteractive($surfaceRadiusSmall);
+  @include pastel(var(--elementBlue));
+  padding: 0.5rem 0.9rem;
   font-family: inherit;
   font-size: 0.95rem;
   color: var(--color);
-  border: 0.05rem solid var(--card-border-color);
-  border-radius: 1.4rem;
-  background-color: var(--card-background-color);
-  transition: border-color 0.15s ease;
-}
-
-.trigger:hover:not(:disabled) {
-  border-color: var(--primary-color);
+  border: none;
+  box-shadow: 0 0.15rem 0.5rem color-mix(in srgb, var(--color) 10%, transparent);
 }
 
 .trigger:hover:not(:disabled) .chevron {
   transform: translateY(0.1rem);
 }
 
-.trigger:focus-visible {
-  outline: 0.1rem solid var(--primary-color);
-  outline-offset: 0.2rem;
-}
-
 .trigger:disabled {
   cursor: default;
   opacity: 0.5;
+  transform: none;
 }
 
 .triggerOpen {
-  border-color: var(--primary-color);
+  @include pastel(var(--elementBlue), 50%);
+  outline: 1px solid var(--card-border-color);
 }
 
 .triggerOpen .chevron {
@@ -73,7 +65,7 @@
   height: 0.9em;
   flex: 0 0 auto;
   color: var(--secondary-color);
-  transition: transform 0.15s ease;
+  transition: transform $surfaceTransition;
 }
 
 .panel {
@@ -89,12 +81,12 @@
   overscroll-behavior: contain;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  padding: 0.85rem 1rem;
+  padding: 1rem 1.25rem;
   background-color: var(--background-color);
-  border: 0.05rem solid var(--card-border-color);
-  border-radius: 0.6rem;
-  box-shadow: 0 0.75rem 2rem rgba(0, 0, 0, 0.3);
-  animation: panelIn 0.16s ease both;
+  border: 1px solid var(--card-border-color);
+  border-radius: $surfaceRadius;
+  box-shadow: 0 0.75rem 2rem var(--shadow-color);
+  animation: panelIn $surfaceTransition both;
 }
 
 .panel::-webkit-scrollbar {

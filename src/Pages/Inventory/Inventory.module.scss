@@ -1,9 +1,10 @@
+@use 'globalDesignElements.module' as *;
+
 .inventory {
   margin: 6rem auto 0 auto;
   max-width: 32rem;
   padding: 2rem;
-  border: 0.05rem solid var(--card-border-color);
-  border-radius: 1rem;
-  background-color: var(--card-background-color);
+  @include surface;
+  @include pastel(var(--elementPeach), 50%);
   text-align: center;
 }

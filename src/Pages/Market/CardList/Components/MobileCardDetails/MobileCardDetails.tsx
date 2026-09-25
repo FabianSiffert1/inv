@@ -25,7 +25,9 @@ export function MobileCardDetails(props: MobileCardDetailsProps) {
         <div className={styles.scrollArea}>
           <div className={styles.cardImageAndBaseInfo}>
             {props.card.images.large && (
-              <img className={styles.cardImage} src={props.card.images.large} alt={props.card.name} decoding='async' />
+              <div className={styles.cardImageFrame}>
+                <img className={styles.cardImage} src={props.card.images.large} alt={props.card.name} decoding='async' />
+              </div>
             )}
             <CardBaseDetails card={props.card} />
           </div>
