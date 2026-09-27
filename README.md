@@ -52,12 +52,17 @@ npm run build
 pm2 restart inv
 ```
 
-`data/` lives outside `dist/`, so a rebuild keeps the snapshot. Refresh it daily with a cron job on
-the server, for example:
+`data/` lives outside `dist/`, so a rebuild keeps the snapshot. Refresh it daily with a pm2 cron job,
+started once from the repository directory on the server:
 
 ```
-0 4 * * * cd /path/to/inv && npm run fetch-data >> logs/fetch-data.log 2>&1
+pm2 start npm --name inv-fetch-data --cron-restart "0 4 * * *" --no-autorestart -- run fetch-data
+pm2 save
 ```
+
+pm2 runs the job once right away, then every day at 04:00. `--no-autorestart` stops pm2 from
+restarting it after it exits, and `pm2 save` keeps it across reboots. Check a run with
+`pm2 logs inv-fetch-data`, or trigger one by hand with `pm2 restart inv-fetch-data`.
 
 Each file is written to a temporary path and renamed into place, so the site keeps serving the
 previous data while a refresh runs, and a failed set keeps its previous file.
@@ -79,7 +84,10 @@ and its hot-reload WebSocket makes phones prompt for local network access.
   falls back to the OS preference. An inline script in `index.html` applies it before first paint so
   the page does not flash the wrong theme.
 - **Card images** load lazily via the native `loading="lazy"` attribute, with the aspect ratio
-  reserved up front so the grid does not shift as they arrive.
+  reserved up front so the grid does not shift as they arrive. Cards without an image, or whose
+  image fails to load after one retry, show a tinted placeholder with the card name.
+- **Links**: the selected set and the open card live in the URL (`/market?set=<setId>&card=<cardId>`),
+  so the link buttons next to the set selector and the card title can share them.
 - A dot next to a set name means that set is already stored offline.
 
 ## Known gaps
