@@ -3,6 +3,7 @@ import { PokemonCard, PokemonCardProp, TcgPlayer, TcgPlayerPriceSet } from '../.
 import { formatPrice } from '../../../../../util/format/price'
 import { formatSetReleaseDate } from '../../../../../util/format/date'
 import { useModalBehaviour } from '../../../../../util/ui/useModalBehaviour'
+import { CardImage } from '../CardImage/CardImage'
 import { ExternalLink } from '../ExternalLink/ExternalLink'
 import styles from './CardDetails.module.scss'
 
@@ -34,7 +35,7 @@ export function CardDetails(props: CardDetailsProps) {
             ×
           </button>
           <div className={styles.cardLargeImage}>
-            {props.card.images.large && <img src={props.card.images.large} alt={props.card.name} decoding='async' />}
+            <CardImage sources={[props.card.images.large, props.card.images.small]} alt={props.card.name} />
           </div>
           <div className={styles.detailsColumn}>
             <CardBaseDetails card={props.card} />

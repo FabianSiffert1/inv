@@ -50,13 +50,6 @@
   @include cardImageStyle;
 }
 
-.missingImage {
-  display: block;
-  width: 100%;
-  background-color: var(--card-background-color);
-  @include cardImageStyle;
-}
-
 .cardInformationWrapper {
   display: flex;
   flex-direction: column;

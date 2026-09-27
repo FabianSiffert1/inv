@@ -3,6 +3,7 @@ import { PokemonCard } from '../../../../../util/api/pokemonTGC/model/PokemonCar
 import { formatPrice } from '../../../../../util/format/price'
 import { useIsMobile } from '../../../../../util/ui/useIsMobile'
 import { CardDetails } from '../CardDetails/CardDetails'
+import { CardImage } from '../CardImage/CardImage'
 import { ExternalLink } from '../ExternalLink/ExternalLink'
 import { MobileCardDetails } from '../MobileCardDetails/MobileCardDetails'
 import styles from './Card.module.scss'
@@ -38,11 +39,7 @@ export function Card({ card }: CardProps) {
       {areCardDetailsVisible &&
         (isMobile ? <MobileCardDetails card={card} onClose={closeCardDetails} /> : <CardDetails card={card} onClose={closeCardDetails} />)}
       <button type='button' className={styles.card} onClick={() => setCardDetailsVisible(true)}>
-        {card.images.small ? (
-          <img className={styles.cardImage} src={card.images.small} alt={card.name} loading='lazy' decoding='async' />
-        ) : (
-          <span className={styles.missingImage} aria-hidden='true' />
-        )}
+        <CardImage className={styles.cardImage} sources={[card.images.small]} alt={card.name} lazy />
       </button>
       <div className={styles.cardInformationWrapper}>
         <div className={styles.cardName}>{card.name}</div>

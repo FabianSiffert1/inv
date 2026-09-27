@@ -2,6 +2,7 @@ import { useRef } from 'react'
 import { PokemonCard } from '../../../../../util/api/pokemonTGC/model/PokemonCard'
 import { useModalBehaviour } from '../../../../../util/ui/useModalBehaviour'
 import { CardBaseDetails, CardMarketPrices, SetInformation, TcgPlayerPrices } from '../CardDetails/CardDetails'
+import { CardImage } from '../CardImage/CardImage'
 import styles from './MobileCardDetails.module.scss'
 
 interface MobileCardDetailsProps {
@@ -24,11 +25,9 @@ export function MobileCardDetails(props: MobileCardDetailsProps) {
         </div>
         <div className={styles.scrollArea}>
           <div className={styles.cardImageAndBaseInfo}>
-            {props.card.images.large && (
-              <div className={styles.cardImageFrame}>
-                <img className={styles.cardImage} src={props.card.images.large} alt={props.card.name} decoding='async' />
-              </div>
-            )}
+            <div className={styles.cardImageFrame}>
+              <CardImage className={styles.cardImage} sources={[props.card.images.large, props.card.images.small]} alt={props.card.name} />
+            </div>
             <CardBaseDetails card={props.card} />
           </div>
           <SetInformation card={props.card} />
