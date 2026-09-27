@@ -69,7 +69,7 @@ const toCardmarket = (cardmarket) =>
     ? {
         url:
           cardmarket.idProduct != undefined
-            ? `https://www.cardmarket.com/en/Pokemon/Products?idProduct=${cardmarket.idProduct}`
+            ? `https://www.cardmarket.com/en/Pokemon/Products?idProduct=${cardmarket.idProduct}&language=1`
             : undefined,
         updatedAt: cardmarket.updated,
         prices: {
