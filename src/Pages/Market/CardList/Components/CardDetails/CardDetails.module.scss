@@ -80,8 +80,8 @@
   grid-row: 1;
   align-self: start;
   overflow: hidden;
-  padding: 2.5rem 1.25rem 1.25rem 1.25rem;
-  border-radius: $archRadius;
+  padding: 1.25rem;
+  border-radius: 1.5rem;
   @include pastel(var(--tint, var(--elementBlue)));
 
   img {

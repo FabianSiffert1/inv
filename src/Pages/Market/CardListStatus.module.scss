@@ -30,20 +30,3 @@
   color: var(--secondary-color);
   max-width: 32rem;
 }
-
-.retryButton {
-  margin-top: 0.5rem;
-  @include surfaceInteractive($surfaceRadiusSmall);
-  @include pastel(var(--elementBlue));
-  padding: 0.8rem 1.4rem;
-  font: small-caps 1.1rem sans-serif;
-  color: var(--color);
-  border: none;
-  box-shadow: 0 0.15rem 0.5rem color-mix(in srgb, var(--color) 10%, transparent);
-}
-
-.retryButton:disabled {
-  cursor: default;
-  opacity: 0.5;
-  transform: none;
-}

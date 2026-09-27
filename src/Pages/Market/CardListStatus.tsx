@@ -6,9 +6,6 @@ interface CardListStatusProps {
   isFetching: boolean
   error: unknown
   cardCount: number
-  onRetry: () => void
-  retriesLeft: number
-  isRetryCoolingDown: boolean
 }
 
 const messageForError = (error: unknown): string => {
@@ -22,18 +19,7 @@ const messageForError = (error: unknown): string => {
   if ((error as { message?: string })?.message == 'Network Error') {
     return 'Could not reach the server. Check your connection.'
   }
-  return 'Could not load cards.'
-}
-
-function RetryControl(props: CardListStatusProps) {
-  if (props.retriesLeft <= 0) {
-    return <div className={styles.detail}>No retries left. Reload the page to try again.</div>
-  }
-  return (
-    <button type='button' className={styles.retryButton} disabled={props.isRetryCoolingDown} onClick={props.onRetry}>
-      {props.isRetryCoolingDown ? 'Retrying…' : `Try again (${props.retriesLeft} left)`}
-    </button>
-  )
+  return 'Could not load cards. Reload the page to try again.'
 }
 
 export default function CardListStatus(props: CardListStatusProps) {
@@ -46,7 +32,6 @@ export default function CardListStatus(props: CardListStatusProps) {
       <div className={styles.status} role='alert'>
         <div className={styles.headline}>Cards could not be loaded</div>
         <div className={styles.detail}>{messageForError(props.error)}</div>
-        <RetryControl {...props} />
       </div>
     )
   }
@@ -70,8 +55,7 @@ export default function CardListStatus(props: CardListStatusProps) {
     return (
       <div className={styles.status}>
         <div className={styles.headline}>No cards found</div>
-        <div className={styles.detail}>The API returned no cards for this set.</div>
-        <RetryControl {...props} />
+        <div className={styles.detail}>There are no cards for this set yet.</div>
       </div>
     )
   }

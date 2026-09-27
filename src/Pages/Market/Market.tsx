@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useRef, useState } from 'react'
+import { useCallback, useContext, useEffect, useState } from 'react'
 import { HeaderContext } from '../../Header/HeaderProvider'
 import { PokemonSetName, PokemonTCGSeries } from '../../util/api/pokemonTGC/model/PokemonSet'
 import { useAllSets, useCardsOfSet } from '../../util/api/pokemonTGC/hooks'
@@ -11,9 +11,6 @@ import EraStrip from './Selector/EraStrip'
 import selectorStyles from './Selector/Selector.module.scss'
 import SetStrip from './Selector/SetStrip'
 
-const maximumManualRetries = 3
-const retryCooldownMilliseconds = 5000
-
 export default function Market() {
   const { setHeaderItem, setBusy } = useContext(HeaderContext)
 
@@ -21,12 +18,9 @@ export default function Market() {
   const [currentlySelectedPokemonSet, setCurrentlySelectedPokemonSet] = useState<PokemonSetName | undefined>(undefined)
   const [isEraDropdownOpen, setEraDropdownOpen] = useState(false)
   const [isSetDropdownOpen, setSetDropdownOpen] = useState(false)
-  const [manualRetryCount, setManualRetryCount] = useState(0)
-  const [isRetryCoolingDown, setRetryCoolingDown] = useState(false)
-  const cooldownTimeout = useRef<number | undefined>(undefined)
 
-  const { data: sets, isFetching: areSetsFetching, error: setsError, refetch: refetchSets } = useAllSets()
-  const { data: cards, isFetching: areCardsFetching, error: cardsError, refetch: refetchCards } = useCardsOfSet(currentlySelectedPokemonSet)
+  const { data: sets, isFetching: areSetsFetching, error: setsError } = useAllSets()
+  const { data: cards, isFetching: areCardsFetching, error: cardsError } = useCardsOfSet(currentlySelectedPokemonSet)
 
   const isFetching = areSetsFetching || areCardsFetching
   const isMobile = useIsMobile()
@@ -37,13 +31,11 @@ export default function Market() {
     setCurrentlySelectedPokemonSet(undefined)
     setEraDropdownOpen(false)
     setSetDropdownOpen(true)
-    setManualRetryCount(0)
   }, [])
 
   const selectSet = useCallback((set: PokemonSetName) => {
     window.scrollTo(0, 0)
     setCurrentlySelectedPokemonSet(set)
-    setManualRetryCount(0)
   }, [])
 
   const openEraDropdown = useCallback((isOpen: boolean) => {
@@ -104,23 +96,6 @@ export default function Market() {
 
   useEffect(() => () => setBusy(false), [setBusy])
 
-  useEffect(() => () => window.clearTimeout(cooldownTimeout.current), [])
-
-  const retryFetch = () => {
-    if (isRetryCoolingDown || manualRetryCount >= maximumManualRetries) {
-      return
-    }
-    setManualRetryCount((previous) => previous + 1)
-    setRetryCoolingDown(true)
-    cooldownTimeout.current = window.setTimeout(() => setRetryCoolingDown(false), retryCooldownMilliseconds)
-    if (setsError != null) {
-      refetchSets()
-    }
-    if (currentlySelectedPokemonSet != undefined) {
-      refetchCards()
-    }
-  }
-
   return (
     <div className={styles.market}>
       <CardListStatus
@@ -129,9 +104,6 @@ export default function Market() {
         isFetching={isFetching}
         error={cardsError ?? setsError}
         cardCount={cards?.length ?? 0}
-        onRetry={retryFetch}
-        retriesLeft={maximumManualRetries - manualRetryCount}
-        isRetryCoolingDown={isRetryCoolingDown}
       />
 
       <div className={styles.cardListWrapper}>
