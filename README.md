@@ -3,6 +3,10 @@
 A Pokémon TCG card browser. Pick an era, pick a set, get the cards with current market prices
 from [TCGdex](https://tcgdex.dev).
 
+<p align="center">
+  <img src="docs/inv.png" width="70%" height="70%">
+</p>
+
 ## About this project
 
 This is an old weekend project. It started as an attempt at a mobile-first website and turned into a
