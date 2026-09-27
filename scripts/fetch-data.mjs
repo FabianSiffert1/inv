@@ -67,6 +67,10 @@ const toSet = (set) => ({
 const toCardmarket = (cardmarket) =>
   cardmarket
     ? {
+        url:
+          cardmarket.idProduct != undefined
+            ? `https://www.cardmarket.com/en/Pokemon/Products?idProduct=${cardmarket.idProduct}`
+            : undefined,
         updatedAt: cardmarket.updated,
         prices: {
           averageSellPrice: price(cardmarket.avg),

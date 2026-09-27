@@ -1,4 +1,5 @@
 import { ReactElement, useRef } from 'react'
+import { CopyButton } from '../../../../../Components/CopyButton/CopyButton'
 import { PokemonCard, PokemonCardProp, TcgPlayer, TcgPlayerPriceSet } from '../../../../../util/api/pokemonTGC/model/PokemonCard'
 import { formatPrice } from '../../../../../util/format/price'
 import { formatSetReleaseDate } from '../../../../../util/format/date'
@@ -118,9 +119,12 @@ export function CardMarketPrices(props: PokemonCardProp) {
     <section className={styles.panel}>
       <div className={styles.panelHeader}>
         {props.card.cardmarket?.url ? (
-          <ExternalLink href={props.card.cardmarket.url}>
-            <span className={styles.panelTitle}>Cardmarket</span>
-          </ExternalLink>
+          <>
+            <ExternalLink href={props.card.cardmarket.url}>
+              <span className={styles.panelTitle}>Cardmarket</span>
+            </ExternalLink>
+            <CopyButton value={props.card.cardmarket.url} label='Copy Cardmarket link' />
+          </>
         ) : (
           <span className={styles.panelTitle}>Cardmarket</span>
         )}
@@ -144,9 +148,12 @@ export function TcgPlayerPrices(props: PokemonCardProp) {
     <section className={styles.panel}>
       <div className={styles.panelHeader}>
         {props.card.tcgplayer?.url ? (
-          <ExternalLink href={props.card.tcgplayer.url}>
-            <span className={styles.panelTitle}>TCGPlayer</span>
-          </ExternalLink>
+          <>
+            <ExternalLink href={props.card.tcgplayer.url}>
+              <span className={styles.panelTitle}>TCGPlayer</span>
+            </ExternalLink>
+            <CopyButton value={props.card.tcgplayer.url} label='Copy TCGPlayer link' />
+          </>
         ) : (
           <span className={styles.panelTitle}>TCGPlayer</span>
         )}
