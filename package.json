@@ -13,7 +13,7 @@
     "formatAndFix": "npm run format && npm run lintFix",
     "typecheck": "tsc --noEmit",
     "preview": "vite preview --port 3030",
-    "fetch-data": "node --env-file-if-exists=.env scripts/fetch-data.mjs",
+    "fetch-data": "node scripts/fetch-data.mjs",
     "prepare": "husky"
   },
   "dependencies": {

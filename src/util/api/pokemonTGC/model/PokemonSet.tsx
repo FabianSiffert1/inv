@@ -14,7 +14,7 @@ export interface PokemonSet {
   releaseDate: string
   updatedAt?: string
   images: {
-    symbol: string
-    logo: string
+    symbol?: string
+    logo?: string
   }
 }

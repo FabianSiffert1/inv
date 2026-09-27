@@ -1,7 +1,7 @@
 # inv
 
 A Pokémon TCG card browser. Pick an era, pick a set, get the cards with current market prices
-from [pokemontcg.io](https://pokemontcg.io).
+from [TCGdex](https://tcgdex.dev).
 
 ## About this project
 
@@ -16,21 +16,16 @@ npm install
 npm run dev
 ```
 
-The site does not call the Pokémon TCG API from the browser. It reads a snapshot of all sets and
+The site does not call the TCGdex API from the browser. It reads a snapshot of all sets and
 cards from `data/`, which `npm run fetch-data` downloads. Run it once before starting the dev server:
 
 ```
 npm run fetch-data
 ```
 
-The first run fetches every card of every set and takes a while. Copy `.env-example` to `.env` and
-put a [Pokémon TCG API](https://dev.pokemontcg.io) key in it for a higher rate limit:
-
-```
-POKEMON_TCG_API_KEY='your-key'
-```
-
-The key is only read by the fetch script on the server and never reaches the client bundle.
+TCGdex needs no API key. Prices are only available per card, so a run requests every card of every
+set individually and takes a while. Pokémon TCG Pocket sets are skipped, as they have no market
+prices.
 
 ## Scripts
 
