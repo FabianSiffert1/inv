@@ -3,6 +3,7 @@ import { CopyButton } from '../../../../../Components/CopyButton/CopyButton'
 import { PokemonCard, PokemonCardProp, TcgPlayer, TcgPlayerPriceSet } from '../../../../../util/api/pokemonTGC/model/PokemonCard'
 import { formatPrice } from '../../../../../util/format/price'
 import { formatSetReleaseDate } from '../../../../../util/format/date'
+import { cardShareLink } from '../../../../../util/shareLinks'
 import { useModalBehaviour } from '../../../../../util/ui/useModalBehaviour'
 import { CardImage } from '../CardImage/CardImage'
 import { ExternalLink } from '../ExternalLink/ExternalLink'
@@ -55,7 +56,10 @@ export function CardDetails(props: CardDetailsProps) {
 export function CardBaseDetails(props: PokemonCardProp) {
   return (
     <div className={styles.cardBaseInformationContainer}>
-      <h2 className={styles.cardTitle}>{props.card.name}</h2>
+      <div className={styles.titleRow}>
+        <h2 className={styles.cardTitle}>{props.card.name}</h2>
+        <CopyButton variant='share' value={cardShareLink(props.card)} label='Copy link to this card' />
+      </div>
       <div className={styles.metaRow}>
         {props.card.rarity && <span className={styles.metaChip}>{props.card.rarity}</span>}
         <span className={styles.metaChip}>

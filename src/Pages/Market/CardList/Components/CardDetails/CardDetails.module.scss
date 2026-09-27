@@ -112,9 +112,16 @@
   border-bottom: 1px solid var(--card-border-color);
 }
 
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.375rem;
+}
+
 .cardTitle {
   @include typoDisplay;
-  margin: 0 0 1.375rem 0;
+  margin: 0;
   font-size: clamp(1.25rem, 4vw, 2.375rem);
   text-wrap: balance;
 }

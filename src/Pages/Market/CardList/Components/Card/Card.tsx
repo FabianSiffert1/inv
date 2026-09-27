@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { PokemonCard } from '../../../../../util/api/pokemonTGC/model/PokemonCard'
 import { formatPrice } from '../../../../../util/format/price'
 import { useIsMobile } from '../../../../../util/ui/useIsMobile'
@@ -10,6 +9,12 @@ import styles from './Card.module.scss'
 
 interface CardProps {
   card: PokemonCard
+}
+
+interface CardWithDetailsProps extends CardProps {
+  isDetailsOpen: boolean
+  onOpen: () => void
+  onClose: () => void
 }
 
 const typeTintClassNames: Record<string, string> = {
@@ -28,17 +33,13 @@ const typeTintClassNames: Record<string, string> = {
 
 const tintClassName = (card: PokemonCard): string => typeTintClassNames[card.types?.[0] ?? ''] ?? styles.tintBlue
 
-export function Card({ card }: CardProps) {
-  const [areCardDetailsVisible, setCardDetailsVisible] = useState(false)
+export function Card({ card, isDetailsOpen, onOpen, onClose }: CardWithDetailsProps) {
   const isMobile = useIsMobile()
-
-  const closeCardDetails = () => setCardDetailsVisible(false)
 
   return (
     <div className={`${styles.cardWrapper} ${tintClassName(card)}`}>
-      {areCardDetailsVisible &&
-        (isMobile ? <MobileCardDetails card={card} onClose={closeCardDetails} /> : <CardDetails card={card} onClose={closeCardDetails} />)}
-      <button type='button' className={styles.card} onClick={() => setCardDetailsVisible(true)}>
+      {isDetailsOpen && (isMobile ? <MobileCardDetails card={card} onClose={onClose} /> : <CardDetails card={card} onClose={onClose} />)}
+      <button type='button' className={styles.card} onClick={onOpen}>
         <CardImage className={styles.cardImage} sources={[card.images.small]} alt={card.name} lazy />
       </button>
       <div className={styles.cardInformationWrapper}>
