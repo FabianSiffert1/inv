@@ -13,19 +13,16 @@ interface CardListStatusProps {
 
 const messageForError = (error: unknown): string => {
   const status = (error as { response?: { status?: number } })?.response?.status
-  if (status == 429) {
-    return 'The Pokémon TCG API is rate limiting requests. Wait a moment and try again.'
-  }
-  if (status == 403 || status == 401) {
-    return 'The Pokémon TCG API rejected the API key. Check VITE_POKEMON_TCG_API_KEY.'
+  if (status == 404) {
+    return 'No card data is available for this yet. Try again later.'
   }
   if (status != undefined && status >= 500) {
-    return 'The Pokémon TCG API is currently unavailable. Try again later.'
+    return 'The server is currently unavailable. Try again later.'
   }
   if ((error as { message?: string })?.message == 'Network Error') {
-    return 'Could not reach the Pokémon TCG API. Check your connection.'
+    return 'Could not reach the server. Check your connection.'
   }
-  return 'Could not load cards from the Pokémon TCG API.'
+  return 'Could not load cards.'
 }
 
 function RetryControl(props: CardListStatusProps) {
