@@ -8,29 +8,35 @@ interface CardImageProps {
   lazy?: boolean
 }
 
+type RetryState = 'initial' | 'waiting' | 'retrying'
+
 const retryDelayMilliseconds = 3000
+const failedSources = new Set<string>()
 
 export function CardImage(props: CardImageProps) {
-  const sources = props.sources.filter((source): source is string => source != undefined)
-  const [sourceIndex, setSourceIndex] = useState(0)
-  const [hasRetried, setRetried] = useState(false)
-  const [attempt, setAttempt] = useState(0)
+  const [retryState, setRetryState] = useState<RetryState>('initial')
+  const [, setFailedSourceCount] = useState(0)
   const retryTimeout = useRef<number | undefined>(undefined)
 
   useEffect(() => () => window.clearTimeout(retryTimeout.current), [])
 
+  const source = props.sources.find((candidate): candidate is string => candidate != undefined && !failedSources.has(candidate))
+
   const handleError = () => {
-    if (!hasRetried) {
-      setRetried(true)
-      retryTimeout.current = window.setTimeout(() => setAttempt((previous) => previous + 1), retryDelayMilliseconds)
+    if (source == undefined) {
       return
     }
-    setRetried(false)
-    setSourceIndex((previous) => previous + 1)
+    if (retryState == 'initial') {
+      setRetryState('waiting')
+      retryTimeout.current = window.setTimeout(() => setRetryState('retrying'), retryDelayMilliseconds)
+      return
+    }
+    failedSources.add(source)
+    setRetryState('initial')
+    setFailedSourceCount((previous) => previous + 1)
   }
 
-  const source = sources[sourceIndex]
-  if (source == undefined) {
+  if (source == undefined || retryState == 'waiting') {
     return (
       <span className={styles.placeholder} role='img' aria-label={props.alt}>
         <span className={styles.placeholderName}>{props.alt}</span>
@@ -40,7 +46,7 @@ export function CardImage(props: CardImageProps) {
 
   return (
     <img
-      key={`${source}-${attempt}`}
+      key={`${source}-${retryState}`}
       className={props.className}
       src={source}
       alt={props.alt}
