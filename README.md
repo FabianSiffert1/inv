@@ -3,6 +3,8 @@
 A Pokémon TCG card browser. Pick an era, pick a set, get the cards with current market prices
 from [TCGdex](https://tcgdex.dev).
 
+Live at [inv.siffert.io](https://inv.siffert.io).
+
 <p align="center">
   <img src="docs/inv.png" width="70%" height="70%">
 </p>

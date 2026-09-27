@@ -24,7 +24,7 @@ html[data-theme='dark'] {
   --marker: #{$neutral-0};
 
   --primary-color: #{$violet-400};
-  --secondary-color: #{$neutral-400};
+  --secondary-color: var(--color);
 
   color-scheme: dark;
 }
@@ -36,7 +36,7 @@ html[data-theme='light'] {
   --marker: #{$black-2};
 
   --primary-color: #{$blue-1};
-  --secondary-color: #{$neutral-400};
+  --secondary-color: var(--color);
 
   color-scheme: light;
 }
