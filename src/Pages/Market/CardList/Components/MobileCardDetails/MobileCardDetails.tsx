@@ -1,9 +1,10 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { PokemonCard } from '../../../../../util/api/pokemonTGC/model/PokemonCard'
 import { useLocalizedName } from '../../../../../util/ui/language/LanguageProvider'
 import { useModalBehaviour } from '../../../../../util/ui/useModalBehaviour'
 import { CardBaseDetails, CardMarketPrices, SetInformation, TcgPlayerPrices } from '../CardDetails/CardDetails'
 import { CardImage } from '../CardImage/CardImage'
+import { ImageZoom } from '../ImageZoom/ImageZoom'
 import styles from './MobileCardDetails.module.scss'
 
 interface MobileCardDetailsProps {
@@ -15,6 +16,8 @@ export function MobileCardDetails(props: MobileCardDetailsProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   useModalBehaviour(containerRef, props.onClose)
   const cardName = useLocalizedName(props.card)
+  const [isZoomOpen, setZoomOpen] = useState(false)
+  const imageSources = [props.card.images.large, props.card.images.small]
 
   return (
     <div className={styles.mobileCardDetailsWrapper}>
@@ -27,9 +30,9 @@ export function MobileCardDetails(props: MobileCardDetailsProps) {
         </div>
         <div className={styles.scrollArea}>
           <div className={styles.cardImageAndBaseInfo}>
-            <div className={styles.cardImageFrame}>
-              <CardImage className={styles.cardImage} sources={[props.card.images.large, props.card.images.small]} alt={cardName} />
-            </div>
+            <button type='button' className={styles.cardImageFrame} onClick={() => setZoomOpen(true)} aria-label={`Zoom into ${cardName}`}>
+              <CardImage className={styles.cardImage} sources={imageSources} alt={cardName} />
+            </button>
             <CardBaseDetails card={props.card} />
           </div>
           <SetInformation card={props.card} />
@@ -37,6 +40,7 @@ export function MobileCardDetails(props: MobileCardDetailsProps) {
           <TcgPlayerPrices card={props.card} />
         </div>
       </div>
+      {isZoomOpen && <ImageZoom sources={imageSources} alt={cardName} onClose={() => setZoomOpen(false)} />}
     </div>
   )
 }

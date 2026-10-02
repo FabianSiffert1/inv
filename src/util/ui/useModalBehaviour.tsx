@@ -9,6 +9,8 @@ const focusableSelector = [
   '[tabindex]:not([tabindex="-1"])'
 ].join(',')
 
+const openModals: RefObject<HTMLElement>[] = []
+
 export const useModalBehaviour = (containerRef: RefObject<HTMLElement>, onClose: () => void) => {
   const onCloseRef = useRef(onClose)
   onCloseRef.current = onClose
@@ -20,6 +22,9 @@ export const useModalBehaviour = (containerRef: RefObject<HTMLElement>, onClose:
     const focusableElements = () => Array.from(containerRef.current?.querySelectorAll<HTMLElement>(focusableSelector) ?? [])
 
     const onKeyDown = (event: KeyboardEvent) => {
+      if (openModals[openModals.length - 1] != containerRef) {
+        return
+      }
       if (event.key == 'Escape') {
         onCloseRef.current()
         return
@@ -47,11 +52,13 @@ export const useModalBehaviour = (containerRef: RefObject<HTMLElement>, onClose:
       }
     }
 
+    openModals.push(containerRef)
     document.body.style.overflow = 'hidden'
     document.addEventListener('keydown', onKeyDown)
     focusableElements()[0]?.focus()
 
     return () => {
+      openModals.splice(openModals.indexOf(containerRef), 1)
       document.removeEventListener('keydown', onKeyDown)
       document.body.style.overflow = previousOverflow
       previouslyFocused?.focus()

@@ -1,0 +1,81 @@
+@use 'globalDesignElements.module' as *;
+
+$zoomInCursor:
+  url('./zoom-in-cursor.png') 13 13,
+  zoom-in;
+$zoomOutCursor:
+  url('./zoom-out-cursor.png') 13 13,
+  zoom-out;
+
+.imageZoom {
+  position: fixed;
+  inset: 0;
+  z-index: $zOverlay + 1;
+  background-color: color-mix(in srgb, var(--background-color) 92%, transparent);
+  backdrop-filter: blur(0.5rem);
+  -webkit-backdrop-filter: blur(0.5rem);
+  animation: fadeIn 0.18s ease both;
+}
+
+.stage {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: $zoomInCursor;
+
+  &.zoomedIn {
+    cursor: $zoomOutCursor;
+  }
+}
+
+.frame {
+  width: min(92vw, calc(88vh * 63 / 88));
+  transform-origin: center;
+  will-change: transform;
+
+  &.animated {
+    transition: transform 220ms $archEase;
+  }
+}
+
+.image {
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+  -webkit-user-drag: none;
+  @include cardImageStyle;
+}
+
+.closeButton {
+  @include surfaceInteractive($surfaceRadiusSmall);
+  @include pastel(var(--elementPeach), 85%);
+  position: absolute;
+  top: calc(1rem + env(safe-area-inset-top, 0px));
+  right: 1rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  line-height: 1;
+  border: none;
+  color: var(--color);
+  font-family: inherit;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
