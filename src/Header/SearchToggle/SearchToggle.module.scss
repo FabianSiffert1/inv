@@ -62,3 +62,46 @@
     height: 1.5rem;
   }
 }
+
+.closeGlyph {
+  font-size: 1.6rem;
+  line-height: 1;
+  color: var(--color);
+}
+
+.floating {
+  position: fixed;
+  z-index: $zHeader;
+  right: 1.25rem;
+  bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
+  justify-content: flex-end;
+
+  .searchToggle {
+    @include pastel(var(--elementPeach), 85%);
+    flex: 0 0 auto;
+    width: 3.5rem;
+    height: 3.5rem;
+    box-shadow: 0 0.4rem 1.2rem var(--shadow-color);
+    backdrop-filter: blur(0.75rem);
+    -webkit-backdrop-filter: blur(0.75rem);
+
+    svg {
+      width: 1.9rem;
+      height: 1.9rem;
+    }
+  }
+
+  .searchField {
+    height: 3.5rem;
+    font-size: 1rem;
+    background-color: color-mix(in srgb, var(--background-color) 92%, transparent);
+    box-shadow: 0 0.4rem 1.2rem var(--shadow-color);
+    backdrop-filter: blur(0.75rem);
+    -webkit-backdrop-filter: blur(0.75rem);
+  }
+
+  &.open .searchField {
+    width: calc(100vw - 2.5rem - 3.5rem - 0.4rem);
+    padding: 0 1.1rem;
+  }
+}

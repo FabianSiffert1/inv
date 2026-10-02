@@ -1,6 +1,7 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { CopyButton } from '../../Components/CopyButton/CopyButton'
+import SearchToggle from '../../Header/SearchToggle/SearchToggle'
 import { HeaderContext } from '../../Header/HeaderProvider'
 import { PokemonSetName, PokemonTCGSeries } from '../../util/api/pokemonTGC/model/PokemonSet'
 import { useAllSets, useCardsOfSet } from '../../util/api/pokemonTGC/hooks'
@@ -161,6 +162,7 @@ export default function Market() {
       <div className={styles.cardListWrapper}>
         <CardList cards={visibleCards} openCardId={openCardId} onOpenCard={openCard} onCloseCard={closeCard} />
       </div>
+      {isMobile && selectedSet && <SearchToggle floating />}
     </div>
   )
 }

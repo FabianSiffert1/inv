@@ -1,3 +1,9 @@
+@use 'globalDesignElements.module' as *;
+
 .cardListWrapper {
   padding-top: 1.5rem;
+
+  @media (max-width: $smallScreen - 1px) {
+    padding-bottom: 5.5rem;
+  }
 }

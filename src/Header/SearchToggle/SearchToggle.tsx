@@ -3,7 +3,11 @@ import { SearchContext } from '../../util/ui/search/SearchProvider'
 import { MagnifyingGlassIcon } from './SearchIcon'
 import styles from './SearchToggle.module.scss'
 
-export default function SearchToggle() {
+interface SearchToggleProps {
+  floating?: boolean
+}
+
+export default function SearchToggle({ floating = false }: SearchToggleProps) {
   const { query, setQuery, isSearchOpen, openSearch, closeSearch } = useContext(SearchContext)
   const inputRef = useRef<HTMLInputElement>(null)
   const label = isSearchOpen ? 'Close search' : 'Search this set'
@@ -14,14 +18,17 @@ export default function SearchToggle() {
     }
   }, [isSearchOpen])
 
-  const closeOnEscape = (event: KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key == 'Escape') {
       closeSearch()
+    }
+    if (event.key == 'Enter') {
+      inputRef.current?.blur()
     }
   }
 
   return (
-    <div className={`${styles.search} ${isSearchOpen ? styles.open : ''}`}>
+    <div className={`${styles.search} ${floating ? styles.floating : ''} ${isSearchOpen ? styles.open : ''}`}>
       <input
         ref={inputRef}
         className={styles.searchField}
@@ -30,7 +37,7 @@ export default function SearchToggle() {
         aria-label='Search this set'
         value={query}
         onChange={(event) => setQuery(event.target.value)}
-        onKeyDown={closeOnEscape}
+        onKeyDown={handleKeyDown}
         tabIndex={isSearchOpen ? 0 : -1}
         aria-hidden={!isSearchOpen}
       />
@@ -42,7 +49,7 @@ export default function SearchToggle() {
         aria-expanded={isSearchOpen}
         title={label}
       >
-        <MagnifyingGlassIcon />
+        {floating && isSearchOpen ? <span className={styles.closeGlyph}>×</span> : <MagnifyingGlassIcon />}
       </button>
     </div>
   )
