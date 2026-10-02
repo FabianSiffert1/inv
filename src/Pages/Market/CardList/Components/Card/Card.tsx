@@ -1,4 +1,5 @@
 import { PokemonCard } from '../../../../../util/api/pokemonTGC/model/PokemonCard'
+import { useCardName } from '../../../../../util/ui/language/LanguageProvider'
 import { formatPrice } from '../../../../../util/format/price'
 import { useIsMobile } from '../../../../../util/ui/useIsMobile'
 import { CardDetails } from '../CardDetails/CardDetails'
@@ -20,30 +21,31 @@ interface CardWithDetailsProps extends CardProps {
 const typeTintClassNames: Record<string, string> = {
   Water: styles.tintBlue,
   Grass: styles.tintMint,
-  Psychic: styles.tintPink,
+  Psychic: styles.tintLavender,
   Fairy: styles.tintPink,
-  Fire: styles.tintPeach,
-  Fighting: styles.tintPeach,
-  Lightning: styles.tintPeach,
-  Colorless: styles.tintPeach,
-  Darkness: styles.tintSlate,
-  Metal: styles.tintSlate,
+  Fire: styles.tintRed,
+  Fighting: styles.tintBrown,
+  Lightning: styles.tintYellow,
+  Colorless: styles.tintBeige,
+  Darkness: styles.tintDarkGreen,
+  Metal: styles.tintMetal,
   Dragon: styles.tintTeal
 }
 
-const tintClassName = (card: PokemonCard): string => typeTintClassNames[card.types?.[0] ?? ''] ?? styles.tintBlue
+const tintClassName = (card: PokemonCard): string => typeTintClassNames[card.types?.[0] ?? ''] ?? styles.tintEggshell
 
 export function Card({ card, isDetailsOpen, onOpen, onClose }: CardWithDetailsProps) {
   const isMobile = useIsMobile()
+  const cardName = useCardName(card)
 
   return (
     <div className={`${styles.cardWrapper} ${tintClassName(card)}`}>
       {isDetailsOpen && (isMobile ? <MobileCardDetails card={card} onClose={onClose} /> : <CardDetails card={card} onClose={onClose} />)}
       <button type='button' className={styles.card} onClick={onOpen}>
-        <CardImage className={styles.cardImage} sources={[card.images.small]} alt={card.name} lazy />
+        <CardImage className={styles.cardImage} sources={[card.images.small]} alt={cardName} lazy />
       </button>
       <div className={styles.cardInformationWrapper}>
-        <div className={styles.cardName}>{card.name}</div>
+        <div className={styles.cardName}>{cardName}</div>
         <CardPrice card={card} />
       </div>
     </div>

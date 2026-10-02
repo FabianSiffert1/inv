@@ -3,6 +3,7 @@ import { CopyButton } from '../../../../../Components/CopyButton/CopyButton'
 import { PokemonCard, PokemonCardProp, TcgPlayer, TcgPlayerPriceSet } from '../../../../../util/api/pokemonTGC/model/PokemonCard'
 import { formatPrice } from '../../../../../util/format/price'
 import { formatSetReleaseDate } from '../../../../../util/format/date'
+import { useCardName } from '../../../../../util/ui/language/LanguageProvider'
 import { cardShareLink } from '../../../../../util/shareLinks'
 import { useModalBehaviour } from '../../../../../util/ui/useModalBehaviour'
 import { CardImage } from '../CardImage/CardImage'
@@ -27,17 +28,18 @@ interface PriceRowProps {
 export function CardDetails(props: CardDetailsProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   useModalBehaviour(containerRef, props.onClose)
+  const cardName = useCardName(props.card)
 
   return (
     <div className={styles.cardDetailsWrapper}>
       <div className={styles.overlay} onClick={props.onClose} />
       <div className={styles.cardDetailsPositioner}>
-        <div className={styles.cardDetailsContainer} ref={containerRef} role='dialog' aria-modal='true' aria-label={props.card.name}>
+        <div className={styles.cardDetailsContainer} ref={containerRef} role='dialog' aria-modal='true' aria-label={cardName}>
           <button type='button' className={styles.closeButton} aria-label='Close' onClick={props.onClose}>
             ×
           </button>
           <div className={styles.cardLargeImage}>
-            <CardImage sources={[props.card.images.large, props.card.images.small]} alt={props.card.name} />
+            <CardImage sources={[props.card.images.large, props.card.images.small]} alt={cardName} />
           </div>
           <div className={styles.detailsColumn}>
             <CardBaseDetails card={props.card} />
@@ -54,10 +56,12 @@ export function CardDetails(props: CardDetailsProps) {
 }
 
 export function CardBaseDetails(props: PokemonCardProp) {
+  const cardName = useCardName(props.card)
+
   return (
     <div className={styles.cardBaseInformationContainer}>
       <div className={styles.titleRow}>
-        <h2 className={styles.cardTitle}>{props.card.name}</h2>
+        <h2 className={styles.cardTitle}>{cardName}</h2>
         <CopyButton variant='share' value={cardShareLink(props.card)} label='Copy link to this card' />
       </div>
       <div className={styles.metaRow}>

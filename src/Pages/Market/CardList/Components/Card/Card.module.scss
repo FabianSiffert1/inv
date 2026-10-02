@@ -32,6 +32,38 @@
   --tint: var(--elementBlueVariant);
 }
 
+.tintLavender {
+  --tint: var(--elementLavender);
+}
+
+.tintRed {
+  --tint: var(--elementRed);
+}
+
+.tintBrown {
+  --tint: var(--elementBrown);
+}
+
+.tintYellow {
+  --tint: var(--elementYellow);
+}
+
+.tintBeige {
+  --tint: var(--elementBeige);
+}
+
+.tintDarkGreen {
+  --tint: var(--elementDarkGreen);
+}
+
+.tintMetal {
+  --tint: var(--elementMetal);
+}
+
+.tintEggshell {
+  --tint: var(--elementEggshell);
+}
+
 .card {
   @include surfaceInteractive(0.3rem);
   display: block;

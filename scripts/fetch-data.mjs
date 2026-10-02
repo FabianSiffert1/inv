@@ -2,7 +2,7 @@ import { mkdir, readFile, rename, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-const host = 'https://api.tcgdex.net/v2/en'
+const host = 'https://api.tcgdex.net/v2'
 const excludedSeries = new Set(['tcgp'])
 const cardConcurrency = 8
 const maximumAttempts = 5
@@ -13,8 +13,8 @@ const cardsDirectory = path.join(dataDirectory, 'cards')
 
 const sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds))
 
-const get = async (resource) => {
-  const url = `${host}/${resource}`
+const get = async (resource, language = 'en') => {
+  const url = `${host}/${language}/${resource}`
   for (let attempt = 1; ; attempt++) {
     try {
       const response = await fetch(url, { signal: AbortSignal.timeout(requestTimeoutMilliseconds) })
@@ -114,9 +114,10 @@ const toTcgplayer = (tcgplayer) => {
   }
 }
 
-const toCard = (card, set) => ({
+const toCard = (card, set, germanNames) => ({
   id: card.id,
   name: card.name,
+  germanName: germanNames.get(card.id),
   supertype: card.category,
   hp: card.hp?.toString(),
   types: card.types,
@@ -131,6 +132,15 @@ const toCard = (card, set) => ({
   tcgplayer: toTcgplayer(card.pricing?.tcgplayer),
   cardmarket: toCardmarket(card.pricing?.cardmarket)
 })
+
+const fetchGermanNames = async (setId) => {
+  try {
+    const germanSet = await get(`sets/${encodeURIComponent(setId)}`, 'de')
+    return new Map((germanSet.cards ?? []).map((card) => [card.id, card.name]))
+  } catch {
+    return new Map()
+  }
+}
 
 const byTrendPriceDescending = (a, b) => (b.cardmarket?.prices?.trendPrice ?? -1) - (a.cardmarket?.prices?.trendPrice ?? -1)
 
@@ -170,7 +180,8 @@ const main = async () => {
       const cardDetails = await mapConcurrently(setDetail.cards ?? [], cardConcurrency, (card) =>
         get(`cards/${encodeURIComponent(card.id)}`)
       )
-      const cards = cardDetails.map((card) => toCard(card, set)).sort(byTrendPriceDescending)
+      const germanNames = await fetchGermanNames(set.id)
+      const cards = cardDetails.map((card) => toCard(card, set, germanNames)).sort(byTrendPriceDescending)
       await writeJsonAtomically(path.join(cardsDirectory, `${set.id}.json`), cards)
       sets.push(set)
       console.log(`${progress}: ${cards.length} cards`)

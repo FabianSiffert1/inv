@@ -9,6 +9,7 @@ import ErrorPage from './Pages/404/404'
 import Home from './Pages/Home/Home'
 import Inventory from './Pages/Inventory/Inventory'
 import Market from './Pages/Market/Market'
+import LanguageProvider from './util/ui/language/LanguageProvider'
 import ThemeProvider from './util/ui/theme/ThemeProvider'
 
 const cacheMaxAge = 1000 * 60 * 60 * 24 * 7
@@ -89,7 +90,9 @@ root.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <RouterProvider router={router} />
+        <LanguageProvider>
+          <RouterProvider router={router} />
+        </LanguageProvider>
       </ThemeProvider>
     </QueryClientProvider>
   </React.StrictMode>

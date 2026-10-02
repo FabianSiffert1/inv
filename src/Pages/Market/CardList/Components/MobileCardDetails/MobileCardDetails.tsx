@@ -1,5 +1,6 @@
 import { useRef } from 'react'
 import { PokemonCard } from '../../../../../util/api/pokemonTGC/model/PokemonCard'
+import { useCardName } from '../../../../../util/ui/language/LanguageProvider'
 import { useModalBehaviour } from '../../../../../util/ui/useModalBehaviour'
 import { CardBaseDetails, CardMarketPrices, SetInformation, TcgPlayerPrices } from '../CardDetails/CardDetails'
 import { CardImage } from '../CardImage/CardImage'
@@ -13,11 +14,12 @@ interface MobileCardDetailsProps {
 export function MobileCardDetails(props: MobileCardDetailsProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   useModalBehaviour(containerRef, props.onClose)
+  const cardName = useCardName(props.card)
 
   return (
     <div className={styles.mobileCardDetailsWrapper}>
       <div className={styles.overlay} onClick={props.onClose} />
-      <div className={styles.cardDetailsContainer} ref={containerRef} role='dialog' aria-modal='true' aria-label={props.card.name}>
+      <div className={styles.cardDetailsContainer} ref={containerRef} role='dialog' aria-modal='true' aria-label={cardName}>
         <div className={styles.mobileCardDetailsHeader}>
           <button type='button' className={styles.closeButton} aria-label='Close' onClick={props.onClose}>
             ×
@@ -26,7 +28,7 @@ export function MobileCardDetails(props: MobileCardDetailsProps) {
         <div className={styles.scrollArea}>
           <div className={styles.cardImageAndBaseInfo}>
             <div className={styles.cardImageFrame}>
-              <CardImage className={styles.cardImage} sources={[props.card.images.large, props.card.images.small]} alt={props.card.name} />
+              <CardImage className={styles.cardImage} sources={[props.card.images.large, props.card.images.small]} alt={cardName} />
             </div>
             <CardBaseDetails card={props.card} />
           </div>

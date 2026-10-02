@@ -69,6 +69,7 @@ export interface PokemonCardSet {
 export interface PokemonCard {
   id: string
   name: string
+  germanName?: string
   supertype?: string
   subtypes?: string[]
   level?: string

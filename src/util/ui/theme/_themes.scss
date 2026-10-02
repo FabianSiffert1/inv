@@ -10,6 +10,14 @@ html[data-theme] {
   --elementGreen: #{$element-green};
   --elementGreenVariant: #{$element-green-variant};
   --elementGreenVariant2: #{$element-green-variant-2};
+  --elementLavender: #{$element-lavender};
+  --elementRed: #{$element-red};
+  --elementBrown: #{$element-brown};
+  --elementYellow: #{$element-yellow};
+  --elementBeige: #{$element-beige};
+  --elementDarkGreen: #{$element-dark-green};
+  --elementMetal: #{$element-metal};
+  --elementEggshell: #{$element-eggshell};
 
   --card-background-color: color-mix(in srgb, var(--color) 6%, transparent);
   --card-border-color: color-mix(in srgb, var(--color) 18%, transparent);
