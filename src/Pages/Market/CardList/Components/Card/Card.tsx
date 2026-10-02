@@ -1,5 +1,5 @@
 import { PokemonCard } from '../../../../../util/api/pokemonTGC/model/PokemonCard'
-import { useCardName } from '../../../../../util/ui/language/LanguageProvider'
+import { useLocalizedName } from '../../../../../util/ui/language/LanguageProvider'
 import { formatPrice } from '../../../../../util/format/price'
 import { useIsMobile } from '../../../../../util/ui/useIsMobile'
 import { CardDetails } from '../CardDetails/CardDetails'
@@ -36,7 +36,7 @@ const tintClassName = (card: PokemonCard): string => typeTintClassNames[card.typ
 
 export function Card({ card, isDetailsOpen, onOpen, onClose }: CardWithDetailsProps) {
   const isMobile = useIsMobile()
-  const cardName = useCardName(card)
+  const cardName = useLocalizedName(card)
 
   return (
     <div className={`${styles.cardWrapper} ${tintClassName(card)}`}>

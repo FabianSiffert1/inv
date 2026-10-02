@@ -4,6 +4,7 @@ export type PokemonSetName = string
 export interface PokemonSet {
   id: string
   name: PokemonSetName
+  germanName?: string
   series: PokemonTCGSeries
   printedTotal: number
   total: number

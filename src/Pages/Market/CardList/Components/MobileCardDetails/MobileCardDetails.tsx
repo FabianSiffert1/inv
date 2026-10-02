@@ -1,6 +1,6 @@
 import { useRef } from 'react'
 import { PokemonCard } from '../../../../../util/api/pokemonTGC/model/PokemonCard'
-import { useCardName } from '../../../../../util/ui/language/LanguageProvider'
+import { useLocalizedName } from '../../../../../util/ui/language/LanguageProvider'
 import { useModalBehaviour } from '../../../../../util/ui/useModalBehaviour'
 import { CardBaseDetails, CardMarketPrices, SetInformation, TcgPlayerPrices } from '../CardDetails/CardDetails'
 import { CardImage } from '../CardImage/CardImage'
@@ -14,7 +14,7 @@ interface MobileCardDetailsProps {
 export function MobileCardDetails(props: MobileCardDetailsProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   useModalBehaviour(containerRef, props.onClose)
-  const cardName = useCardName(props.card)
+  const cardName = useLocalizedName(props.card)
 
   return (
     <div className={styles.mobileCardDetailsWrapper}>

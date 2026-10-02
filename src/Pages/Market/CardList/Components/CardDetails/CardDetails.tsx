@@ -3,7 +3,7 @@ import { CopyButton } from '../../../../../Components/CopyButton/CopyButton'
 import { PokemonCard, PokemonCardProp, TcgPlayer, TcgPlayerPriceSet } from '../../../../../util/api/pokemonTGC/model/PokemonCard'
 import { formatPrice } from '../../../../../util/format/price'
 import { formatSetReleaseDate } from '../../../../../util/format/date'
-import { useCardName } from '../../../../../util/ui/language/LanguageProvider'
+import { useLocalizedName } from '../../../../../util/ui/language/LanguageProvider'
 import { cardShareLink } from '../../../../../util/shareLinks'
 import { useModalBehaviour } from '../../../../../util/ui/useModalBehaviour'
 import { CardImage } from '../CardImage/CardImage'
@@ -28,7 +28,7 @@ interface PriceRowProps {
 export function CardDetails(props: CardDetailsProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   useModalBehaviour(containerRef, props.onClose)
-  const cardName = useCardName(props.card)
+  const cardName = useLocalizedName(props.card)
 
   return (
     <div className={styles.cardDetailsWrapper}>
@@ -56,7 +56,7 @@ export function CardDetails(props: CardDetailsProps) {
 }
 
 export function CardBaseDetails(props: PokemonCardProp) {
-  const cardName = useCardName(props.card)
+  const cardName = useLocalizedName(props.card)
 
   return (
     <div className={styles.cardBaseInformationContainer}>
@@ -77,10 +77,12 @@ export function CardBaseDetails(props: PokemonCardProp) {
 }
 
 export function SetInformation(props: PokemonCardProp) {
+  const setName = useLocalizedName(props.card.set)
+
   return (
     <section className={`${styles.panel} ${styles.setPanel}`}>
       <div className={styles.panelHeader}>
-        <span className={styles.panelTitle}>{props.card.set.name}</span>
+        <span className={styles.panelTitle}>{setName}</span>
         {props.card.set.images?.symbol && <img className={styles.setSymbol} src={props.card.set.images.symbol} alt='' />}
       </div>
       <dl className={styles.definitionList}>

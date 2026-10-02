@@ -51,6 +51,7 @@ export interface CardMarket {
 export interface PokemonCardSet {
   id: string
   name: string
+  germanName?: string
   series: string
   printedTotal: number
   total: number

@@ -1,4 +1,6 @@
+import { useContext } from 'react'
 import { PokemonSet, PokemonSetName, PokemonTCGSeries } from '../../../util/api/pokemonTGC/model/PokemonSet'
+import { LanguageContext, localizedName } from '../../../util/ui/language/LanguageProvider'
 import Dropdown from './Dropdown'
 import MobileSheet from './MobileSheet'
 import { OptionGridItem } from './OptionGrid'
@@ -14,18 +16,19 @@ interface SetStripProps {
   isMobile: boolean
 }
 
-export const setOptionsOfSeries = (pokemonSets?: PokemonSet[], series?: PokemonTCGSeries): OptionGridItem[] =>
+export const setOptionsOfSeries = (pokemonSets?: PokemonSet[], series?: PokemonTCGSeries, germanNames = false): OptionGridItem[] =>
   (pokemonSets ?? [])
     .filter((pokemonSet) => pokemonSet.series == series)
     .sort((a, b) => a.releaseDate.localeCompare(b.releaseDate))
     .map((pokemonSet) => ({
       id: pokemonSet.name,
-      label: pokemonSet.name,
+      label: localizedName(pokemonSet, germanNames),
       imageUrl: pokemonSet.images.symbol
     }))
 
 export default function SetStrip(props: SetStripProps) {
-  const options = setOptionsOfSeries(props.pokemonSets, props.currentlySelectedPokemonSeries)
+  const { germanNames } = useContext(LanguageContext)
+  const options = setOptionsOfSeries(props.pokemonSets, props.currentlySelectedPokemonSeries, germanNames)
 
   return (
     <>

@@ -51,9 +51,10 @@ const price = (value) => (typeof value == 'number' && value > 0 ? value : undefi
 
 const camelCase = (key) => key.replace(/-([a-z0-9])/g, (_, character) => character.toUpperCase())
 
-const toSet = (set) => ({
+const toSet = (set, germanName) => ({
   id: set.id,
   name: set.name,
+  germanName,
   series: set.serie.name,
   printedTotal: set.cardCount.official,
   total: set.cardCount.total,
@@ -136,9 +137,9 @@ const toCard = (card, set, germanNames) => ({
 const fetchGermanNames = async (setId) => {
   try {
     const germanSet = await get(`sets/${encodeURIComponent(setId)}`, 'de')
-    return new Map((germanSet.cards ?? []).map((card) => [card.id, card.name]))
+    return { setName: germanSet.name, cardNames: new Map((germanSet.cards ?? []).map((card) => [card.id, card.name])) }
   } catch {
-    return new Map()
+    return { setName: undefined, cardNames: new Map() }
   }
 }
 
@@ -176,12 +177,12 @@ const main = async () => {
         console.log(`${progress}: skipped`)
         continue
       }
-      const set = toSet(setDetail)
+      const germanNames = await fetchGermanNames(setDetail.id)
+      const set = toSet(setDetail, germanNames.setName)
       const cardDetails = await mapConcurrently(setDetail.cards ?? [], cardConcurrency, (card) =>
         get(`cards/${encodeURIComponent(card.id)}`)
       )
-      const germanNames = await fetchGermanNames(set.id)
-      const cards = cardDetails.map((card) => toCard(card, set, germanNames)).sort(byTrendPriceDescending)
+      const cards = cardDetails.map((card) => toCard(card, set, germanNames.cardNames)).sort(byTrendPriceDescending)
       await writeJsonAtomically(path.join(cardsDirectory, `${set.id}.json`), cards)
       sets.push(set)
       console.log(`${progress}: ${cards.length} cards`)

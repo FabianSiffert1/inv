@@ -1,5 +1,4 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import { PokemonCard } from '../../api/pokemonTGC/model/PokemonCard'
 
 export const languageStorageKey = 'inv-language'
 
@@ -43,9 +42,14 @@ const LanguageProvider: React.FC<Props> = ({ children }) => {
   return <LanguageContext.Provider value={contextValue}>{children}</LanguageContext.Provider>
 }
 
-export const useCardName = (card: PokemonCard): string => {
-  const { germanNames } = useContext(LanguageContext)
-  return germanNames ? (card.germanName ?? card.name) : card.name
+interface LocalizableName {
+  name: string
+  germanName?: string
 }
+
+export const localizedName = (named: LocalizableName, germanNames: boolean): string =>
+  germanNames ? (named.germanName ?? named.name) : named.name
+
+export const useLocalizedName = (named: LocalizableName): string => localizedName(named, useContext(LanguageContext).germanNames)
 
 export default LanguageProvider
