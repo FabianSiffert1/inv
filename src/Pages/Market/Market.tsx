@@ -7,6 +7,7 @@ import { useAllSets, useCardsOfSet } from '../../util/api/pokemonTGC/hooks'
 import { useCachedSetNames } from '../../util/api/pokemonTGC/useCachedSetNames'
 import { setShareLink } from '../../util/shareLinks'
 import { LanguageContext } from '../../util/ui/language/LanguageProvider'
+import { matchesSearch, SearchContext } from '../../util/ui/search/SearchProvider'
 import { SortContext, sortCards } from '../../util/ui/sort/SortProvider'
 import { useIsMobile } from '../../util/ui/useIsMobile'
 import CardList from './CardList/CardList'
@@ -36,10 +37,12 @@ export default function Market() {
   const { data: cards, isFetching: areCardsFetching, error: cardsError } = useCardsOfSet(currentlySelectedPokemonSet)
   const { sortMode } = useContext(SortContext)
   const { germanNames } = useContext(LanguageContext)
+  const { query } = useContext(SearchContext)
   const sortedCards = useMemo(
     () => (cards == undefined ? undefined : sortCards(cards, sortMode, germanNames)),
     [cards, sortMode, germanNames]
   )
+  const visibleCards = useMemo(() => sortedCards?.filter((card) => matchesSearch(card, query)), [sortedCards, query])
 
   const isFetching = areSetsFetching || areCardsFetching
   const isMobile = useIsMobile()
@@ -152,10 +155,11 @@ export default function Market() {
         isFetching={isFetching}
         error={cardsError ?? setsError}
         cardCount={cards?.length ?? 0}
+        hasNoSearchMatches={(cards?.length ?? 0) > 0 && visibleCards?.length == 0}
       />
 
       <div className={styles.cardListWrapper}>
-        <CardList cards={sortedCards} openCardId={openCardId} onOpenCard={openCard} onCloseCard={closeCard} />
+        <CardList cards={visibleCards} openCardId={openCardId} onOpenCard={openCard} onCloseCard={closeCard} />
       </div>
     </div>
   )

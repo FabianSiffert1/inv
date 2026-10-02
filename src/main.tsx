@@ -10,6 +10,7 @@ import Home from './Pages/Home/Home'
 import Inventory from './Pages/Inventory/Inventory'
 import Market from './Pages/Market/Market'
 import LanguageProvider from './util/ui/language/LanguageProvider'
+import SearchProvider from './util/ui/search/SearchProvider'
 import SortProvider from './util/ui/sort/SortProvider'
 import ThemeProvider from './util/ui/theme/ThemeProvider'
 
@@ -93,7 +94,9 @@ root.render(
       <ThemeProvider>
         <LanguageProvider>
           <SortProvider>
-            <RouterProvider router={router} />
+            <SearchProvider>
+              <RouterProvider router={router} />
+            </SearchProvider>
           </SortProvider>
         </LanguageProvider>
       </ThemeProvider>

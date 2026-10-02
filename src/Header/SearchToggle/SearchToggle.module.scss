@@ -1,0 +1,64 @@
+@use 'globalDesignElements.module' as *;
+
+.search {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.searchField {
+  box-sizing: border-box;
+  width: 0;
+  height: 2.4rem;
+  padding: 0;
+  border: none;
+  border-radius: $surfaceRadiusSmall;
+  background-color: color-mix(in srgb, var(--elementPeach) 50%, transparent);
+  color: var(--color);
+  font: inherit;
+  font-size: 0.9rem;
+  opacity: 0;
+  transform: translateX(0.75rem);
+  transition:
+    width 240ms $archEase,
+    padding 240ms $archEase,
+    opacity 200ms ease,
+    transform 240ms $archEase;
+
+  &::placeholder {
+    color: color-mix(in srgb, var(--color) 50%, transparent);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 1px;
+  }
+
+  .open & {
+    width: 12rem;
+    padding: 0 0.9rem;
+    opacity: 1;
+    transform: translateX(0);
+
+    @media (max-width: $smallScreen - 1px) {
+      width: 9rem;
+    }
+  }
+}
+
+.searchToggle {
+  @include surfaceInteractive($surfaceRadiusSmall);
+  @include pastel(var(--elementPeach), 50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  padding: 0;
+  border: none;
+
+  svg {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}

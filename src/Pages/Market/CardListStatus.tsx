@@ -6,6 +6,7 @@ interface CardListStatusProps {
   isFetching: boolean
   error: unknown
   cardCount: number
+  hasNoSearchMatches: boolean
 }
 
 const messageForError = (error: unknown): string => {
@@ -56,6 +57,15 @@ export default function CardListStatus(props: CardListStatusProps) {
       <div className={styles.status}>
         <div className={styles.headline}>No cards found</div>
         <div className={styles.detail}>There are no cards for this set yet.</div>
+      </div>
+    )
+  }
+
+  if (props.hasNoSearchMatches) {
+    return (
+      <div className={styles.status}>
+        <div className={styles.headline}>No matching cards</div>
+        <div className={styles.detail}>Try a different name, type, rarity or card number.</div>
       </div>
     )
   }
