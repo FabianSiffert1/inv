@@ -1,6 +1,6 @@
 import { PokemonCard } from '../../../../../util/api/pokemonTGC/model/PokemonCard'
 import { useLocalizedName } from '../../../../../util/ui/language/LanguageProvider'
-import { formatPrice } from '../../../../../util/format/price'
+import { formatPriceParts } from '../../../../../util/format/price'
 import { useIsMobile } from '../../../../../util/ui/useIsMobile'
 import { CardDetails } from '../CardDetails/CardDetails'
 import { CardImage } from '../CardImage/CardImage'
@@ -53,8 +53,13 @@ export function Card({ card, isDetailsOpen, onOpen, onClose }: CardWithDetailsPr
 }
 
 function CardPrice({ card }: CardProps) {
-  const trendPrice = formatPrice(card.cardmarket?.prices?.trendPrice)
+  const trendPrice = formatPriceParts(card.cardmarket?.prices?.trendPrice)
   const cardMarketUrl = card.cardmarket?.url
+  const priceLabel = trendPrice && (
+    <>
+      {trendPrice.amount}&nbsp;<span className={styles.currency}>{trendPrice.currency}</span>
+    </>
+  )
 
   return (
     <div className={styles.cardPrice}>
@@ -62,10 +67,10 @@ function CardPrice({ card }: CardProps) {
         <span className={styles.noPrice}>No price</span>
       ) : cardMarketUrl ? (
         <ExternalLink href={cardMarketUrl} plain>
-          {trendPrice}
+          {priceLabel}
         </ExternalLink>
       ) : (
-        <span>{trendPrice}</span>
+        <span>{priceLabel}</span>
       )}
     </div>
   )

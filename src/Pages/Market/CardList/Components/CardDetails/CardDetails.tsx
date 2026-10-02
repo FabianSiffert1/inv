@@ -8,6 +8,7 @@ import { cardShareLink } from '../../../../../util/shareLinks'
 import { useModalBehaviour } from '../../../../../util/ui/useModalBehaviour'
 import { CardImage } from '../CardImage/CardImage'
 import { ExternalLink } from '../ExternalLink/ExternalLink'
+import { GermanListingsLink } from '../GermanListingsLink/GermanListingsLink'
 import { ImageZoom } from '../ImageZoom/ImageZoom'
 import styles from './CardDetails.module.scss'
 
@@ -139,6 +140,7 @@ export function CardMarketPrices(props: PokemonCardProp) {
               <span className={styles.panelTitle}>Cardmarket</span>
             </ExternalLink>
             <CopyButton value={props.card.cardmarket.url} label='Copy Cardmarket link' />
+            <GermanListingsLink cardmarketUrl={props.card.cardmarket.url} />
           </>
         ) : (
           <span className={styles.panelTitle}>Cardmarket</span>

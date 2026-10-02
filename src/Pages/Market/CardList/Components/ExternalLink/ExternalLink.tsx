@@ -17,9 +17,11 @@ export function ExternalLink(props: ExternalLinkProps) {
       onClick={(event) => event.stopPropagation()}
     >
       <span className={styles.label}>{props.children}</span>
-      <span className={styles.arrow} aria-hidden='true'>
-        ↗
-      </span>
+      {!props.plain && (
+        <span className={styles.arrow} aria-hidden='true'>
+          ↗
+        </span>
+      )}
     </a>
   )
 }

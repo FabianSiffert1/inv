@@ -1,0 +1,23 @@
+@use 'globalDesignElements.module' as *;
+
+.germanListingsLink {
+  @include surfaceInteractive($surfaceRadiusSmall);
+  @include pastel(var(--elementPeach), 60%);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-left: auto;
+  padding: 0.2rem 0.55rem;
+  color: var(--color);
+  font-size: 0.8rem;
+  text-decoration: none;
+
+  svg {
+    width: 1rem;
+    height: 1rem;
+  }
+}
+
+.label {
+  font-weight: 600;
+}
