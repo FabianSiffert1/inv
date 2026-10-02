@@ -1,4 +1,5 @@
 import { useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { useModalBehaviour } from '../../../util/ui/useModalBehaviour'
 import styles from './MobileSheet.module.scss'
 import { OptionGridItem } from './OptionGrid'
@@ -16,7 +17,7 @@ export default function MobileSheet(props: MobileSheetProps) {
   const sheetRef = useRef<HTMLDivElement>(null)
   useModalBehaviour(sheetRef, props.onClose)
 
-  return (
+  return createPortal(
     <div className={styles.sheetWrapper}>
       <div className={styles.overlay} onClick={props.onClose} />
       <div className={styles.sheet} ref={sheetRef} role='dialog' aria-modal='true' aria-label={props.title}>
@@ -45,6 +46,7 @@ export default function MobileSheet(props: MobileSheetProps) {
           })}
         </ul>
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }
