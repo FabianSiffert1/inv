@@ -53,6 +53,7 @@ export interface PokemonCardSet {
   name: string
   germanName?: string
   series: string
+  germanSeries?: string
   printedTotal: number
   total: number
   legalities?: {

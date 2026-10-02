@@ -1,4 +1,6 @@
+import { useContext } from 'react'
 import { PokemonSet, PokemonTCGSeries } from '../../../util/api/pokemonTGC/model/PokemonSet'
+import { LanguageContext } from '../../../util/ui/language/LanguageProvider'
 import Dropdown from './Dropdown'
 import MobileSheet from './MobileSheet'
 import { OptionGridItem } from './OptionGrid'
@@ -12,9 +14,13 @@ interface EraStripProps {
   isMobile: boolean
 }
 
-export const eraOptions = (pokemonSets?: PokemonSet[]): OptionGridItem[] => {
+export const eraOptions = (pokemonSets?: PokemonSet[], germanNames = false): OptionGridItem[] => {
   const earliestReleaseDateOfSeries = new Map<string, string>()
+  const germanNameOfSeries = new Map<string, string>()
   pokemonSets?.forEach((pokemonSet) => {
+    if (pokemonSet.germanSeries != undefined && !germanNameOfSeries.has(pokemonSet.series)) {
+      germanNameOfSeries.set(pokemonSet.series, pokemonSet.germanSeries)
+    }
     const currentEarliest = earliestReleaseDateOfSeries.get(pokemonSet.series)
     if (currentEarliest == undefined || pokemonSet.releaseDate < currentEarliest) {
       earliestReleaseDateOfSeries.set(pokemonSet.series, pokemonSet.releaseDate)
@@ -23,11 +29,12 @@ export const eraOptions = (pokemonSets?: PokemonSet[]): OptionGridItem[] => {
 
   return Array.from(earliestReleaseDateOfSeries.entries())
     .sort((a, b) => a[1].localeCompare(b[1]))
-    .map(([series]) => ({ id: series, label: series }))
+    .map(([series]) => ({ id: series, label: germanNames ? (germanNameOfSeries.get(series) ?? series) : series }))
 }
 
 export default function EraStrip(props: EraStripProps) {
-  const options = eraOptions(props.pokemonSets)
+  const { germanNames } = useContext(LanguageContext)
+  const options = eraOptions(props.pokemonSets, germanNames)
 
   return (
     <>

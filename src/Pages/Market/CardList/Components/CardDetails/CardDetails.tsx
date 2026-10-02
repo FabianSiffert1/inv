@@ -78,6 +78,7 @@ export function CardBaseDetails(props: PokemonCardProp) {
 
 export function SetInformation(props: PokemonCardProp) {
   const setName = useLocalizedName(props.card.set)
+  const seriesName = useLocalizedName({ name: props.card.set.series, germanName: props.card.set.germanSeries })
 
   return (
     <section className={`${styles.panel} ${styles.setPanel}`}>
@@ -96,7 +97,7 @@ export function SetInformation(props: PokemonCardProp) {
         </div>
         <div className={styles.definitionRow}>
           <dt>Series</dt>
-          <dd>{props.card.set.series}</dd>
+          <dd>{seriesName}</dd>
         </div>
         {props.card.set.legalities?.unlimited && (
           <div className={styles.definitionRow}>

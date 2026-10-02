@@ -6,6 +6,7 @@ export interface PokemonSet {
   name: PokemonSetName
   germanName?: string
   series: PokemonTCGSeries
+  germanSeries?: string
   printedTotal: number
   total: number
   legalities?: {

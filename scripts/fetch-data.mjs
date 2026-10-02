@@ -51,11 +51,12 @@ const price = (value) => (typeof value == 'number' && value > 0 ? value : undefi
 
 const camelCase = (key) => key.replace(/-([a-z0-9])/g, (_, character) => character.toUpperCase())
 
-const toSet = (set, germanName) => ({
+const toSet = (set, germanName, germanSeries) => ({
   id: set.id,
   name: set.name,
   germanName,
   series: set.serie.name,
+  germanSeries,
   printedTotal: set.cardCount.official,
   total: set.cardCount.total,
   ptcgoCode: set.tcgOnline,
@@ -137,9 +138,13 @@ const toCard = (card, set, germanNames) => ({
 const fetchGermanNames = async (setId) => {
   try {
     const germanSet = await get(`sets/${encodeURIComponent(setId)}`, 'de')
-    return { setName: germanSet.name, cardNames: new Map((germanSet.cards ?? []).map((card) => [card.id, card.name])) }
+    return {
+      setName: germanSet.name,
+      seriesName: germanSet.serie?.name,
+      cardNames: new Map((germanSet.cards ?? []).map((card) => [card.id, card.name]))
+    }
   } catch {
-    return { setName: undefined, cardNames: new Map() }
+    return { setName: undefined, seriesName: undefined, cardNames: new Map() }
   }
 }
 
@@ -178,7 +183,7 @@ const main = async () => {
         continue
       }
       const germanNames = await fetchGermanNames(setDetail.id)
-      const set = toSet(setDetail, germanNames.setName)
+      const set = toSet(setDetail, germanNames.setName, germanNames.seriesName)
       const cardDetails = await mapConcurrently(setDetail.cards ?? [], cardConcurrency, (card) =>
         get(`cards/${encodeURIComponent(card.id)}`)
       )
