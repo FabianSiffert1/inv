@@ -1,0 +1,18 @@
+@use 'globalDesignElements.module' as *;
+
+.sortToggle {
+  @include surfaceInteractive($surfaceRadiusSmall);
+  @include pastel(var(--elementPeach), 50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  padding: 0;
+  border: none;
+
+  svg {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}

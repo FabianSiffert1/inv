@@ -10,6 +10,7 @@ import Home from './Pages/Home/Home'
 import Inventory from './Pages/Inventory/Inventory'
 import Market from './Pages/Market/Market'
 import LanguageProvider from './util/ui/language/LanguageProvider'
+import SortProvider from './util/ui/sort/SortProvider'
 import ThemeProvider from './util/ui/theme/ThemeProvider'
 
 const cacheMaxAge = 1000 * 60 * 60 * 24 * 7
@@ -91,7 +92,9 @@ root.render(
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <LanguageProvider>
-          <RouterProvider router={router} />
+          <SortProvider>
+            <RouterProvider router={router} />
+          </SortProvider>
         </LanguageProvider>
       </ThemeProvider>
     </QueryClientProvider>

@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useState } from 'react'
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { CopyButton } from '../../Components/CopyButton/CopyButton'
 import { HeaderContext } from '../../Header/HeaderProvider'
@@ -6,6 +6,8 @@ import { PokemonSetName, PokemonTCGSeries } from '../../util/api/pokemonTGC/mode
 import { useAllSets, useCardsOfSet } from '../../util/api/pokemonTGC/hooks'
 import { useCachedSetNames } from '../../util/api/pokemonTGC/useCachedSetNames'
 import { setShareLink } from '../../util/shareLinks'
+import { LanguageContext } from '../../util/ui/language/LanguageProvider'
+import { SortContext, sortCards } from '../../util/ui/sort/SortProvider'
 import { useIsMobile } from '../../util/ui/useIsMobile'
 import CardList from './CardList/CardList'
 import CardListStatus from './CardListStatus'
@@ -32,6 +34,12 @@ export default function Market() {
   const currentlySelectedPokemonSet = selectedSet?.name
   const currentlySelectedPokemonSeries = selectedSet?.series ?? chosenPokemonSeries
   const { data: cards, isFetching: areCardsFetching, error: cardsError } = useCardsOfSet(currentlySelectedPokemonSet)
+  const { sortMode } = useContext(SortContext)
+  const { germanNames } = useContext(LanguageContext)
+  const sortedCards = useMemo(
+    () => (cards == undefined ? undefined : sortCards(cards, sortMode, germanNames)),
+    [cards, sortMode, germanNames]
+  )
 
   const isFetching = areSetsFetching || areCardsFetching
   const isMobile = useIsMobile()
@@ -147,7 +155,7 @@ export default function Market() {
       />
 
       <div className={styles.cardListWrapper}>
-        <CardList cards={cards} openCardId={openCardId} onOpenCard={openCard} onCloseCard={closeCard} />
+        <CardList cards={sortedCards} openCardId={openCardId} onOpenCard={openCard} onCloseCard={closeCard} />
       </div>
     </div>
   )
