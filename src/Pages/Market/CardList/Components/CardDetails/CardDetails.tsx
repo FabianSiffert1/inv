@@ -18,8 +18,16 @@ import { GermanListingsLink } from '../GermanListingsLink/GermanListingsLink'
 import { ImageZoom } from '../ImageZoom/ImageZoom'
 import styles from './CardDetails.module.scss'
 
+export interface CardNavigationProps {
+  position: number
+  count: number
+  onPrevious?: () => void
+  onNext?: () => void
+}
+
 interface CardDetailsProps {
   card: PokemonCard
+  navigation?: CardNavigationProps
   onClose: () => void
 }
 
@@ -35,7 +43,7 @@ interface PriceRowProps {
 
 export function CardDetails(props: CardDetailsProps) {
   const containerRef = useRef<HTMLDivElement>(null)
-  useModalBehaviour(containerRef, props.onClose)
+  useModalBehaviour(containerRef, props.onClose, props.navigation)
   const cardName = useLocalizedName(props.card)
   const [isZoomOpen, setZoomOpen] = useState(false)
   const imageSources = [props.card.images.large, props.card.images.small]
@@ -49,9 +57,12 @@ export function CardDetails(props: CardDetailsProps) {
           <button type='button' className={styles.closeButton} aria-label='Close' onClick={props.onClose}>
             ×
           </button>
-          <button type='button' className={styles.cardLargeImage} onClick={() => setZoomOpen(true)} aria-label={`Zoom into ${cardName}`}>
-            <CardImage sources={imageSources} alt={cardName} pokedexNumber={pokedexNumber} />
-          </button>
+          <div className={styles.imageColumn}>
+            <button type='button' className={styles.cardLargeImage} onClick={() => setZoomOpen(true)} aria-label={`Zoom into ${cardName}`}>
+              <CardImage sources={imageSources} alt={cardName} pokedexNumber={pokedexNumber} />
+            </button>
+            {props.navigation && <CardNavigation {...props.navigation} />}
+          </div>
           <div className={styles.detailsColumn}>
             <CardBaseDetails card={props.card} />
             <SetInformation card={props.card} />
@@ -63,6 +74,28 @@ export function CardDetails(props: CardDetailsProps) {
         </div>
       </div>
       {isZoomOpen && <ImageZoom sources={imageSources} alt={cardName} pokedexNumber={pokedexNumber} onClose={() => setZoomOpen(false)} />}
+    </div>
+  )
+}
+
+export function CardNavigation(props: CardNavigationProps) {
+  return (
+    <div className={styles.cardNavigation}>
+      <button
+        type='button'
+        className={styles.navigationButton}
+        aria-label='Previous card'
+        disabled={!props.onPrevious}
+        onClick={props.onPrevious}
+      >
+        ‹
+      </button>
+      <span className={styles.navigationPosition}>
+        {props.position} / {props.count}
+      </span>
+      <button type='button' className={styles.navigationButton} aria-label='Next card' disabled={!props.onNext} onClick={props.onNext}>
+        ›
+      </button>
     </div>
   )
 }

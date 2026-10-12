@@ -11,9 +11,16 @@ const focusableSelector = [
 
 const openModals: RefObject<HTMLElement>[] = []
 
-export const useModalBehaviour = (containerRef: RefObject<HTMLElement>, onClose: () => void) => {
+export interface ModalArrowKeyHandlers {
+  onPrevious?: () => void
+  onNext?: () => void
+}
+
+export const useModalBehaviour = (containerRef: RefObject<HTMLElement>, onClose: () => void, arrowKeyHandlers?: ModalArrowKeyHandlers) => {
   const onCloseRef = useRef(onClose)
   onCloseRef.current = onClose
+  const arrowKeyHandlersRef = useRef(arrowKeyHandlers)
+  arrowKeyHandlersRef.current = arrowKeyHandlers
 
   useEffect(() => {
     const previouslyFocused = document.activeElement as HTMLElement | null
@@ -27,6 +34,14 @@ export const useModalBehaviour = (containerRef: RefObject<HTMLElement>, onClose:
       }
       if (event.key == 'Escape') {
         onCloseRef.current()
+        return
+      }
+      if (event.key == 'ArrowLeft') {
+        arrowKeyHandlersRef.current?.onPrevious?.()
+        return
+      }
+      if (event.key == 'ArrowRight') {
+        arrowKeyHandlersRef.current?.onNext?.()
         return
       }
       if (event.key != 'Tab') {

@@ -82,6 +82,15 @@ export default function Market() {
     [selectedSetId, setSearchParams]
   )
 
+  const stepToCard = useCallback(
+    (cardId: string) => {
+      if (selectedSetId != undefined) {
+        setSearchParams({ set: selectedSetId, card: cardId }, { replace: true, state: location.state })
+      }
+    },
+    [selectedSetId, setSearchParams, location.state]
+  )
+
   const closeCard = useCallback(() => {
     if ((location.state as { openedInApp?: boolean } | null)?.openedInApp) {
       navigate(-1)
@@ -164,7 +173,7 @@ export default function Market() {
       {!isFetching && cards != undefined && <SetValue cards={cards} />}
 
       <div className={styles.cardListWrapper}>
-        <CardList cards={visibleCards} openCardId={openCardId} onOpenCard={openCard} onCloseCard={closeCard} />
+        <CardList cards={visibleCards} openCardId={openCardId} onOpenCard={openCard} onStepToCard={stepToCard} onCloseCard={closeCard} />
       </div>
       {isMobile && selectedSet && <SearchToggle floating />}
     </div>

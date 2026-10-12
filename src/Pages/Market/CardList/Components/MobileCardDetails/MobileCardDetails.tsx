@@ -2,19 +2,27 @@ import { useRef, useState } from 'react'
 import { PokemonCard } from '../../../../../util/api/pokemonTGC/model/PokemonCard'
 import { useLocalizedName } from '../../../../../util/ui/language/LanguageProvider'
 import { useModalBehaviour } from '../../../../../util/ui/useModalBehaviour'
-import { CardBaseDetails, CardMarketPrices, SetInformation, TcgPlayerPrices } from '../CardDetails/CardDetails'
+import {
+  CardBaseDetails,
+  CardMarketPrices,
+  CardNavigation,
+  CardNavigationProps,
+  SetInformation,
+  TcgPlayerPrices
+} from '../CardDetails/CardDetails'
 import { CardImage } from '../CardImage/CardImage'
 import { ImageZoom } from '../ImageZoom/ImageZoom'
 import styles from './MobileCardDetails.module.scss'
 
 interface MobileCardDetailsProps {
   card: PokemonCard
+  navigation?: CardNavigationProps
   onClose: () => void
 }
 
 export function MobileCardDetails(props: MobileCardDetailsProps) {
   const containerRef = useRef<HTMLDivElement>(null)
-  useModalBehaviour(containerRef, props.onClose)
+  useModalBehaviour(containerRef, props.onClose, props.navigation)
   const cardName = useLocalizedName(props.card)
   const [isZoomOpen, setZoomOpen] = useState(false)
   const imageSources = [props.card.images.large, props.card.images.small]
@@ -25,6 +33,7 @@ export function MobileCardDetails(props: MobileCardDetailsProps) {
       <div className={styles.overlay} onClick={props.onClose} />
       <div className={styles.cardDetailsContainer} ref={containerRef} role='dialog' aria-modal='true' aria-label={cardName}>
         <div className={styles.mobileCardDetailsHeader}>
+          {props.navigation && <CardNavigation {...props.navigation} />}
           <button type='button' className={styles.closeButton} aria-label='Close' onClick={props.onClose}>
             ×
           </button>

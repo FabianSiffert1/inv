@@ -2,7 +2,7 @@ import { PokemonCard } from '../../../../../util/api/pokemonTGC/model/PokemonCar
 import { useLocalizedName } from '../../../../../util/ui/language/LanguageProvider'
 import { formatPriceParts } from '../../../../../util/format/price'
 import { useIsMobile } from '../../../../../util/ui/useIsMobile'
-import { CardDetails } from '../CardDetails/CardDetails'
+import { CardDetails, CardNavigationProps } from '../CardDetails/CardDetails'
 import { CardImage } from '../CardImage/CardImage'
 import { ExternalLink } from '../ExternalLink/ExternalLink'
 import { MobileCardDetails } from '../MobileCardDetails/MobileCardDetails'
@@ -14,6 +14,7 @@ interface CardProps {
 
 interface CardWithDetailsProps extends CardProps {
   isDetailsOpen: boolean
+  navigation?: CardNavigationProps
   onOpen: () => void
   onClose: () => void
 }
@@ -34,13 +35,18 @@ const typeTintClassNames: Record<string, string> = {
 
 const tintClassName = (card: PokemonCard): string => typeTintClassNames[card.types?.[0] ?? ''] ?? styles.tintEggshell
 
-export function Card({ card, isDetailsOpen, onOpen, onClose }: CardWithDetailsProps) {
+export function Card({ card, isDetailsOpen, navigation, onOpen, onClose }: CardWithDetailsProps) {
   const isMobile = useIsMobile()
   const cardName = useLocalizedName(card)
 
   return (
     <div className={`${styles.cardWrapper} ${tintClassName(card)}`}>
-      {isDetailsOpen && (isMobile ? <MobileCardDetails card={card} onClose={onClose} /> : <CardDetails card={card} onClose={onClose} />)}
+      {isDetailsOpen &&
+        (isMobile ? (
+          <MobileCardDetails card={card} navigation={navigation} onClose={onClose} />
+        ) : (
+          <CardDetails card={card} navigation={navigation} onClose={onClose} />
+        ))}
       <button type='button' className={styles.card} onClick={onOpen}>
         <CardImage
           className={styles.cardImage}
