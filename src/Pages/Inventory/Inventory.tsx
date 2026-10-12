@@ -1,13 +1,16 @@
-import { useCallback, useContext, useEffect, useMemo } from 'react'
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { HeaderContext } from '../../Header/HeaderProvider'
 import { useCardsOfSets } from '../../util/api/pokemonTGC/hooks'
 import { PokemonCard } from '../../util/api/pokemonTGC/model/PokemonCard'
+import { PokemonSet, PokemonTCGSeries } from '../../util/api/pokemonTGC/model/PokemonSet'
 import { FavoritesContext } from '../../util/ui/favorites/FavoritesProvider'
 import { LanguageContext } from '../../util/ui/language/LanguageProvider'
 import { matchesSearch, SearchContext } from '../../util/ui/search/SearchProvider'
 import { SortContext, sortCards } from '../../util/ui/sort/SortProvider'
+import { StarIcon } from '../../Components/FavoriteButton/FavoriteButton'
 import CardList from '../Market/CardList/CardList'
+import SetSelector from '../Market/Selector/SetSelector'
 import styles from './Inventory.module.scss'
 
 export default function Inventory() {
@@ -21,6 +24,7 @@ export default function Inventory() {
   const location = useLocation()
   const navigate = useNavigate()
   const openCardId = searchParams.get('card') ?? undefined
+  const [chosenPokemonSeries, setChosenPokemonSeries] = useState<PokemonTCGSeries | undefined>(undefined)
 
   const setIds = useMemo(() => [...new Set(favorites.map((favorite) => favorite.setId))], [favorites])
   const setQueries = useCardsOfSets(setIds)
@@ -49,9 +53,17 @@ export default function Inventory() {
     }
   }, [location.state, navigate, setSearchParams])
 
+  const selectSet = useCallback(
+    (set: PokemonSet) => {
+      window.scrollTo(0, 0)
+      navigate({ pathname: '/market', search: `?${new URLSearchParams({ set: set.id })}` })
+    },
+    [navigate]
+  )
+
   useEffect(() => {
-    setHeaderItem(undefined)
-  }, [setHeaderItem])
+    setHeaderItem(<SetSelector selectedSeries={chosenPokemonSeries} onSelectEra={setChosenPokemonSeries} onSelectSet={selectSet} />)
+  }, [setHeaderItem, chosenPokemonSeries, selectSet])
 
   useEffect(() => {
     setBusy(isFetching)
@@ -59,18 +71,24 @@ export default function Inventory() {
 
   useEffect(() => () => setBusy(false), [setBusy])
 
-  if (favorites.length == 0) {
-    return (
-      <div className={styles.inventory}>
-        <div className={styles.headline}>No favorites yet</div>
-        <div className={styles.detail}>Open a card and tap the star next to its name to keep it here.</div>
-      </div>
-    )
-  }
-
   return (
-    <div className={styles.favorites}>
-      <CardList cards={favoriteCards} openCardId={openCardId} onOpenCard={openCard} onStepToCard={stepToCard} onCloseCard={closeCard} />
+    <div className={styles.inventoryPage}>
+      <div className={styles.backdrop} aria-hidden='true' />
+      <div className={styles.pageTitle}>
+        <StarIcon />
+        <h1 className={styles.pageHeadline}>Favorites</h1>
+        {favorites.length > 0 && <span className={styles.pageCount}>{favorites.length}</span>}
+      </div>
+      {favorites.length == 0 ? (
+        <div className={styles.inventory}>
+          <div className={styles.headline}>No favorites yet</div>
+          <div className={styles.detail}>Open a card and tap the star next to its name to keep it here.</div>
+        </div>
+      ) : (
+        <div className={styles.favorites}>
+          <CardList cards={favoriteCards} openCardId={openCardId} onOpenCard={openCard} onStepToCard={stepToCard} onCloseCard={closeCard} />
+        </div>
+      )}
     </div>
   )
 }

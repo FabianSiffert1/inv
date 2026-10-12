@@ -1,14 +1,11 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
-import { CopyButton } from '../../Components/CopyButton/CopyButton'
 import SearchToggle from '../../Header/SearchToggle/SearchToggle'
 import { HeaderContext } from '../../Header/HeaderProvider'
-import { PokemonSetName, PokemonTCGSeries } from '../../util/api/pokemonTGC/model/PokemonSet'
+import { PokemonSet, PokemonTCGSeries } from '../../util/api/pokemonTGC/model/PokemonSet'
 import { useAllSets, useCardsOfSet } from '../../util/api/pokemonTGC/hooks'
-import { useCachedSetNames } from '../../util/api/pokemonTGC/useCachedSetNames'
 import { PokemonCard } from '../../util/api/pokemonTGC/model/PokemonCard'
 import { formatPrice } from '../../util/format/price'
-import { setShareLink } from '../../util/shareLinks'
 import { LanguageContext } from '../../util/ui/language/LanguageProvider'
 import { matchesSearch, SearchContext } from '../../util/ui/search/SearchProvider'
 import { SortContext, sortCards } from '../../util/ui/sort/SortProvider'
@@ -16,9 +13,7 @@ import { useIsMobile } from '../../util/ui/useIsMobile'
 import CardList from './CardList/CardList'
 import CardListStatus from './CardListStatus'
 import styles from './Market.module.scss'
-import EraStrip from './Selector/EraStrip'
-import selectorStyles from './Selector/Selector.module.scss'
-import SetStrip from './Selector/SetStrip'
+import SetSelector from './Selector/SetSelector'
 
 export default function Market() {
   const { setHeaderItem, setBusy } = useContext(HeaderContext)
@@ -30,8 +25,6 @@ export default function Market() {
   const openCardId = searchParams.get('card') ?? undefined
 
   const [chosenPokemonSeries, setChosenPokemonSeries] = useState<PokemonTCGSeries | undefined>(undefined)
-  const [isEraDropdownOpen, setEraDropdownOpen] = useState(false)
-  const [isSetDropdownOpen, setSetDropdownOpen] = useState(false)
 
   const { data: sets, isFetching: areSetsFetching, error: setsError } = useAllSets()
   const selectedSet = sets?.find((set) => set.id == selectedSetId)
@@ -49,28 +42,21 @@ export default function Market() {
 
   const isFetching = areSetsFetching || areCardsFetching
   const isMobile = useIsMobile()
-  const cachedSetNames = useCachedSetNames()
 
   const selectEra = useCallback(
     (series: PokemonTCGSeries) => {
       setChosenPokemonSeries(series)
       setSearchParams({})
-      setEraDropdownOpen(false)
-      setSetDropdownOpen(true)
     },
     [setSearchParams]
   )
 
   const selectSet = useCallback(
-    (setName: PokemonSetName) => {
-      const set = sets?.find((candidate) => candidate.name == setName)
-      if (set == undefined) {
-        return
-      }
+    (set: PokemonSet) => {
       window.scrollTo(0, 0)
       setSearchParams({ set: set.id })
     },
-    [sets, setSearchParams]
+    [setSearchParams]
   )
 
   const openCard = useCallback(
@@ -99,59 +85,16 @@ export default function Market() {
     }
   }, [location.state, navigate, selectedSetId, setSearchParams])
 
-  const openEraDropdown = useCallback((isOpen: boolean) => {
-    setEraDropdownOpen(isOpen)
-    if (isOpen) {
-      setSetDropdownOpen(false)
-    }
-  }, [])
-
-  const openSetDropdown = useCallback((isOpen: boolean) => {
-    setSetDropdownOpen(isOpen)
-    if (isOpen) {
-      setEraDropdownOpen(false)
-    }
-  }, [])
-
   useEffect(() => {
     setHeaderItem(
-      <div className={selectorStyles.selector}>
-        <EraStrip
-          pokemonSets={sets}
-          currentlySelectedPokemonSeries={currentlySelectedPokemonSeries}
-          setCurrentlySelectedPokemonSeries={selectEra}
-          isOpen={isEraDropdownOpen}
-          setOpen={openEraDropdown}
-          isMobile={isMobile}
-        />
-        <SetStrip
-          pokemonSets={sets}
-          currentlySelectedPokemonSeries={currentlySelectedPokemonSeries}
-          currentlySelectedPokemonSet={currentlySelectedPokemonSet}
-          setCurrentlySelectedPokemonSet={selectSet}
-          isOpen={isSetDropdownOpen}
-          setOpen={openSetDropdown}
-          cachedSetNames={cachedSetNames}
-          isMobile={isMobile}
-        />
-        {selectedSet && <CopyButton variant='share' value={setShareLink(selectedSet.id)} label='Copy link to this set' />}
-      </div>
+      <SetSelector
+        selectedSeries={currentlySelectedPokemonSeries}
+        selectedSet={selectedSet}
+        onSelectEra={selectEra}
+        onSelectSet={selectSet}
+      />
     )
-  }, [
-    setHeaderItem,
-    sets,
-    selectedSet,
-    currentlySelectedPokemonSeries,
-    currentlySelectedPokemonSet,
-    isEraDropdownOpen,
-    isSetDropdownOpen,
-    isMobile,
-    cachedSetNames,
-    selectEra,
-    selectSet,
-    openEraDropdown,
-    openSetDropdown
-  ])
+  }, [setHeaderItem, selectedSet, currentlySelectedPokemonSeries, selectEra, selectSet])
 
   useEffect(() => {
     setBusy(isFetching)
