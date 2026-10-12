@@ -7,3 +7,26 @@
     padding-bottom: 5.5rem;
   }
 }
+
+.setValue {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.75rem;
+  padding-top: 1.5rem;
+}
+
+.setValueLabel {
+  @include typoFieldLabel;
+  color: var(--secondary-color);
+}
+
+.setValueAmount {
+  @include typoFieldValue;
+  font-variant-numeric: tabular-nums;
+}
+
+.setValueCoverage {
+  font-size: 0.85rem;
+  color: var(--secondary-color);
+}

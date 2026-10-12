@@ -6,6 +6,8 @@ import { HeaderContext } from '../../Header/HeaderProvider'
 import { PokemonSetName, PokemonTCGSeries } from '../../util/api/pokemonTGC/model/PokemonSet'
 import { useAllSets, useCardsOfSet } from '../../util/api/pokemonTGC/hooks'
 import { useCachedSetNames } from '../../util/api/pokemonTGC/useCachedSetNames'
+import { PokemonCard } from '../../util/api/pokemonTGC/model/PokemonCard'
+import { formatPrice } from '../../util/format/price'
 import { setShareLink } from '../../util/shareLinks'
 import { LanguageContext } from '../../util/ui/language/LanguageProvider'
 import { matchesSearch, SearchContext } from '../../util/ui/search/SearchProvider'
@@ -159,10 +161,32 @@ export default function Market() {
         hasNoSearchMatches={(cards?.length ?? 0) > 0 && visibleCards?.length == 0}
       />
 
+      {!isFetching && cards != undefined && <SetValue cards={cards} />}
+
       <div className={styles.cardListWrapper}>
         <CardList cards={visibleCards} openCardId={openCardId} onOpenCard={openCard} onCloseCard={closeCard} />
       </div>
       {isMobile && selectedSet && <SearchToggle floating />}
+    </div>
+  )
+}
+
+function SetValue({ cards }: { cards: PokemonCard[] }) {
+  const trendPrices = cards.map((card) => card.cardmarket?.prices?.trendPrice).filter((price): price is number => price != undefined)
+  if (trendPrices.length == 0) {
+    return null
+  }
+  const total = trendPrices.reduce((sum, price) => sum + price, 0)
+
+  return (
+    <div className={styles.setValue}>
+      <span className={styles.setValueLabel}>Set value</span>
+      <span className={styles.setValueAmount}>{formatPrice(total)}</span>
+      {trendPrices.length < cards.length && (
+        <span className={styles.setValueCoverage}>
+          {trendPrices.length} of {cards.length} cards priced
+        </span>
+      )}
     </div>
   )
 }
