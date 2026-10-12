@@ -6,6 +6,7 @@ interface CardImageProps {
   alt: string
   className?: string
   lazy?: boolean
+  pokedexNumber?: number
 }
 
 type RetryState = 'initial' | 'waiting' | 'retrying'
@@ -16,6 +17,7 @@ const failedSources = new Set<string>()
 export function CardImage(props: CardImageProps) {
   const [retryState, setRetryState] = useState<RetryState>('initial')
   const [, setFailedSourceCount] = useState(0)
+  const [hasSpriteFailed, setSpriteFailed] = useState(false)
   const retryTimeout = useRef<number | undefined>(undefined)
 
   useEffect(() => () => window.clearTimeout(retryTimeout.current), [])
@@ -39,6 +41,16 @@ export function CardImage(props: CardImageProps) {
   if (source == undefined || retryState == 'waiting') {
     return (
       <span className={styles.placeholder} role='img' aria-label={props.alt}>
+        {props.pokedexNumber != undefined && !hasSpriteFailed && (
+          <img
+            className={styles.placeholderSprite}
+            src={`/data/sprites/${props.pokedexNumber}.png`}
+            alt=''
+            loading={props.lazy ? 'lazy' : undefined}
+            decoding='async'
+            onError={() => setSpriteFailed(true)}
+          />
+        )}
         <span className={styles.placeholderName}>{props.alt}</span>
       </span>
     )

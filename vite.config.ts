@@ -6,6 +6,11 @@ import { Connect, defineConfig, Plugin } from 'vite'
 
 const dataDirectory = fileURLToPath(new URL('./data', import.meta.url))
 
+const servedFileTypes: Record<string, { contentType: string; cacheControl: string }> = {
+  '.json': { contentType: 'application/json', cacheControl: 'no-cache' },
+  '.png': { contentType: 'image/png', cacheControl: 'public, max-age=2592000' }
+}
+
 const serveDataDirectory: Connect.NextHandleFunction = (request, response) => {
   const requestPath = decodeURIComponent((request.url ?? '').split('?')[0])
   const filePath = path.join(dataDirectory, requestPath)
@@ -15,7 +20,8 @@ const serveDataDirectory: Connect.NextHandleFunction = (request, response) => {
     response.end()
   }
 
-  if (!filePath.startsWith(dataDirectory + path.sep) || !filePath.endsWith('.json')) {
+  const fileType = servedFileTypes[path.extname(filePath)]
+  if (!filePath.startsWith(dataDirectory + path.sep) || fileType == undefined) {
     return notFound()
   }
 
@@ -24,13 +30,13 @@ const serveDataDirectory: Connect.NextHandleFunction = (request, response) => {
       return notFound()
     }
     const etag = `"${stats.size}-${stats.mtimeMs}"`
-    response.setHeader('Cache-Control', 'no-cache')
+    response.setHeader('Cache-Control', fileType.cacheControl)
     response.setHeader('ETag', etag)
     if (request.headers['if-none-match'] == etag) {
       response.statusCode = 304
       return response.end()
     }
-    response.setHeader('Content-Type', 'application/json')
+    response.setHeader('Content-Type', fileType.contentType)
     createReadStream(filePath).pipe(response)
   })
 }

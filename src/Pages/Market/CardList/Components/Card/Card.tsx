@@ -42,7 +42,13 @@ export function Card({ card, isDetailsOpen, onOpen, onClose }: CardWithDetailsPr
     <div className={`${styles.cardWrapper} ${tintClassName(card)}`}>
       {isDetailsOpen && (isMobile ? <MobileCardDetails card={card} onClose={onClose} /> : <CardDetails card={card} onClose={onClose} />)}
       <button type='button' className={styles.card} onClick={onOpen}>
-        <CardImage className={styles.cardImage} sources={[card.images.small]} alt={cardName} lazy />
+        <CardImage
+          className={styles.cardImage}
+          sources={[card.images.small]}
+          alt={cardName}
+          pokedexNumber={card.nationalPokedexNumbers?.[0]}
+          lazy
+        />
       </button>
       <div className={styles.cardInformationWrapper}>
         <div className={styles.cardName}>{cardName}</div>

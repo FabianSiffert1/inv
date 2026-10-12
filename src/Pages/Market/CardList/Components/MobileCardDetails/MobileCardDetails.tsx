@@ -18,6 +18,7 @@ export function MobileCardDetails(props: MobileCardDetailsProps) {
   const cardName = useLocalizedName(props.card)
   const [isZoomOpen, setZoomOpen] = useState(false)
   const imageSources = [props.card.images.large, props.card.images.small]
+  const pokedexNumber = props.card.nationalPokedexNumbers?.[0]
 
   return (
     <div className={styles.mobileCardDetailsWrapper}>
@@ -31,7 +32,7 @@ export function MobileCardDetails(props: MobileCardDetailsProps) {
         <div className={styles.scrollArea}>
           <div className={styles.cardImageAndBaseInfo}>
             <button type='button' className={styles.cardImageFrame} onClick={() => setZoomOpen(true)} aria-label={`Zoom into ${cardName}`}>
-              <CardImage className={styles.cardImage} sources={imageSources} alt={cardName} />
+              <CardImage className={styles.cardImage} sources={imageSources} alt={cardName} pokedexNumber={pokedexNumber} />
             </button>
             <CardBaseDetails card={props.card} />
           </div>
@@ -40,7 +41,7 @@ export function MobileCardDetails(props: MobileCardDetailsProps) {
           <TcgPlayerPrices card={props.card} />
         </div>
       </div>
-      {isZoomOpen && <ImageZoom sources={imageSources} alt={cardName} onClose={() => setZoomOpen(false)} />}
+      {isZoomOpen && <ImageZoom sources={imageSources} alt={cardName} pokedexNumber={pokedexNumber} onClose={() => setZoomOpen(false)} />}
     </div>
   )
 }

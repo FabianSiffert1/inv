@@ -33,6 +33,7 @@ export function CardDetails(props: CardDetailsProps) {
   const cardName = useLocalizedName(props.card)
   const [isZoomOpen, setZoomOpen] = useState(false)
   const imageSources = [props.card.images.large, props.card.images.small]
+  const pokedexNumber = props.card.nationalPokedexNumbers?.[0]
 
   return (
     <div className={styles.cardDetailsWrapper}>
@@ -43,7 +44,7 @@ export function CardDetails(props: CardDetailsProps) {
             ×
           </button>
           <button type='button' className={styles.cardLargeImage} onClick={() => setZoomOpen(true)} aria-label={`Zoom into ${cardName}`}>
-            <CardImage sources={imageSources} alt={cardName} />
+            <CardImage sources={imageSources} alt={cardName} pokedexNumber={pokedexNumber} />
           </button>
           <div className={styles.detailsColumn}>
             <CardBaseDetails card={props.card} />
@@ -55,17 +56,27 @@ export function CardDetails(props: CardDetailsProps) {
           </div>
         </div>
       </div>
-      {isZoomOpen && <ImageZoom sources={imageSources} alt={cardName} onClose={() => setZoomOpen(false)} />}
+      {isZoomOpen && <ImageZoom sources={imageSources} alt={cardName} pokedexNumber={pokedexNumber} onClose={() => setZoomOpen(false)} />}
     </div>
   )
 }
 
 export function CardBaseDetails(props: PokemonCardProp) {
   const cardName = useLocalizedName(props.card)
+  const pokedexNumber = props.card.nationalPokedexNumbers?.[0]
 
   return (
     <div className={styles.cardBaseInformationContainer}>
       <div className={styles.titleRow}>
+        {pokedexNumber != undefined && (
+          <img
+            key={pokedexNumber}
+            className={styles.titleSprite}
+            src={`/data/sprites/${pokedexNumber}.png`}
+            alt=''
+            onError={(event) => (event.currentTarget.hidden = true)}
+          />
+        )}
         <h2 className={styles.cardTitle}>{cardName}</h2>
         <CopyButton variant='share' value={cardShareLink(props.card)} label='Copy link to this card' />
       </div>

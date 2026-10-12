@@ -1,4 +1,4 @@
-import { mkdir, readFile, rename, writeFile } from 'node:fs/promises'
+import { access, mkdir, readFile, rename, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -10,6 +10,8 @@ const requestTimeoutMilliseconds = 30_000
 
 const dataDirectory = fileURLToPath(new URL('../data', import.meta.url))
 const cardsDirectory = path.join(dataDirectory, 'cards')
+const spritesDirectory = path.join(dataDirectory, 'sprites')
+const spriteHost = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon'
 
 const sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds))
 
@@ -165,10 +167,40 @@ const writeJsonAtomically = async (filePath, value) => {
   await rename(temporaryPath, filePath)
 }
 
+const fileExists = async (filePath) => {
+  try {
+    await access(filePath)
+    return true
+  } catch {
+    return false
+  }
+}
+
+const downloadSprite = async (pokedexNumber) => {
+  const filePath = path.join(spritesDirectory, `${pokedexNumber}.png`)
+  if (await fileExists(filePath)) {
+    return true
+  }
+  try {
+    const response = await fetch(`${spriteHost}/${pokedexNumber}.png`, { signal: AbortSignal.timeout(requestTimeoutMilliseconds) })
+    if (!response.ok) {
+      return false
+    }
+    const temporaryPath = `${filePath}.tmp`
+    await writeFile(temporaryPath, Buffer.from(await response.arrayBuffer()))
+    await rename(temporaryPath, filePath)
+    return true
+  } catch {
+    return false
+  }
+}
+
 const main = async () => {
   await mkdir(cardsDirectory, { recursive: true })
+  await mkdir(spritesDirectory, { recursive: true })
 
   const previousSets = await readPreviousSets()
+  const pokedexNumbers = new Set()
   const setSummaries = await get('sets')
   console.log(`Fetched ${setSummaries.length} set summaries`)
 
@@ -189,6 +221,7 @@ const main = async () => {
       )
       const cards = cardDetails.map((card) => toCard(card, set, germanNames.cardNames)).sort(byTrendPriceDescending)
       await writeJsonAtomically(path.join(cardsDirectory, `${set.id}.json`), cards)
+      cards.forEach((card) => card.nationalPokedexNumbers?.forEach((number) => pokedexNumbers.add(number)))
       sets.push(set)
       console.log(`${progress}: ${cards.length} cards`)
     } catch (error) {
@@ -202,6 +235,14 @@ const main = async () => {
 
   sets.sort((a, b) => a.releaseDate.localeCompare(b.releaseDate))
   await writeJsonAtomically(path.join(dataDirectory, 'sets.json'), { generatedAt: new Date().toISOString(), sets })
+
+  const sortedPokedexNumbers = [...pokedexNumbers].sort((a, b) => a - b)
+  const spriteResults = await mapConcurrently(sortedPokedexNumbers, cardConcurrency, downloadSprite)
+  const missingSprites = sortedPokedexNumbers.filter((_, index) => !spriteResults[index])
+  console.log(`Sprites: ${sortedPokedexNumbers.length - missingSprites.length}/${sortedPokedexNumbers.length} available`)
+  if (missingSprites.length > 0) {
+    console.error(`Missing sprites: ${missingSprites.join(', ')}`)
+  }
 
   if (failedSets.length > 0) {
     console.error(`Failed sets: ${failedSets.join(', ')}`)

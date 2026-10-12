@@ -91,7 +91,7 @@
     zoom-in;
   @include pastel(var(--tint, var(--elementBlue)));
 
-  img {
+  > img {
     display: block;
     width: 100%;
     height: auto;
@@ -99,7 +99,7 @@
     @include cardImageStyle;
   }
 
-  &:hover img {
+  &:hover > img {
     transform: scale(1.06);
   }
 }
@@ -124,6 +124,13 @@
   align-items: center;
   gap: 0.5rem;
   margin-bottom: 1.375rem;
+}
+
+.titleSprite {
+  width: 3rem;
+  height: 3rem;
+  flex-shrink: 0;
+  image-rendering: pixelated;
 }
 
 .cardTitle {

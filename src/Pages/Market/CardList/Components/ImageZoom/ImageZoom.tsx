@@ -7,6 +7,7 @@ import styles from './ImageZoom.module.scss'
 interface ImageZoomProps {
   sources: (string | undefined)[]
   alt: string
+  pokedexNumber?: number
   onClose: () => void
 }
 
@@ -36,7 +37,7 @@ const distance = (a: Point, b: Point): number => Math.hypot(a.x - b.x, a.y - b.y
 const midpoint = (a: Point, b: Point): Point => ({ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 })
 const clampValue = (value: number, limit: number): number => Math.min(Math.max(value, -limit), limit)
 
-export function ImageZoom({ sources, alt, onClose }: ImageZoomProps) {
+export function ImageZoom({ sources, alt, pokedexNumber, onClose }: ImageZoomProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const stageRef = useRef<HTMLDivElement>(null)
   const frameRef = useRef<HTMLDivElement>(null)
@@ -198,7 +199,7 @@ export function ImageZoom({ sources, alt, onClose }: ImageZoomProps) {
           className={`${styles.frame} ${isGesturing ? '' : styles.animated}`}
           style={{ transform: `translate(${transform.x}px, ${transform.y}px) scale(${transform.scale})` }}
         >
-          <CardImage className={styles.image} sources={sources} alt={alt} />
+          <CardImage className={styles.image} sources={sources} alt={alt} pokedexNumber={pokedexNumber} />
         </div>
       </div>
       <button type='button' className={styles.closeButton} aria-label='Close zoom' onClick={onClose}>

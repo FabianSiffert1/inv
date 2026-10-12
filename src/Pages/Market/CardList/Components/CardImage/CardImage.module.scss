@@ -9,6 +9,12 @@
   @include cardImageStyle;
 }
 
+.placeholderSprite {
+  width: 50%;
+  max-width: 96px;
+  image-rendering: pixelated;
+}
+
 .placeholderName {
   @include typoDisplay;
   text-align: center;
