@@ -1,6 +1,12 @@
 import { ReactElement, useRef, useState } from 'react'
 import { CopyButton } from '../../../../../Components/CopyButton/CopyButton'
-import { PokemonCard, PokemonCardProp, TcgPlayer, TcgPlayerPriceSet } from '../../../../../util/api/pokemonTGC/model/PokemonCard'
+import {
+  CardMarketPriceSet,
+  PokemonCard,
+  PokemonCardProp,
+  TcgPlayer,
+  TcgPlayerPriceSet
+} from '../../../../../util/api/pokemonTGC/model/PokemonCard'
 import { formatPrice } from '../../../../../util/format/price'
 import { formatSetReleaseDate } from '../../../../../util/format/date'
 import { useLocalizedName } from '../../../../../util/ui/language/LanguageProvider'
@@ -160,14 +166,37 @@ export function CardMarketPrices(props: PokemonCardProp) {
       {prices == undefined ? (
         <div className={styles.emptyPanel}>No prices available.</div>
       ) : (
-        <dl className={styles.definitionList}>
-          <PriceRow label='Trend' price={prices.trendPrice} />
-          <PriceRow label='Average' price={prices.averageSellPrice} />
-          <PriceRow label='Avg. 30 days' price={prices.avg30} />
-          <PriceRow label='Suggested' price={prices.suggestedPrice} />
-        </dl>
+        <>
+          <dl className={styles.definitionList}>
+            <PriceRow label='Trend' price={prices.trendPrice} />
+            <PriceRow label='Average' price={prices.averageSellPrice} />
+            <PriceRow label='Avg. 30 days' price={prices.avg30} />
+            <PriceRow label='Suggested' price={prices.suggestedPrice} />
+          </dl>
+          <ReverseHoloPrices prices={prices} />
+        </>
       )}
     </section>
+  )
+}
+
+function ReverseHoloPrices({ prices }: { prices: CardMarketPriceSet }) {
+  const hasReverseHoloPrices = [prices.reverseHoloTrend, prices.reverseHoloSell, prices.reverseHoloAvg30, prices.reverseHoloLow].some(
+    (price) => price != undefined
+  )
+  if (!hasReverseHoloPrices) {
+    return null
+  }
+  return (
+    <div className={styles.tcgPlayerPriceSet}>
+      <div className={styles.priceSetTitle}>Reverse Holofoil</div>
+      <dl className={styles.definitionList}>
+        <PriceRow label='Trend' price={prices.reverseHoloTrend} />
+        <PriceRow label='Average' price={prices.reverseHoloSell} />
+        <PriceRow label='Avg. 30 days' price={prices.reverseHoloAvg30} />
+        <PriceRow label='Low' price={prices.reverseHoloLow} />
+      </dl>
+    </div>
   )
 }
 
