@@ -14,6 +14,13 @@ export default function WebNavigation() {
     <div className={styles.webNavigation}>
       <nav>
         <ul>
+          {!isMobile && (
+            <li key={'searchToggle'}>
+              <div className={styles.themeToggle}>
+                <SearchToggle />
+              </div>
+            </li>
+          )}
           <li key={'favoritesLink'}>
             <NavLink
               to='/inventory'
@@ -24,13 +31,6 @@ export default function WebNavigation() {
               <StarIcon />
             </NavLink>
           </li>
-          {!isMobile && (
-            <li key={'searchToggle'}>
-              <div className={styles.themeToggle}>
-                <SearchToggle />
-              </div>
-            </li>
-          )}
           <li key={'sortToggle'}>
             <div className={styles.themeToggle}>
               <SortToggle />
