@@ -1,3 +1,5 @@
+@use 'globalDesignElements.module' as *;
+
 .webNavigation {
   display: flex;
   align-items: center;
@@ -32,5 +34,20 @@
       width: 1.4rem;
       height: 1.4rem;
     }
+  }
+}
+
+.favoritesLink {
+  @include surfaceInteractive($surfaceRadiusSmall);
+  @include pastel(var(--elementPeach), 50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.4rem;
+  height: 2.4rem;
+
+  svg {
+    width: 1.5rem;
+    height: 1.5rem;
   }
 }

@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { useQuery, useQueryClient } from 'react-query'
+import { useQueries, useQuery, useQueryClient } from 'react-query'
 import { PokemonCard } from './model/PokemonCard'
 import { PokemonSet, PokemonSetName } from './model/PokemonSet'
 import { fetchAllCardsOfASet, fetchSetsSnapshot, SetsSnapshot } from './querys'
@@ -38,4 +38,21 @@ export const useCardsOfSet = (setName?: PokemonSetName) => {
     enabled: set != undefined,
     staleTime: Infinity
   })
+}
+
+export const useCardsOfSets = (setIds: string[]) => {
+  const { data: snapshot } = useSetsSnapshot()
+  const generatedAt = snapshot?.generatedAt
+
+  return useQueries(
+    setIds.map((setId) => {
+      const setName = snapshot?.sets.find((candidate) => candidate.id == setId)?.name
+      return {
+        queryKey: ['cards', 'set', setName, generatedAt],
+        queryFn: ({ signal }: { signal?: AbortSignal }) => fetchAllCardsOfASet(setId, signal),
+        enabled: setName != undefined,
+        staleTime: Infinity
+      }
+    })
+  )
 }

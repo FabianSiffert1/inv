@@ -1,5 +1,6 @@
 import { ReactElement, useRef, useState } from 'react'
 import { CopyButton } from '../../../../../Components/CopyButton/CopyButton'
+import { FavoriteButton } from '../../../../../Components/FavoriteButton/FavoriteButton'
 import {
   CardMarketPriceSet,
   PokemonCard,
@@ -118,6 +119,7 @@ export function CardBaseDetails(props: PokemonCardProp) {
         )}
         <h2 className={styles.cardTitle}>{cardName}</h2>
         <CopyButton variant='share' value={cardShareLink(props.card)} label='Copy link to this card' />
+        <FavoriteButton card={props.card} />
       </div>
       <div className={styles.metaRow}>
         {props.card.rarity && <span className={styles.metaChip}>{props.card.rarity}</span>}

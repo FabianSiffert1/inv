@@ -9,6 +9,7 @@ import ErrorPage from './Pages/404/404'
 import Home from './Pages/Home/Home'
 import Inventory from './Pages/Inventory/Inventory'
 import Market from './Pages/Market/Market'
+import FavoritesProvider from './util/ui/favorites/FavoritesProvider'
 import LanguageProvider from './util/ui/language/LanguageProvider'
 import SearchProvider from './util/ui/search/SearchProvider'
 import SortProvider from './util/ui/sort/SortProvider'
@@ -95,7 +96,9 @@ root.render(
         <LanguageProvider>
           <SortProvider>
             <SearchProvider>
-              <RouterProvider router={router} />
+              <FavoritesProvider>
+                <RouterProvider router={router} />
+              </FavoritesProvider>
             </SearchProvider>
           </SortProvider>
         </LanguageProvider>

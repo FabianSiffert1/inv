@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+import { StarIcon } from '../../../Components/FavoriteButton/FavoriteButton'
 import LanguageToggle from '../../LanguageToggle/LanguageToggle'
 import SearchToggle from '../../SearchToggle/SearchToggle'
 import SortToggle from '../../SortToggle/SortToggle'
@@ -12,6 +14,11 @@ export default function WebNavigation() {
     <div className={styles.webNavigation}>
       <nav>
         <ul>
+          <li key={'favoritesLink'}>
+            <Link to='/inventory' className={styles.favoritesLink} aria-label='Favorites' title='Favorites'>
+              <StarIcon />
+            </Link>
+          </li>
           {!isMobile && (
             <li key={'searchToggle'}>
               <div className={styles.themeToggle}>
