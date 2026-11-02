@@ -33,21 +33,32 @@ export default function Title() {
   const location = useLocation()
   const isDexMode = location.pathname.startsWith('/pokemon')
   const [hasToggled, setToggled] = useState(false)
+  const [pendingDexMode, setPendingDexMode] = useState<boolean | undefined>(undefined)
+  const isShowingDexMode = pendingDexMode ?? isDexMode
 
   useEffect(() => {
     storeLocation(isDexMode ? dexLocationStorageKey : cardsLocationStorageKey, `${location.pathname}${withoutOpenCard(location.search)}`)
   }, [isDexMode, location.pathname, location.search])
 
-  const target = isDexMode ? readLocation(cardsLocationStorageKey, '/') : readLocation(dexLocationStorageKey, '/pokemon')
-  const label = isDexMode ? 'Switch to cards' : 'Switch to Pokédex'
+  useEffect(() => {
+    setPendingDexMode(undefined)
+  }, [isDexMode])
+
+  const target = isShowingDexMode ? readLocation(cardsLocationStorageKey, '/') : readLocation(dexLocationStorageKey, '/pokemon')
+  const label = isShowingDexMode ? 'Switch to cards' : 'Switch to Pokédex'
+
+  const toggle = () => {
+    setToggled(true)
+    setPendingDexMode(!isShowingDexMode)
+  }
 
   return (
     <div className={styles.title}>
-      <Link className={styles.modeToggle} to={target} aria-label={label} title={label} onClick={() => setToggled(true)}>
-        <span key={isDexMode ? 'dex' : 'cards'} className={hasToggled ? `${styles.modeIcon} ${styles.flipIn}` : styles.modeIcon}>
-          {isDexMode ? <PikachuIcon /> : <CardBackIcon />}
+      <Link className={styles.modeToggle} to={target} aria-label={label} title={label} onClick={toggle}>
+        <span key={isShowingDexMode ? 'dex' : 'cards'} className={hasToggled ? `${styles.modeIcon} ${styles.flipIn}` : styles.modeIcon}>
+          {isShowingDexMode ? <PikachuIcon /> : <CardBackIcon />}
         </span>
-        <span className={styles.modeLabel}>{isDexMode ? 'Dex' : 'Cards'}</span>
+        <span className={styles.modeLabel}>{isShowingDexMode ? 'Dex' : 'Cards'}</span>
       </Link>
     </div>
   )
