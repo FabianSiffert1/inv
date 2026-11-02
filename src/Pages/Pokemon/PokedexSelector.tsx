@@ -1,5 +1,7 @@
 import { KeyboardEvent, useContext, useMemo, useState } from 'react'
+import { CopyButton } from '../../Components/CopyButton/CopyButton'
 import { Pokemon, spriteUrl } from '../../util/api/pokemonTGC/model/Pokemon'
+import { pokemonShareLink } from '../../util/shareLinks'
 import { LanguageContext, localizedName } from '../../util/ui/language/LanguageProvider'
 import { useIsMobile } from '../../util/ui/useIsMobile'
 import Dropdown from '../Market/Selector/Dropdown'
@@ -154,6 +156,9 @@ export default function PokedexSelector(props: PokedexSelectorProps) {
           onSelect={selectPokemon}
           sheetHeader={filterField}
         />
+      )}
+      {props.selectedNumber != undefined && (
+        <CopyButton variant='share' value={pokemonShareLink(props.selectedNumber)} label='Copy link to this Pokémon' />
       )}
     </div>
   )
