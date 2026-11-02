@@ -28,7 +28,7 @@ export const eraOptions = (pokemonSets?: PokemonSet[], germanNames = false): Opt
   })
 
   return Array.from(earliestReleaseDateOfSeries.entries())
-    .sort((a, b) => a[1].localeCompare(b[1]))
+    .sort((a, b) => b[1].localeCompare(a[1]))
     .map(([series]) => ({ id: series, label: germanNames ? (germanNameOfSeries.get(series) ?? series) : series }))
 }
 

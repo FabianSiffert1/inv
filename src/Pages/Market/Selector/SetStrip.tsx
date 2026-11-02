@@ -19,7 +19,7 @@ interface SetStripProps {
 export const setOptionsOfSeries = (pokemonSets?: PokemonSet[], series?: PokemonTCGSeries, germanNames = false): OptionGridItem[] =>
   (pokemonSets ?? [])
     .filter((pokemonSet) => pokemonSet.series == series)
-    .sort((a, b) => a.releaseDate.localeCompare(b.releaseDate))
+    .sort((a, b) => b.releaseDate.localeCompare(a.releaseDate))
     .map((pokemonSet) => ({
       id: pokemonSet.name,
       label: localizedName(pokemonSet, germanNames),
