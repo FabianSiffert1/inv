@@ -1,0 +1,47 @@
+@use 'globalDesignElements.module' as *;
+
+.pokemonPage {
+  padding-top: 1.5rem;
+}
+
+.pageTitle {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.75rem;
+}
+
+.sprite {
+  width: 4rem;
+  height: 4rem;
+  margin: -0.75rem -0.5rem -0.75rem -0.75rem;
+  image-rendering: pixelated;
+}
+
+.pageHeadline {
+  @include typoDisplay;
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+.pokedexNumber {
+  font-family: $monoFont;
+  font-size: 0.9rem;
+  color: var(--secondary-color);
+}
+
+.pageCount {
+  @include surface($surfaceRadiusSmall);
+  @include pastel(var(--elementYellow), 60%);
+  @include typoFieldValue;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.85rem;
+}
+
+.cardListWrapper {
+  padding-top: 1.5rem;
+
+  @media (max-width: $smallScreen - 1px) {
+    padding-bottom: 5.5rem;
+  }
+}

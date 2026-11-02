@@ -12,6 +12,7 @@ import { SortContext, sortCards } from '../../util/ui/sort/SortProvider'
 import { useIsMobile } from '../../util/ui/useIsMobile'
 import CardList from './CardList/CardList'
 import CardListStatus from './CardListStatus'
+import PokemonSuggestions from '../Pokemon/PokemonSuggestions'
 import styles from './Market.module.scss'
 import SetSelector from './Selector/SetSelector'
 
@@ -104,6 +105,7 @@ export default function Market() {
 
   return (
     <div className={styles.market}>
+      <PokemonSuggestions />
       <CardListStatus
         hasSelectedEra={currentlySelectedPokemonSeries != undefined}
         hasSelectedSet={currentlySelectedPokemonSet != undefined}

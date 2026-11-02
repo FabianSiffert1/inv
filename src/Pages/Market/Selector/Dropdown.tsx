@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { ReactNode, useEffect, useRef } from 'react'
 import styles from './Dropdown.module.scss'
 import OptionGrid, { OptionGridItem } from './OptionGrid'
 
@@ -13,6 +13,7 @@ interface DropdownProps {
   setOpen: (isOpen: boolean) => void
   disabled?: boolean
   cachedIds?: string[]
+  panelHeader?: ReactNode
 }
 
 export default function Dropdown(props: DropdownProps) {
@@ -69,6 +70,7 @@ export default function Dropdown(props: DropdownProps) {
       </button>
       {props.isOpen && !props.disabled && (
         <div className={styles.panel}>
+          {props.panelHeader}
           <OptionGrid
             variant={props.variant}
             ariaLabel={props.ariaLabel}

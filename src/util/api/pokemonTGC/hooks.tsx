@@ -1,8 +1,9 @@
 import { useEffect } from 'react'
 import { useQueries, useQuery, useQueryClient } from 'react-query'
+import { Pokemon } from './model/Pokemon'
 import { PokemonCard } from './model/PokemonCard'
 import { PokemonSet, PokemonSetName } from './model/PokemonSet'
-import { fetchAllCardsOfASet, fetchSetsSnapshot, SetsSnapshot } from './querys'
+import { fetchAllCardsOfASet, fetchCardsOfPokemon, fetchPokemonIndex, fetchSetsSnapshot, SetsSnapshot } from './querys'
 
 const setsSnapshotStaleTime = 1000 * 60 * 60
 
@@ -54,5 +55,55 @@ export const useCardsOfSets = (setIds: string[]) => {
         staleTime: Infinity
       }
     })
+  )
+}
+
+export const usePokemonIndex = () => {
+  const queryClient = useQueryClient()
+  const { data: snapshot } = useSetsSnapshot()
+  const generatedAt = snapshot?.generatedAt
+
+  useEffect(() => {
+    if (generatedAt == undefined) {
+      return
+    }
+    queryClient.removeQueries({
+      predicate: (query) => {
+        const key = query.queryKey
+        return Array.isArray(key) && key[0] == 'pokemon' && key[1] == 'index' && key[2] != generatedAt
+      }
+    })
+  }, [queryClient, generatedAt])
+
+  return useQuery<Pokemon[]>(['pokemon', 'index', generatedAt], ({ signal }) => fetchPokemonIndex(signal), {
+    enabled: generatedAt != undefined,
+    staleTime: Infinity
+  })
+}
+
+export const useCardsOfPokemon = (pokedexNumber?: number) => {
+  const queryClient = useQueryClient()
+  const { data: snapshot } = useSetsSnapshot()
+  const generatedAt = snapshot?.generatedAt
+
+  useEffect(() => {
+    if (generatedAt == undefined) {
+      return
+    }
+    queryClient.removeQueries({
+      predicate: (query) => {
+        const key = query.queryKey
+        return Array.isArray(key) && key[0] == 'cards' && key[1] == 'pokemon' && key[3] != generatedAt
+      }
+    })
+  }, [queryClient, generatedAt])
+
+  return useQuery<PokemonCard[]>(
+    ['cards', 'pokemon', pokedexNumber, generatedAt],
+    ({ signal }) => fetchCardsOfPokemon(pokedexNumber as number, signal),
+    {
+      enabled: pokedexNumber != undefined && generatedAt != undefined,
+      staleTime: Infinity
+    }
   )
 }

@@ -11,6 +11,7 @@ import { SortContext, sortCards } from '../../util/ui/sort/SortProvider'
 import { StarIcon } from '../../Components/FavoriteButton/FavoriteButton'
 import CardList from '../Market/CardList/CardList'
 import SetSelector from '../Market/Selector/SetSelector'
+import PokemonSuggestions from '../Pokemon/PokemonSuggestions'
 import styles from './Inventory.module.scss'
 
 export default function Inventory() {
@@ -74,6 +75,7 @@ export default function Inventory() {
   return (
     <div className={styles.inventoryPage}>
       <div className={styles.backdrop} aria-hidden='true' />
+      <PokemonSuggestions />
       <div className={styles.pageTitle}>
         <StarIcon />
         <h1 className={styles.pageHeadline}>Favorites</h1>

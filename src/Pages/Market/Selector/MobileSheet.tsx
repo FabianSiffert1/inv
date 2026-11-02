@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { ReactNode, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { useModalBehaviour } from '../../../util/ui/useModalBehaviour'
 import styles from './MobileSheet.module.scss'
@@ -11,6 +11,7 @@ interface MobileSheetProps {
   onSelect: (id: string) => void
   onClose: () => void
   cachedIds?: string[]
+  sheetHeader?: ReactNode
 }
 
 export default function MobileSheet(props: MobileSheetProps) {
@@ -27,6 +28,7 @@ export default function MobileSheet(props: MobileSheetProps) {
             ×
           </button>
         </div>
+        {props.sheetHeader}
         <ul className={styles.optionList} role='listbox' aria-label={props.title}>
           {props.options.map((option) => {
             const isSelected = option.id == props.selectedId

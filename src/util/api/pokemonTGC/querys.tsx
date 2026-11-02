@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { Pokemon } from './model/Pokemon'
 import { PokemonCard } from './model/PokemonCard'
 import { PokemonSet } from './model/PokemonSet'
 
@@ -12,3 +13,9 @@ export const fetchSetsSnapshot = async (signal?: AbortSignal): Promise<SetsSnaps
 
 export const fetchAllCardsOfASet = async (setId: string, signal?: AbortSignal): Promise<PokemonCard[]> =>
   (await axios.get<PokemonCard[]>(`/data/cards/${encodeURIComponent(setId)}.json`, { signal })).data
+
+export const fetchPokemonIndex = async (signal?: AbortSignal): Promise<Pokemon[]> =>
+  (await axios.get<Pokemon[]>('/data/pokemon.json', { signal })).data
+
+export const fetchCardsOfPokemon = async (pokedexNumber: number, signal?: AbortSignal): Promise<PokemonCard[]> =>
+  (await axios.get<PokemonCard[]>(`/data/pokemon/${pokedexNumber}.json`, { signal })).data

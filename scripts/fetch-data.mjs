@@ -11,7 +11,11 @@ const requestTimeoutMilliseconds = 30_000
 const dataDirectory = fileURLToPath(new URL('../data', import.meta.url))
 const cardsDirectory = path.join(dataDirectory, 'cards')
 const spritesDirectory = path.join(dataDirectory, 'sprites')
+const pokemonDirectory = path.join(dataDirectory, 'pokemon')
 const spriteHost = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon'
+const speciesNamesUrl = 'https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/pokemon_species_names.csv'
+const englishLanguageId = '9'
+const germanLanguageId = '6'
 
 const sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds))
 
@@ -195,9 +199,102 @@ const downloadSprite = async (pokedexNumber) => {
   }
 }
 
+const parseCsvLine = (line) => {
+  const fields = []
+  let field = ''
+  let isQuoted = false
+  for (let index = 0; index < line.length; index++) {
+    const character = line[index]
+    if (isQuoted) {
+      if (character == '"' && line[index + 1] == '"') {
+        field += '"'
+        index++
+      } else if (character == '"') {
+        isQuoted = false
+      } else {
+        field += character
+      }
+    } else if (character == '"') {
+      isQuoted = true
+    } else if (character == ',') {
+      fields.push(field)
+      field = ''
+    } else {
+      field += character
+    }
+  }
+  fields.push(field)
+  return fields
+}
+
+const fetchSpeciesNames = async () => {
+  try {
+    const response = await fetch(speciesNamesUrl, { signal: AbortSignal.timeout(requestTimeoutMilliseconds) })
+    if (!response.ok) {
+      return new Map()
+    }
+    const names = new Map()
+    for (const line of (await response.text()).split('\n').slice(1)) {
+      const [speciesId, languageId, name] = parseCsvLine(line.trim())
+      if (!name || (languageId != englishLanguageId && languageId != germanLanguageId)) {
+        continue
+      }
+      const entry = names.get(Number(speciesId)) ?? {}
+      entry[languageId == englishLanguageId ? 'name' : 'germanName'] = name
+      names.set(Number(speciesId), entry)
+    }
+    return names
+  } catch {
+    return new Map()
+  }
+}
+
+const mostCommon = (values) => {
+  const counts = new Map()
+  values.filter((value) => value != undefined).forEach((value) => counts.set(value, (counts.get(value) ?? 0) + 1))
+  return [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].length - b[0].length)[0]?.[0]
+}
+
+const byReleaseDateDescending = (a, b) => b.set.releaseDate.localeCompare(a.set.releaseDate)
+
+const writePokemonData = async (sets) => {
+  const cardsOfPokemon = new Map()
+  for (const set of sets) {
+    const cards = JSON.parse(await readFile(path.join(cardsDirectory, `${set.id}.json`), 'utf8'))
+    cards.forEach((card) =>
+      card.nationalPokedexNumbers?.forEach((number) => {
+        if (!cardsOfPokemon.has(number)) {
+          cardsOfPokemon.set(number, [])
+        }
+        cardsOfPokemon.get(number).push(card)
+      })
+    )
+  }
+
+  const speciesNames = await fetchSpeciesNames()
+  if (speciesNames.size == 0) {
+    console.error('Species names unavailable, falling back to card names')
+  }
+
+  const pokemon = []
+  for (const [number, cards] of [...cardsOfPokemon.entries()].sort((a, b) => a[0] - b[0])) {
+    await writeJsonAtomically(path.join(pokemonDirectory, `${number}.json`), cards.sort(byReleaseDateDescending))
+    const species = speciesNames.get(number)
+    pokemon.push({
+      number,
+      name: species?.name ?? mostCommon(cards.map((card) => card.name)),
+      germanName: species?.germanName ?? mostCommon(cards.map((card) => card.germanName)),
+      cardCount: cards.length
+    })
+  }
+  await writeJsonAtomically(path.join(dataDirectory, 'pokemon.json'), pokemon)
+  console.log(`Pokémon: ${pokemon.length} with cards`)
+}
+
 const main = async () => {
   await mkdir(cardsDirectory, { recursive: true })
   await mkdir(spritesDirectory, { recursive: true })
+  await mkdir(pokemonDirectory, { recursive: true })
 
   const previousSets = await readPreviousSets()
   const pokedexNumbers = new Set()
@@ -234,6 +331,7 @@ const main = async () => {
   }
 
   sets.sort((a, b) => a.releaseDate.localeCompare(b.releaseDate))
+  await writePokemonData(sets)
   await writeJsonAtomically(path.join(dataDirectory, 'sets.json'), { generatedAt: new Date().toISOString(), sets })
 
   const sortedPokedexNumbers = [...pokedexNumbers].sort((a, b) => a - b)

@@ -3,13 +3,60 @@
 .title {
   @include typoDisplay;
   font-size: 1.15rem;
+}
 
-  a {
-    font-size: inherit;
-    text-decoration-color: transparent;
+.modeToggle {
+  @include surfaceInteractive($surfaceRadiusSmall);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.3rem 0.8rem 0.3rem 0.5rem;
+  font-size: inherit;
+  color: var(--color);
+  text-decoration: none;
+  outline: 1px solid var(--card-border-color);
+}
+
+.modeIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  perspective: 10rem;
+}
+
+.flipIn {
+  animation: flipIn 280ms $archEase both;
+}
+
+.cardBack {
+  height: 1.7rem;
+  width: auto;
+}
+
+.sprite {
+  width: 2.9rem;
+  height: 2.9rem;
+  margin: -0.5rem;
+  image-rendering: pixelated;
+}
+
+.modeLabel {
+  min-width: 3.4em;
+}
+
+@keyframes flipIn {
+  from {
+    transform: rotateY(90deg);
   }
+  to {
+    transform: rotateY(0deg);
+  }
+}
 
-  a:hover {
-    text-decoration-color: var(--marker);
+@media (prefers-reduced-motion: reduce) {
+  .flipIn {
+    animation: none;
   }
 }

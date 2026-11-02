@@ -17,6 +17,7 @@ import { CardImage } from '../CardImage/CardImage'
 import { ExternalLink } from '../ExternalLink/ExternalLink'
 import { GermanListingsLink } from '../GermanListingsLink/GermanListingsLink'
 import { ImageZoom } from '../ImageZoom/ImageZoom'
+import AllCardsOfPokemonLink from '../../../../Pokemon/AllCardsOfPokemonLink'
 import styles from './CardDetails.module.scss'
 
 export interface CardNavigationProps {
@@ -129,6 +130,7 @@ export function CardBaseDetails(props: PokemonCardProp) {
         {props.card.evolvesFrom && <span className={styles.metaMuted}>Evolves from {props.card.evolvesFrom}</span>}
         {props.card.artist && <span className={styles.metaMuted}>Illus. {props.card.artist}</span>}
       </div>
+      {pokedexNumber != undefined && <AllCardsOfPokemonLink pokedexNumber={pokedexNumber} />}
     </div>
   )
 }

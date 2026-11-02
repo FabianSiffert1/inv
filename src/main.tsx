@@ -9,6 +9,7 @@ import ErrorPage from './Pages/404/404'
 import Home from './Pages/Home/Home'
 import Inventory from './Pages/Inventory/Inventory'
 import Market from './Pages/Market/Market'
+import Pokemon from './Pages/Pokemon/Pokemon'
 import FavoritesProvider from './util/ui/favorites/FavoritesProvider'
 import LanguageProvider from './util/ui/language/LanguageProvider'
 import SearchProvider from './util/ui/search/SearchProvider'
@@ -16,7 +17,7 @@ import SortProvider from './util/ui/sort/SortProvider'
 import ThemeProvider from './util/ui/theme/ThemeProvider'
 
 const cacheMaxAge = 1000 * 60 * 60 * 24 * 7
-const persistedCardSetLimit = 8
+const persistedCardListLimit = 8
 
 const router = createBrowserRouter(
   [
@@ -36,6 +37,10 @@ const router = createBrowserRouter(
         {
           path: 'market',
           element: <Market />
+        },
+        {
+          path: 'pokemon/:pokedexNumber?',
+          element: <Pokemon />
         }
       ]
     }
@@ -57,7 +62,7 @@ const queryClient = new QueryClient({
   }
 })
 
-const isCardSetQuery = (queryKey: unknown): boolean => Array.isArray(queryKey) && queryKey[0] == 'cards' && queryKey[1] == 'set'
+const isCardListQuery = (queryKey: unknown): boolean => Array.isArray(queryKey) && queryKey[0] == 'cards'
 
 persistQueryClient({
   queryClient,
@@ -72,17 +77,17 @@ persistQueryClient({
       if (query.state.data == undefined || query.state.status != 'success') {
         return false
       }
-      if (!isCardSetQuery(query.queryKey)) {
+      if (!isCardListQuery(query.queryKey)) {
         return true
       }
-      const cardSetQueries = queryClient
+      const cardListQueries = queryClient
         .getQueryCache()
         .getAll()
-        .filter((cached) => isCardSetQuery(cached.queryKey) && cached.state.data != undefined)
+        .filter((cached) => isCardListQuery(cached.queryKey) && cached.state.data != undefined)
         .sort((a, b) => b.state.dataUpdatedAt - a.state.dataUpdatedAt)
-        .slice(0, persistedCardSetLimit)
+        .slice(0, persistedCardListLimit)
 
-      return cardSetQueries.some((cached) => cached.queryHash == query.queryHash)
+      return cardListQueries.some((cached) => cached.queryHash == query.queryHash)
     }
   }
 })

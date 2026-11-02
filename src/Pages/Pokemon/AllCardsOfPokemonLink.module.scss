@@ -1,0 +1,28 @@
+@use 'globalDesignElements.module' as *;
+
+.link {
+  @include surfaceInteractive($surfaceRadiusSmall);
+  @include pastel(var(--elementYellow), 45%);
+  display: inline-flex;
+  margin-top: 0.75rem;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.8rem;
+  font-size: 0.85rem;
+  color: var(--color);
+  text-decoration: none;
+}
+
+.arrow {
+  transition: transform $surfaceTransition;
+}
+
+.link:hover .arrow {
+  transform: translateX(0.15rem);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .arrow {
+    transition: none;
+  }
+}
