@@ -1,46 +1,45 @@
 import { useCallback, useContext, useEffect, useMemo } from 'react'
-import { Navigate, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { Link, Navigate, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { HeaderContext } from '../../Header/HeaderProvider'
 import SearchToggle from '../../Header/SearchToggle/SearchToggle'
 import { useCardsOfPokemon, usePokemonIndex } from '../../util/api/pokemonTGC/hooks'
-import { pokemonPath, spriteUrl } from '../../util/api/pokemonTGC/model/Pokemon'
+import { Pokemon as PokemonEntry, pokemonPath, spriteUrl } from '../../util/api/pokemonTGC/model/Pokemon'
 import { LanguageContext, localizedName } from '../../util/ui/language/LanguageProvider'
 import { matchesSearch, SearchContext } from '../../util/ui/search/SearchProvider'
 import { SortContext, sortCards } from '../../util/ui/sort/SortProvider'
 import { useIsMobile } from '../../util/ui/useIsMobile'
 import CardList from '../Market/CardList/CardList'
 import CardListStatus from '../Market/CardListStatus'
+import { Generation, generationByNumber, generationLabel, generationOfPokemon, generationPath, isInGeneration } from './generations'
+import PokedexSelector from './PokedexSelector'
 import styles from './Pokemon.module.scss'
-import PokemonPicker from './PokemonPicker'
+import PokemonGrid from './PokemonGrid'
+import { matchingPokemon } from './pokemonSearch'
 import PokemonSuggestions from './PokemonSuggestions'
-
-export const defaultPokedexNumber = 25
 
 export default function Pokemon() {
   const { setHeaderItem, setBusy } = useContext(HeaderContext)
-  const { sortMode } = useContext(SortContext)
-  const { germanNames } = useContext(LanguageContext)
-  const { query } = useContext(SearchContext)
   const isMobile = useIsMobile()
 
   const params = useParams()
-  const pokedexNumber = Number(params.pokedexNumber)
-  const hasValidNumber = Number.isInteger(pokedexNumber) && pokedexNumber > 0
-  const [searchParams, setSearchParams] = useSearchParams()
-  const location = useLocation()
+  const [searchParams] = useSearchParams()
   const navigate = useNavigate()
-  const openCardId = searchParams.get('card') ?? undefined
+  const pokedexNumber = params.pokedexNumber == undefined ? undefined : Number(params.pokedexNumber)
+  const hasInvalidNumber = pokedexNumber != undefined && !(Number.isInteger(pokedexNumber) && pokedexNumber > 0)
+  const selectedGeneration =
+    pokedexNumber != undefined ? generationOfPokemon(pokedexNumber) : generationByNumber(Number(searchParams.get('generation')))
 
   const { data: pokemonIndex, isFetching: isIndexFetching, error: indexError } = usePokemonIndex()
-  const { data: cards, isFetching: areCardsFetching, error: cardsError } = useCardsOfPokemon(hasValidNumber ? pokedexNumber : undefined)
-  const pokemon = pokemonIndex?.find((entry) => entry.number == pokedexNumber)
+  const { data: cards, isFetching: areCardsFetching, error: cardsError } = useCardsOfPokemon(hasInvalidNumber ? undefined : pokedexNumber)
   const isFetching = isIndexFetching || areCardsFetching
 
-  const sortedCards = useMemo(
-    () => (cards == undefined ? undefined : sortCards(cards, sortMode, germanNames)),
-    [cards, sortMode, germanNames]
+  const selectGeneration = useCallback(
+    (generation: Generation) => {
+      window.scrollTo(0, 0)
+      navigate(generationPath(generation))
+    },
+    [navigate]
   )
-  const visibleCards = useMemo(() => sortedCards?.filter((card) => matchesSearch(card, query)), [sortedCards, query])
 
   const selectPokemon = useCallback(
     (number: number) => {
@@ -49,6 +48,136 @@ export default function Pokemon() {
     },
     [navigate]
   )
+
+  useEffect(() => {
+    setHeaderItem(
+      <PokedexSelector
+        pokemon={pokemonIndex}
+        selectedGeneration={selectedGeneration}
+        selectedNumber={pokedexNumber}
+        onSelectGeneration={selectGeneration}
+        onSelectPokemon={selectPokemon}
+      />
+    )
+  }, [setHeaderItem, pokemonIndex, selectedGeneration, pokedexNumber, selectGeneration, selectPokemon])
+
+  useEffect(() => {
+    setBusy(isFetching)
+  }, [setBusy, isFetching])
+
+  useEffect(() => () => setBusy(false), [setBusy])
+
+  if (hasInvalidNumber) {
+    return <Navigate to='/pokemon' replace />
+  }
+
+  return (
+    <div className={styles.pokemonPage}>
+      {pokedexNumber == undefined ? (
+        <GenerationOverview generation={selectedGeneration} pokemonIndex={pokemonIndex} isFetching={isIndexFetching} error={indexError} />
+      ) : (
+        <PokemonCards
+          pokemon={pokemonIndex?.find((entry) => entry.number == pokedexNumber)}
+          generation={selectedGeneration}
+          cards={cards}
+          pokedexNumber={pokedexNumber}
+          isFetching={isFetching}
+          error={cardsError ?? indexError}
+        />
+      )}
+      {isMobile && (pokedexNumber != undefined || selectedGeneration != undefined) && <SearchToggle floating />}
+    </div>
+  )
+}
+
+interface GenerationOverviewProps {
+  generation?: Generation
+  pokemonIndex?: PokemonEntry[]
+  isFetching: boolean
+  error: unknown
+}
+
+function GenerationOverview(props: GenerationOverviewProps) {
+  const { germanNames } = useContext(LanguageContext)
+  const { query } = useContext(SearchContext)
+  const { generation, pokemonIndex } = props
+
+  const pokemonOfGeneration = useMemo(
+    () => (generation == undefined ? [] : (pokemonIndex ?? []).filter((entry) => isInGeneration(entry.number, generation))),
+    [pokemonIndex, generation]
+  )
+  const visiblePokemon = useMemo(() => matchingPokemon(pokemonOfGeneration, query, germanNames), [pokemonOfGeneration, query, germanNames])
+
+  if (generation == undefined) {
+    return (
+      <>
+        <PokemonSuggestions />
+        <div className={styles.status}>
+          <div className={styles.hint}>
+            <div className={styles.headline}>Welcome to the Pokédex</div>
+            <div className={styles.detail}>Choose a generation from the menu above, then pick a Pokémon to see all of its cards.</div>
+          </div>
+        </div>
+      </>
+    )
+  }
+
+  if (props.error != null) {
+    return (
+      <CardListStatus
+        hasSelectedEra
+        hasSelectedSet
+        isFetching={props.isFetching}
+        error={props.error}
+        cardCount={0}
+        hasNoSearchMatches={false}
+      />
+    )
+  }
+
+  return (
+    <>
+      <div className={styles.pageTitle}>
+        <h1 className={styles.pageHeadline}>{generationLabel(generation, germanNames)}</h1>
+        {pokemonOfGeneration.length > 0 && <span className={styles.pageCount}>{pokemonOfGeneration.length} Pokémon</span>}
+      </div>
+      {pokemonOfGeneration.length > 0 && visiblePokemon.length == 0 && (
+        <div className={styles.status}>
+          <div className={styles.headline}>No matching Pokémon</div>
+          <div className={styles.detail}>Try a different name or Pokédex number.</div>
+        </div>
+      )}
+      <div className={styles.listWrapper}>
+        <PokemonGrid pokemon={visiblePokemon} />
+      </div>
+    </>
+  )
+}
+
+interface PokemonCardsProps {
+  pokemon?: PokemonEntry
+  generation?: Generation
+  cards?: ReturnType<typeof useCardsOfPokemon>['data']
+  pokedexNumber: number
+  isFetching: boolean
+  error: unknown
+}
+
+function PokemonCards(props: PokemonCardsProps) {
+  const { sortMode } = useContext(SortContext)
+  const { germanNames } = useContext(LanguageContext)
+  const { query } = useContext(SearchContext)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const location = useLocation()
+  const navigate = useNavigate()
+  const openCardId = searchParams.get('card') ?? undefined
+  const { pokemon, generation, cards } = props
+
+  const sortedCards = useMemo(
+    () => (cards == undefined ? undefined : sortCards(cards, sortMode, germanNames)),
+    [cards, sortMode, germanNames]
+  )
+  const visibleCards = useMemo(() => sortedCards?.filter((card) => matchesSearch(card, query)), [sortedCards, query])
 
   const openCard = useCallback((cardId: string) => setSearchParams({ card: cardId }, { state: { openedInApp: true } }), [setSearchParams])
 
@@ -65,43 +194,33 @@ export default function Pokemon() {
     }
   }, [location.state, navigate, setSearchParams])
 
-  useEffect(() => {
-    setHeaderItem(<PokemonPicker pokemon={pokemonIndex} selectedNumber={pokedexNumber} onSelect={selectPokemon} />)
-  }, [setHeaderItem, pokemonIndex, pokedexNumber, selectPokemon])
-
-  useEffect(() => {
-    setBusy(isFetching)
-  }, [setBusy, isFetching])
-
-  useEffect(() => () => setBusy(false), [setBusy])
-
-  if (!hasValidNumber) {
-    return <Navigate to={pokemonPath(defaultPokedexNumber)} replace />
-  }
-
   return (
-    <div className={styles.pokemonPage}>
-      <PokemonSuggestions excludedNumber={pokedexNumber} />
+    <>
+      <PokemonSuggestions excludedNumber={props.pokedexNumber} />
       {pokemon && (
         <div className={styles.pageTitle}>
           <img className={styles.sprite} src={spriteUrl(pokemon.number)} alt='' onError={(event) => (event.currentTarget.hidden = true)} />
           <h1 className={styles.pageHeadline}>{localizedName(pokemon, germanNames)}</h1>
           <span className={styles.pokedexNumber}>#{pokemon.number.toString().padStart(4, '0')}</span>
           <span className={styles.pageCount}>{pokemon.cardCount} cards</span>
+          {generation && (
+            <Link className={styles.generationLink} to={generationPath(generation)} onClick={() => window.scrollTo(0, 0)}>
+              <span aria-hidden='true'>←</span> {generationLabel(generation, germanNames)}
+            </Link>
+          )}
         </div>
       )}
       <CardListStatus
         hasSelectedEra
         hasSelectedSet
-        isFetching={isFetching}
-        error={cardsError ?? indexError}
+        isFetching={props.isFetching}
+        error={props.error}
         cardCount={cards?.length ?? 0}
         hasNoSearchMatches={(cards?.length ?? 0) > 0 && visibleCards?.length == 0}
       />
-      <div className={styles.cardListWrapper}>
+      <div className={styles.listWrapper}>
         <CardList cards={visibleCards} openCardId={openCardId} onOpenCard={openCard} onStepToCard={stepToCard} onCloseCard={closeCard} />
       </div>
-      {isMobile && <SearchToggle floating />}
-    </div>
+    </>
   )
 }

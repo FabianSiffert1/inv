@@ -33,7 +33,9 @@ const typeTintClassNames: Record<string, string> = {
   Dragon: styles.tintTeal
 }
 
-const tintClassName = (card: PokemonCard): string => typeTintClassNames[card.types?.[0] ?? ''] ?? styles.tintEggshell
+export const tintClassNameOfType = (type?: string): string => typeTintClassNames[type ?? ''] ?? styles.tintEggshell
+
+const tintClassName = (card: PokemonCard): string => tintClassNameOfType(card.types?.[0])
 
 export function Card({ card, isDetailsOpen, navigation, onOpen, onClose }: CardWithDetailsProps) {
   const isMobile = useIsMobile()

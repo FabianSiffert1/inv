@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { pokemonPath } from '../../util/api/pokemonTGC/model/Pokemon'
-import { CardBackIcon, PikachuIcon, pikachuPokedexNumber } from './ModeIcons'
+import { CardBackIcon, PikachuIcon } from './ModeIcons'
 import styles from './Title.module.scss'
 
 const cardsLocationStorageKey = 'inv-last-cards-location'
@@ -36,16 +35,10 @@ export default function Title() {
   const [hasToggled, setToggled] = useState(false)
 
   useEffect(() => {
-    if (isDexMode) {
-      storeLocation(dexLocationStorageKey, location.pathname)
-    } else {
-      storeLocation(cardsLocationStorageKey, `${location.pathname}${withoutOpenCard(location.search)}`)
-    }
+    storeLocation(isDexMode ? dexLocationStorageKey : cardsLocationStorageKey, `${location.pathname}${withoutOpenCard(location.search)}`)
   }, [isDexMode, location.pathname, location.search])
 
-  const target = isDexMode
-    ? readLocation(cardsLocationStorageKey, '/')
-    : readLocation(dexLocationStorageKey, pokemonPath(pikachuPokedexNumber))
+  const target = isDexMode ? readLocation(cardsLocationStorageKey, '/') : readLocation(dexLocationStorageKey, '/pokemon')
   const label = isDexMode ? 'Switch to cards' : 'Switch to Pokédex'
 
   return (

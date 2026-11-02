@@ -2,6 +2,7 @@ export interface Pokemon {
   number: number
   name: string
   germanName?: string
+  type?: string
   cardCount: number
 }
 

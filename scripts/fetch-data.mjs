@@ -284,6 +284,7 @@ const writePokemonData = async (sets) => {
       number,
       name: species?.name ?? mostCommon(cards.map((card) => card.name)),
       germanName: species?.germanName ?? mostCommon(cards.map((card) => card.germanName)),
+      type: mostCommon(cards.map((card) => card.types?.[0])),
       cardCount: cards.length
     })
   }

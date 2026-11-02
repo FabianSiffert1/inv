@@ -45,7 +45,7 @@ export function CardBackIcon() {
   )
 }
 
-export const pikachuPokedexNumber = 25
+const pikachuPokedexNumber = 25
 
 export function PikachuIcon() {
   return <img className={styles.sprite} src={spriteUrl(pikachuPokedexNumber)} alt='' />
