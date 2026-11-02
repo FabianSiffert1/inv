@@ -5,7 +5,7 @@ export type RarityTier = 'top' | 'high' | 'regular'
 const rarityGroups: string[][] = [
   ['Mega Hyper Rare', 'Hyper rare', 'Black White Rare'],
   ['Special illustration rare', 'Secret Rare', 'Shiny Ultra Rare'],
-  ['Ultra Rare', 'Illustration rare', 'Mega Attack Rare'],
+  ['Illustration rare', 'Mega Attack Rare', 'Ultra Rare'],
   ['Shiny rare VMAX', 'Shiny rare V', 'Shiny rare'],
   ['ACE SPEC Rare', 'Radiant Rare', 'Amazing Rare', 'Full Art Trainer'],
   ['Rare PRIME', 'LEGEND', 'Rare Holo LV.X'],
