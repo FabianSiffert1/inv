@@ -3,15 +3,13 @@ import { PokemonCard } from '../../api/pokemonTGC/model/PokemonCard'
 export type RarityTier = 'top' | 'high' | 'regular'
 
 const rarityGroups: string[][] = [
-  ['Mega Hyper Rare', 'Hyper rare', 'Black White Rare'],
-  ['Special illustration rare', 'Secret Rare', 'Shiny Ultra Rare'],
-  ['Illustration rare', 'Mega Attack Rare', 'Ultra Rare'],
-  ['Shiny rare VMAX', 'Shiny rare V', 'Shiny rare'],
-  ['ACE SPEC Rare', 'Radiant Rare', 'Amazing Rare', 'Full Art Trainer'],
-  ['Rare PRIME', 'LEGEND', 'Rare Holo LV.X'],
-  ['Holo Rare VSTAR', 'Holo Rare VMAX', 'Holo Rare V', 'Double rare'],
-  ['Pikachu Rare', 'RGB Rare', 'Futuristic Rare', 'Classic Collection'],
-  ['Holo Rare', 'Rare Holo', 'Rare'],
+  ['RGB Rare', 'Black White Rare', 'Mega Hyper Rare'],
+  ['Hyper rare', 'Secret Rare', 'Futuristic Rare', 'Special illustration rare'],
+  ['Rare Holo LV.X', 'Holo Rare VMAX', 'Shiny rare VMAX', 'Holo Rare VSTAR', 'Mega Attack Rare', 'Radiant Rare'],
+  ['ACE SPEC Rare', 'Illustration rare', 'Ultra Rare', 'Shiny Ultra Rare', 'Shiny rare V', 'Amazing Rare', 'LEGEND'],
+  ['Holo Rare V', 'Full Art Trainer', 'Rare PRIME', 'Double rare'],
+  ['Shiny rare', 'Holo Rare', 'Rare Holo', 'Classic Collection'],
+  ['Pikachu Rare', 'Rare'],
   ['Uncommon', 'Common'],
   ['Promo']
 ]
@@ -23,7 +21,7 @@ const unknownRarityRank = rarityRanks.size
 const noRarityRank = unknownRarityRank + 1
 
 const topTierGroupCount = 2
-const highTierGroupCount = 5
+const highTierGroupCount = 4
 
 export const rarityOf = (card: PokemonCard): string => card.rarity ?? noRarity
 
