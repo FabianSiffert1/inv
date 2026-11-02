@@ -1,12 +1,13 @@
 import React, { createContext, useCallback, useEffect, useMemo, useState } from 'react'
 import { PokemonCard } from '../../api/pokemonTGC/model/PokemonCard'
 import { localizedName } from '../language/LanguageProvider'
+import { rarityOf, rarityRank } from './rarity'
 
 export const sortStorageKey = 'inv-sort'
 
-export type SortMode = 'price' | 'number' | 'name'
+export type SortMode = 'price' | 'number' | 'name' | 'rarity'
 
-const sortModes: SortMode[] = ['price', 'number', 'name']
+const sortModes: SortMode[] = ['price', 'number', 'name', 'rarity']
 
 export const nextSortMode = (sortMode: SortMode): SortMode => sortModes[(sortModes.indexOf(sortMode) + 1) % sortModes.length]
 
@@ -58,7 +59,9 @@ export const sortCards = (cards: PokemonCard[], sortMode: SortMode, germanNames:
   const compare: Record<SortMode, (a: PokemonCard, b: PokemonCard) => number> = {
     price: (a, b) => trendPrice(b) - trendPrice(a),
     number: (a, b) => collator.compare(a.number, b.number),
-    name: (a, b) => collator.compare(localizedName(a, germanNames), localizedName(b, germanNames))
+    name: (a, b) => collator.compare(localizedName(a, germanNames), localizedName(b, germanNames)),
+    rarity: (a, b) =>
+      rarityRank(rarityOf(a)) - rarityRank(rarityOf(b)) || rarityOf(a).localeCompare(rarityOf(b)) || trendPrice(b) - trendPrice(a)
   }
   return [...cards].sort(compare[sortMode])
 }

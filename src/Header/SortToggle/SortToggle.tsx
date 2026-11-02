@@ -1,18 +1,20 @@
 import { ReactElement, useContext } from 'react'
 import { nextSortMode, SortContext, SortMode } from '../../util/ui/sort/SortProvider'
-import { CoinIcon, HashIcon, PikaTextIcon } from './SortIcons'
+import { CoinIcon, GemIcon, HashIcon, PikaTextIcon } from './SortIcons'
 import styles from './SortToggle.module.scss'
 
 const sortModeIcons: Record<SortMode, ReactElement> = {
   price: <CoinIcon />,
   number: <HashIcon />,
-  name: <PikaTextIcon />
+  name: <PikaTextIcon />,
+  rarity: <GemIcon />
 }
 
 const sortModeLabels: Record<SortMode, string> = {
   price: 'price',
   number: 'card number',
-  name: 'name'
+  name: 'name',
+  rarity: 'rarity'
 }
 
 export default function SortToggle() {

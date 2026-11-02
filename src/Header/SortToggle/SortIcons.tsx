@@ -198,3 +198,39 @@ export function PikaTextIcon() {
     </svg>
   )
 }
+
+const gemPixels = [
+  '................',
+  '................',
+  '....KKKKKKKK....',
+  '...KWWLLLLCCK...',
+  '..KWLLLLLLLCCK..',
+  '.KKKKKKKKKKKKKK.',
+  '.KLLLLCCCCDDDDK.',
+  '..KLLLCCCCDDDK..',
+  '...KLLCCCCDDK...',
+  '....KLCCCCDK....',
+  '.....KCCCCK.....',
+  '......KCCK......',
+  '.......KK.......'
+]
+
+const gemColors: Record<string, string> = {
+  K: '#2B2433',
+  W: '#FFFFFF',
+  L: '#9FE8FF',
+  C: '#4FC3F7',
+  D: '#1E88C8'
+}
+
+export function GemIcon() {
+  return (
+    <svg viewBox='0 0 16 16' shapeRendering='crispEdges' aria-hidden='true' focusable='false'>
+      {gemPixels.flatMap((row, y) =>
+        [...row].map((pixel, x) =>
+          gemColors[pixel] ? <rect key={`${x}-${y}`} x={x} y={y + 1} width='1' height='1' fill={gemColors[pixel]} /> : null
+        )
+      )}
+    </svg>
+  )
+}
