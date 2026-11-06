@@ -100,6 +100,7 @@ const persistOptions = {
     throttleTime: 2000
   }),
   maxAge: cacheMaxAge,
+  // Bump when the shape of persisted data changes.
   buster: 'server-snapshot-2',
   dehydrateOptions: {
     shouldDehydrateQuery: (query: Query) => {

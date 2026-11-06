@@ -93,8 +93,11 @@ and its hot-reload WebSocket makes phones prompt for local network access.
   `dev` and `preview`, JSON with `Cache-Control: no-cache` and an ETag, images with a 30-day cache.
 - **TanStack Query** fetches the snapshot and persists it to IndexedDB so a revisit is instant.
   The set list is revalidated hourly; card queries are keyed by `generatedAt`, so a new snapshot
-  drops the old cards. Only the eight most recently viewed card lists are persisted, to keep the
-  cache small.
+  drops the old cards. Only the eight most recently viewed card lists plus the sets behind your
+  favorites are persisted, to keep the cache small; the search index is never persisted. The
+  persisted cache carries a `buster` string in `main.tsx`. Bump it whenever the shape of
+  `sets.json` or the card files changes, so browsers discard the old copy instead of running new
+  code against old data.
 - **Theming** is a `data-theme` attribute on `<html>`. The choice is stored in `localStorage` and
   falls back to the OS preference. An inline script in `index.html` applies it before first paint so
   the page does not flash the wrong theme.
