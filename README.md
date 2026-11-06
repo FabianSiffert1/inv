@@ -31,7 +31,8 @@ npm run fetch-data
 
 TCGdex needs no API key. Prices are only available per card, so a run requests every card of every
 set individually and takes a while. Pokémon TCG Pocket sets are skipped, as they have no market
-prices.
+prices. The run also downloads a static sprite for every Pokémon that has cards, plus an animated
+one where PokeAPI has it, into `data/sprites/`.
 
 ## Scripts
 
@@ -95,6 +96,11 @@ and its hot-reload WebSocket makes phones prompt for local network access.
 - **Links**: the selected set and the open card live in the URL (`/market?set=<setId>&card=<cardId>`),
   so the link buttons next to the set selector and the card title can share them.
 - A dot next to a set name means that set is already stored offline.
+- **Prices** come from TCGdex, which mirrors Cardmarket and TCGplayer price guides. Each card
+  carries the timestamp of its last price update, shown under the price panels. The daily refresh
+  only picks up what TCGdex has re-synced, so prices can be older than the snapshot.
+- **Sprites** are PokeAPI's 96×96 PNGs. Pokémon detail pages show the animated Showdown GIF when
+  one exists and fall back to the PNG otherwise, or when the system asks for reduced motion.
 - **Favorites** live in `localStorage` for guests. Signed-in users get them from Firestore instead,
   one document per user at `users/<uid>`, with offline persistence so toggles work without a
   connection. The first sign-in merges the local list into the cloud one. Firebase is loaded lazily,
@@ -126,4 +132,5 @@ npx firebase deploy --only firestore:rules
 ## Known gaps
 
 - There is no test suite.
-- Prices are whatever the API reports and are not validated, and are at most one refresh old.
+- Prices are whatever TCGdex reports and are not validated. See the price timestamp for their age.
+- Animated sprites are missing for some Pokémon above #1000 and are not used in the grids.

@@ -294,3 +294,9 @@
   @include typoFieldLabel;
   font-weight: 500;
 }
+
+.priceUpdated {
+  padding-top: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--secondary-color);
+}

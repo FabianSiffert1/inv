@@ -9,7 +9,7 @@ import {
   TcgPlayerPriceSet
 } from '../../../../../util/api/pokemonTGC/model/PokemonCard'
 import { formatPrice } from '../../../../../util/format/price'
-import { formatSetReleaseDate } from '../../../../../util/format/date'
+import { formatPriceDate, formatSetReleaseDate } from '../../../../../util/format/date'
 import { useLocalizedName } from '../../../../../util/ui/language/LanguageProvider'
 import { cardShareLink } from '../../../../../util/shareLinks'
 import { useModalBehaviour } from '../../../../../util/ui/useModalBehaviour'
@@ -211,10 +211,19 @@ export function CardMarketPrices(props: PokemonCardProp) {
             <PriceRow label='Suggested' price={prices.suggestedPrice} />
           </dl>
           <ReverseHoloPrices prices={prices} />
+          <PriceUpdatedAt updatedAt={props.card.cardmarket?.updatedAt} />
         </>
       )}
     </section>
   )
+}
+
+function PriceUpdatedAt({ updatedAt }: { updatedAt?: string }) {
+  const formatted = formatPriceDate(updatedAt)
+  if (formatted == undefined) {
+    return null
+  }
+  return <div className={styles.priceUpdated}>Prices from {formatted}</div>
 }
 
 function ReverseHoloPrices({ prices }: { prices: CardMarketPriceSet }) {
@@ -255,7 +264,10 @@ export function TcgPlayerPrices(props: PokemonCardProp) {
       {props.card.tcgplayer == undefined ? (
         <div className={styles.emptyPanel}>No prices available.</div>
       ) : (
-        <TcgPlayerPriceList tcgPlayer={props.card.tcgplayer} />
+        <>
+          <TcgPlayerPriceList tcgPlayer={props.card.tcgplayer} />
+          <PriceUpdatedAt updatedAt={props.card.tcgplayer.updatedAt} />
+        </>
       )}
     </section>
   )
