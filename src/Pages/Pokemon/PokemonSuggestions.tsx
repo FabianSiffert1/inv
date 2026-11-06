@@ -1,4 +1,4 @@
-import { useContext } from 'react'
+import { useContext, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { MagnifyingGlassIcon } from '../../Header/SearchToggle/SearchIcon'
 import { usePokemonIndex, useSearchIndex } from '../../util/api/pokemonTGC/hooks'
@@ -23,6 +23,11 @@ export default function PokemonSuggestions(props: PokemonSuggestionsProps) {
   const trimmedQuery = query.trim()
   const isActive = trimmedQuery.length >= minimumQueryLength && !/^#?\d+$/.test(trimmedQuery)
   const { data: searchIndex } = useSearchIndex(isActive)
+  const normalizedQuery = trimmedQuery.toLowerCase()
+  const cardCount = useMemo(
+    () => (isActive ? searchIndex?.filter((entry) => matchesSearchIndex(entry, normalizedQuery)).length : undefined),
+    [isActive, searchIndex, normalizedQuery]
+  )
 
   if (!isActive) {
     return null
@@ -33,8 +38,6 @@ export default function PokemonSuggestions(props: PokemonSuggestionsProps) {
       : matchingPokemon(pokemonIndex, trimmedQuery, germanNames)
           .filter((entry) => entry.number != props.excludedNumber)
           .slice(0, suggestionLimit)
-  const normalizedQuery = trimmedQuery.toLowerCase()
-  const cardCount = searchIndex?.filter((entry) => matchesSearchIndex(entry, normalizedQuery)).length
   if (suggestions.length == 0 && cardCount == 0) {
     return null
   }
