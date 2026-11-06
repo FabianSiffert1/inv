@@ -1,5 +1,8 @@
+@use 'sass:color';
+
 /* Dark Theme Colors */
 $neutral-0: #ffffff;
+$neutral-300: #c4c4c8;
 $neutral-400: #949497;
 $neutral-900: #1a1a1c;
 
@@ -32,3 +35,46 @@ $element-beige: #e6d3b0;
 $element-dark-green: #789a8a;
 $element-metal: #c4ccd6;
 $element-eggshell: #f0ead6;
+
+/* Dark Theme, cool base with pastel accents */
+$night-base: #1e1e2e;
+$night-text: #cdd6f4;
+$night-subtext: #a6adc8;
+$night-accent: #b4befe;
+
+$pastel-rose: #f2cdcd;
+$pastel-pink: #f5c2e7;
+$pastel-blue: #89b4fa;
+$pastel-sky: #89dceb;
+$pastel-sapphire: #74c7ec;
+$pastel-teal: #94e2d5;
+$pastel-green: #a6e3a1;
+$pastel-lavender: #b4befe;
+$pastel-red: #f38ba8;
+$pastel-maroon: #eba0ac;
+$pastel-yellow: #f9e2af;
+$pastel-rosewater: #f5e0dc;
+$night-overlay: #6c7086;
+$night-surface: #585b70;
+
+@function night($pastel) {
+  @return color.mix($pastel, $night-base, 55%);
+}
+
+$element-peach-dark: night($pastel-rose);
+$element-pink-dark: night($pastel-pink);
+$element-blue-dark: night($pastel-blue);
+$element-blue-variant-dark: night($pastel-sky);
+$element-blue-variant-2-dark: night($pastel-sapphire);
+$element-blue-green-gradient-dark: night($pastel-teal);
+$element-green-dark: night($pastel-green);
+$element-green-variant-dark: night($pastel-teal);
+$element-green-variant-2-dark: night($pastel-sapphire);
+$element-lavender-dark: night($pastel-lavender);
+$element-red-dark: night($pastel-red);
+$element-brown-dark: night($pastel-maroon);
+$element-yellow-dark: night($pastel-yellow);
+$element-beige-dark: night($pastel-rosewater);
+$element-dark-green-dark: color.mix($pastel-green, $night-base, 40%);
+$element-metal-dark: night($night-overlay);
+$element-eggshell-dark: night($night-surface);

@@ -23,16 +23,35 @@ html[data-theme] {
   --card-border-color: color-mix(in srgb, var(--color) 18%, transparent);
   --shadow-color: color-mix(in srgb, var(--color) 14%, transparent);
   --scrim-color: color-mix(in srgb, var(--background-color) 75%, transparent);
+  --details-wash: color-mix(in srgb, var(--elementPeach) 50%, transparent);
 }
 
 html[data-theme='dark'] {
-  --background-color: #{$neutral-900};
+  --background-color: #{$night-base};
+  --details-wash: color-mix(in srgb, var(--elementLavender) 14%, transparent);
+  --elementPeach: #{$element-peach-dark};
+  --elementPink: #{$element-pink-dark};
+  --elementBlue: #{$element-blue-dark};
+  --elementBlueVariant: #{$element-blue-variant-dark};
+  --elementBlueVariant2: #{$element-blue-variant-2-dark};
+  --elementBlueGreenGradient: #{$element-blue-green-gradient-dark};
+  --elementGreen: #{$element-green-dark};
+  --elementGreenVariant: #{$element-green-variant-dark};
+  --elementGreenVariant2: #{$element-green-variant-2-dark};
+  --elementLavender: #{$element-lavender-dark};
+  --elementRed: #{$element-red-dark};
+  --elementBrown: #{$element-brown-dark};
+  --elementYellow: #{$element-yellow-dark};
+  --elementBeige: #{$element-beige-dark};
+  --elementDarkGreen: #{$element-dark-green-dark};
+  --elementMetal: #{$element-metal-dark};
+  --elementEggshell: #{$element-eggshell-dark};
   --background-gradient: none;
-  --color: #{$neutral-0};
-  --marker: #{$neutral-0};
+  --color: #{$night-text};
+  --marker: #{$night-accent};
 
-  --primary-color: #{$violet-400};
-  --secondary-color: var(--color);
+  --primary-color: #{$night-accent};
+  --secondary-color: #{$night-subtext};
 
   color-scheme: dark;
 }
