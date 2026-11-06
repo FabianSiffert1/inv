@@ -3,6 +3,7 @@
 .cardWrapper {
   @include surface;
   @include pastel(var(--tint));
+  cursor: pointer;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;

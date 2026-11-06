@@ -1,3 +1,4 @@
+import { MouseEvent } from 'react'
 import { PokemonCard } from '../../../../../util/api/pokemonTGC/model/PokemonCard'
 import { useLocalizedName } from '../../../../../util/ui/language/LanguageProvider'
 import { formatPriceParts } from '../../../../../util/format/price'
@@ -41,8 +42,15 @@ export function Card({ card, isDetailsOpen, navigation, onOpen, onClose }: CardW
   const isMobile = useIsMobile()
   const cardName = useLocalizedName(card)
 
+  const openFromTile = (event: MouseEvent<HTMLDivElement>) => {
+    if (isDetailsOpen || (event.target as HTMLElement).closest('a, button') != null) {
+      return
+    }
+    onOpen()
+  }
+
   return (
-    <div className={`${styles.cardWrapper} ${tintClassName(card)} ${isDetailsOpen ? styles.detailsOpen : ''}`}>
+    <div className={`${styles.cardWrapper} ${tintClassName(card)} ${isDetailsOpen ? styles.detailsOpen : ''}`} onClick={openFromTile}>
       {isDetailsOpen &&
         (isMobile ? (
           <MobileCardDetails card={card} navigation={navigation} onClose={onClose} />
