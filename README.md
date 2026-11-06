@@ -112,8 +112,11 @@ and its hot-reload WebSocket makes phones prompt for local network access.
 - **Prices** come from TCGdex, which mirrors Cardmarket and TCGplayer price guides. Each card
   carries the timestamp of its last price update, shown under the price panels. When TCGdex maps
   several cards of a set to one Cardmarket product, only the lowest-numbered card keeps that
-  product and price; the others get a Cardmarket search link and no price. The daily refresh
-  only picks up what TCGdex has re-synced, so prices can be older than the snapshot.
+  product and price; the others get a Cardmarket search link and no price. A card without a
+  Cardmarket price shows its TCGplayer market price instead, in USD and tagged as such. Those USD
+  amounts take part in the price sort as they are, but not in the set and favorites totals, which
+  stay in EUR. The daily refresh only picks up what TCGdex has re-synced, so prices can be older
+  than the snapshot.
 - **Sprites** are PokeAPI's 96×96 PNGs. Pokémon detail pages show the animated Showdown GIF when
   one exists and fall back to the PNG otherwise, or when the system asks for reduced motion.
 - **Favorites** live in `localStorage` for guests. Signed-in users get them from Firestore instead.

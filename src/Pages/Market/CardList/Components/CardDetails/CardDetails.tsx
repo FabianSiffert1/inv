@@ -11,7 +11,7 @@ import {
 } from '../../../../../util/api/pokemonTGC/model/PokemonCard'
 import { spriteUrl } from '../../../../../util/api/pokemonTGC/model/Pokemon'
 import { setPath } from '../../../../../util/api/pokemonTGC/model/PokemonSet'
-import { formatPrice } from '../../../../../util/format/price'
+import { Currency, formatPrice } from '../../../../../util/format/price'
 import { formatPriceDate, formatSetReleaseDate } from '../../../../../util/format/date'
 import { useLocalizedName } from '../../../../../util/ui/language/LanguageProvider'
 import { cardShareLink } from '../../../../../util/shareLinks'
@@ -45,6 +45,7 @@ interface PriceSetProps {
 interface PriceRowProps {
   label: string
   price?: number
+  currency?: Currency
 }
 
 export function CardDetails(props: CardDetailsProps) {
@@ -182,7 +183,7 @@ export function SetInformation(props: PokemonCardProp) {
 }
 
 export function PriceRow(props: PriceRowProps) {
-  const formatted = formatPrice(props.price)
+  const formatted = formatPrice(props.price, props.currency)
   if (formatted == undefined) {
     return null
   }
@@ -323,7 +324,7 @@ export function PriceSet({ cardType, priceSet }: PriceSetProps): ReactElement | 
       <div className={styles.priceSetTitle}>{cardType}</div>
       <dl className={styles.definitionList}>
         {(Object.keys(tcgPlayerPriceLabels) as (keyof TcgPlayerPriceSet)[]).map((key) => (
-          <PriceRow key={key} label={tcgPlayerPriceLabels[key]} price={priceSet[key]} />
+          <PriceRow key={key} label={tcgPlayerPriceLabels[key]} price={priceSet[key]} currency='USD' />
         ))}
       </dl>
     </div>

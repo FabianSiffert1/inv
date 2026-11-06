@@ -1,5 +1,6 @@
 import React, { createContext, useCallback, useEffect, useMemo, useState } from 'react'
 import { PokemonCard } from '../../api/pokemonTGC/model/PokemonCard'
+import { cardDisplayPrice } from '../../cardPrice'
 import { localizedName } from '../language/LanguageProvider'
 import { rarityOf, rarityRank } from './rarity'
 
@@ -52,7 +53,7 @@ const SortProvider: React.FC<Props> = ({ children }) => {
   return <SortContext.Provider value={contextValue}>{children}</SortContext.Provider>
 }
 
-const trendPrice = (card: PokemonCard): number => card.cardmarket?.prices?.trendPrice ?? -1
+const trendPrice = (card: PokemonCard): number => cardDisplayPrice(card)?.amount ?? -1
 
 export const sortCards = (cards: PokemonCard[], sortMode: SortMode, germanNames: boolean): PokemonCard[] => {
   const collator = new Intl.Collator(germanNames ? 'de' : 'en', { numeric: true, sensitivity: 'base' })

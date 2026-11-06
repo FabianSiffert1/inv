@@ -1,12 +1,18 @@
-const priceFormat = new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' })
+export type Currency = 'EUR' | 'USD'
 
-export const formatPrice = (price?: number): string | undefined => (price == undefined ? undefined : priceFormat.format(price))
+const priceFormats: Record<Currency, Intl.NumberFormat> = {
+  EUR: new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }),
+  USD: new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' })
+}
 
-export const formatPriceParts = (price?: number): { amount: string; currency: string } | undefined => {
+export const formatPrice = (price?: number, currency: Currency = 'EUR'): string | undefined =>
+  price == undefined ? undefined : priceFormats[currency].format(price)
+
+export const formatPriceParts = (price?: number, currency: Currency = 'EUR'): { amount: string; currency: string } | undefined => {
   if (price == undefined) {
     return undefined
   }
-  const parts = priceFormat.formatToParts(price)
+  const parts = priceFormats[currency].formatToParts(price)
   return {
     amount: parts
       .filter((part) => part.type != 'currency')
