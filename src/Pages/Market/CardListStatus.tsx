@@ -1,3 +1,4 @@
+import { HttpError, isNetworkError } from '../../util/api/pokemonTGC/querys'
 import styles from './CardListStatus.module.scss'
 
 interface CardListStatusProps {
@@ -10,14 +11,13 @@ interface CardListStatusProps {
 }
 
 const messageForError = (error: unknown): string => {
-  const status = (error as { response?: { status?: number } })?.response?.status
-  if (status == 404) {
+  if (error instanceof HttpError && error.status == 404) {
     return 'No card data is available for this yet. Try again later.'
   }
-  if (status != undefined && status >= 500) {
+  if (error instanceof HttpError && error.status >= 500) {
     return 'The server is currently unavailable. Try again later.'
   }
-  if ((error as { message?: string })?.message == 'Network Error') {
+  if (isNetworkError(error)) {
     return 'Could not reach the server. Check your connection.'
   }
   return 'Could not load cards. Reload the page to try again.'

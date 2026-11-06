@@ -11,6 +11,7 @@ import Home from './Pages/Home/Home'
 import Inventory from './Pages/Inventory/Inventory'
 import Market from './Pages/Market/Market'
 import Pokemon from './Pages/Pokemon/Pokemon'
+import { isNotFoundError } from './util/api/pokemonTGC/querys'
 import AuthProvider from './util/auth/AuthProvider'
 import FavoritesProvider from './util/ui/favorites/FavoritesProvider'
 import LanguageProvider from './util/ui/language/LanguageProvider'
@@ -51,8 +52,6 @@ const router = createBrowserRouter(
   ],
   { basename: import.meta.env.BASE_URL }
 )
-
-const isNotFoundError = (error: unknown): boolean => (error as { response?: { status?: number } })?.response?.status == 404
 
 const queryClient = new QueryClient({
   defaultOptions: {

@@ -1,4 +1,3 @@
-import axios from 'axios'
 import { Pokemon } from './model/Pokemon'
 import { PokemonCard } from './model/PokemonCard'
 import { PokemonSet } from './model/PokemonSet'
@@ -8,14 +7,34 @@ export interface SetsSnapshot {
   sets: PokemonSet[]
 }
 
-export const fetchSetsSnapshot = async (signal?: AbortSignal): Promise<SetsSnapshot> =>
-  (await axios.get<SetsSnapshot>('/data/sets.json', { signal })).data
+export class HttpError extends Error {
+  readonly status: number
 
-export const fetchAllCardsOfASet = async (setId: string, signal?: AbortSignal): Promise<PokemonCard[]> =>
-  (await axios.get<PokemonCard[]>(`/data/cards/${encodeURIComponent(setId)}.json`, { signal })).data
+  constructor(status: number, url: string) {
+    super(`${status} for ${url}`)
+    this.name = 'HttpError'
+    this.status = status
+  }
+}
 
-export const fetchPokemonIndex = async (signal?: AbortSignal): Promise<Pokemon[]> =>
-  (await axios.get<Pokemon[]>('/data/pokemon.json', { signal })).data
+export const isNotFoundError = (error: unknown): boolean => error instanceof HttpError && error.status == 404
 
-export const fetchCardsOfPokemon = async (pokedexNumber: number, signal?: AbortSignal): Promise<PokemonCard[]> =>
-  (await axios.get<PokemonCard[]>(`/data/pokemon/${pokedexNumber}.json`, { signal })).data
+export const isNetworkError = (error: unknown): boolean => error instanceof TypeError
+
+const getJson = async <T,>(url: string, signal?: AbortSignal): Promise<T> => {
+  const response = await fetch(url, { signal })
+  if (!response.ok) {
+    throw new HttpError(response.status, url)
+  }
+  return (await response.json()) as T
+}
+
+export const fetchSetsSnapshot = (signal?: AbortSignal) => getJson<SetsSnapshot>('/data/sets.json', signal)
+
+export const fetchAllCardsOfASet = (setId: string, signal?: AbortSignal) =>
+  getJson<PokemonCard[]>(`/data/cards/${encodeURIComponent(setId)}.json`, signal)
+
+export const fetchPokemonIndex = (signal?: AbortSignal) => getJson<Pokemon[]>('/data/pokemon.json', signal)
+
+export const fetchCardsOfPokemon = (pokedexNumber: number, signal?: AbortSignal) =>
+  getJson<PokemonCard[]>(`/data/pokemon/${pokedexNumber}.json`, signal)
