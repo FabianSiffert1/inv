@@ -12,6 +12,7 @@ import Home from './Pages/Home/Home'
 import Inventory from './Pages/Inventory/Inventory'
 import Market from './Pages/Market/Market'
 import Pokemon from './Pages/Pokemon/Pokemon'
+import Search from './Pages/Search/Search'
 import { SetsSnapshot } from './util/api/pokemonTGC/querys'
 import { isNotFoundError } from './util/api/pokemonTGC/querys'
 import { isFavoriteSetId } from './util/ui/favorites/favoriteSets'
@@ -53,6 +54,10 @@ const router = createBrowserRouter(
         {
           path: 'artists/:slug?',
           element: <Artists />
+        },
+        {
+          path: 'search',
+          element: <Search />
         }
       ]
     }

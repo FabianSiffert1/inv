@@ -1,11 +1,13 @@
 import { ReactElement, useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { StarIcon } from '../../Components/FavoriteButton/FavoriteButton'
+import { MagnifyingGlassIcon } from '../SearchToggle/SearchIcon'
 import { CardBackIcon, PikachuIcon, SmeargleIcon } from './ModeIcons'
 import styles from './Title.module.scss'
 
 type BrowseMode = 'cards' | 'dex' | 'artists'
-type Mode = BrowseMode | 'favorites'
+type PlaceMode = 'favorites' | 'search'
+type Mode = BrowseMode | PlaceMode
 
 const browseModes: BrowseMode[] = ['cards', 'dex', 'artists']
 const lastBrowseModeStorageKey = 'inv-last-mode'
@@ -45,20 +47,33 @@ const browseModeSettings: Record<BrowseMode, BrowseModeSettings> = {
   }
 }
 
-const favoritesSettings: ModeSettings = {
-  label: 'Favorites',
-  icon: (
-    <span className={styles.modeStar}>
-      <StarIcon />
-    </span>
-  )
+const placeModeSettings: Record<PlaceMode, ModeSettings> = {
+  favorites: {
+    label: 'Favorites',
+    icon: (
+      <span className={styles.modeStar}>
+        <StarIcon />
+      </span>
+    )
+  },
+  search: {
+    label: 'Search',
+    icon: (
+      <span className={styles.modeStar}>
+        <MagnifyingGlassIcon />
+      </span>
+    )
+  }
 }
 
-const isBrowseMode = (mode: Mode): mode is BrowseMode => mode != 'favorites'
+const isBrowseMode = (mode: Mode): mode is BrowseMode => mode != 'favorites' && mode != 'search'
 
 const modeOfPath = (pathname: string): Mode => {
   if (pathname.startsWith('/inventory')) {
     return 'favorites'
+  }
+  if (pathname.startsWith('/search')) {
+    return 'search'
   }
   if (pathname.startsWith('/pokemon')) {
     return 'dex'
@@ -124,7 +139,7 @@ export default function Title() {
   const targetSettings = browseModeSettings[targetMode]
   const target = readBrowseLocation(targetMode)
   const label = isBrowseMode(shownMode) ? targetSettings.switchLabel : `Back to ${targetSettings.label}`
-  const shownSettings = isBrowseMode(shownMode) ? browseModeSettings[shownMode] : favoritesSettings
+  const shownSettings = isBrowseMode(shownMode) ? browseModeSettings[shownMode] : placeModeSettings[shownMode]
 
   return (
     <div className={styles.title}>

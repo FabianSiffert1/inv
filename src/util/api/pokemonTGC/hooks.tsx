@@ -4,12 +4,14 @@ import { Artist } from './model/Artist'
 import { Pokemon } from './model/Pokemon'
 import { PokemonCard } from './model/PokemonCard'
 import { PokemonSet, PokemonSetName } from './model/PokemonSet'
+import { SearchIndexEntry } from './model/SearchIndex'
 import {
   fetchAllCardsOfASet,
   fetchArtistIndex,
   fetchCardsOfArtist,
   fetchCardsOfPokemon,
   fetchPokemonIndex,
+  fetchSearchIndex,
   fetchSetsSnapshot,
   SetsSnapshot
 } from './querys'
@@ -120,6 +122,18 @@ export const useCardsOfPokemon = (pokedexNumber?: number) => {
     queryKey: ['cards', 'pokemon', pokedexNumber, generatedAt],
     queryFn: ({ signal }) => fetchCardsOfPokemon(pokedexNumber as number, signal),
     enabled: pokedexNumber != undefined && generatedAt != undefined,
+    staleTime: Infinity
+  })
+}
+
+export const useSearchIndex = (enabled: boolean) => {
+  const { data: snapshot } = useSetsSnapshot()
+  const generatedAt = snapshot?.generatedAt
+
+  return useQuery<SearchIndexEntry[]>({
+    queryKey: ['search', 'index', generatedAt],
+    queryFn: ({ signal }) => fetchSearchIndex(signal),
+    enabled: enabled && generatedAt != undefined,
     staleTime: Infinity
   })
 }

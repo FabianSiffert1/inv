@@ -106,6 +106,10 @@ and its hot-reload WebSocket makes phones prompt for local network access.
   there. Sets is the market view by era and set, Pokémon lists Pokémon by generation, Artists lists
   illustrators by card count, each with the illustrator's most expensive card as the
   tile. Each mode remembers its last page.
+- **Search** filters the list you are on. The suggestions under the box also offer "all cards named …",
+  which opens `/search?q=` with every matching card across every set, built from `data/search.json`,
+  a compact index of name, set, image and trend price per card. Clicking a result opens the card in
+  its set.
 - **Links**: the selected set and the open card live in the URL (`/market?set=<setId>&card=<cardId>`),
   so the share buttons next to the selectors and the card title can copy them. Card details link to
   the card's set, its Pokémon and its illustrator.

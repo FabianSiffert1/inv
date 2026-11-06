@@ -2,6 +2,7 @@ import { Artist } from './model/Artist'
 import { Pokemon } from './model/Pokemon'
 import { PokemonCard } from './model/PokemonCard'
 import { PokemonSet } from './model/PokemonSet'
+import { SearchIndexEntry } from './model/SearchIndex'
 
 export interface SetsSnapshot {
   generatedAt: string
@@ -44,3 +45,5 @@ export const fetchArtistIndex = (signal?: AbortSignal) => getJson<Artist[]>('/da
 
 export const fetchCardsOfArtist = (slug: string, signal?: AbortSignal) =>
   getJson<PokemonCard[]>(`/data/artists/${encodeURIComponent(slug)}.json`, signal)
+
+export const fetchSearchIndex = (signal?: AbortSignal) => getJson<SearchIndexEntry[]>('/data/search.json', signal)

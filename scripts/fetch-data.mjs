@@ -450,6 +450,23 @@ const writeArtistData = async (allCards) => {
   console.log(`Artists: ${artists.length}`)
 }
 
+const toSearchEntry = (card) => ({
+  id: card.id,
+  name: card.name,
+  germanName: card.germanName,
+  setId: card.set.id,
+  number: card.number,
+  image: card.images.small,
+  trendPrice: card.cardmarket?.prices?.trendPrice,
+  rarity: card.rarity,
+  type: card.types?.[0]
+})
+
+const writeSearchIndex = async (allCards) => {
+  await writeJsonAtomically(path.join(dataDirectory, 'search.json'), allCards.map(toSearchEntry))
+  console.log(`Search index: ${allCards.length} cards`)
+}
+
 const main = async () => {
   await mkdir(cardsDirectory, { recursive: true })
   await mkdir(spritesDirectory, { recursive: true })
@@ -506,6 +523,7 @@ const main = async () => {
   const allCards = await readCardsOfSets(sets)
   await writePokemonData(allCards)
   await writeArtistData(allCards)
+  await writeSearchIndex(allCards)
   await writeJsonAtomically(path.join(dataDirectory, 'sets.json'), { generatedAt: new Date().toISOString(), sets })
 
   const sortedPokedexNumbers = [...pokedexNumbers].sort((a, b) => a - b)
