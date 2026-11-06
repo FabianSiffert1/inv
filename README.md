@@ -7,7 +7,7 @@ them in a favorites list that follows you across devices once you sign in.
 Live at [inv.siffert.io](https://inv.siffert.io).
 
 <p align="center">
-  <img src="docs/inv.png" width="70%" height="70%">
+  <img src="docs/screenshot.png" width="70%" height="70%">
 </p>
 
 ## About this project
