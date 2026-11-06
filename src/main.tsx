@@ -49,6 +49,8 @@ const router = createBrowserRouter(
   { basename: import.meta.env.BASE_URL }
 )
 
+const isNotFoundError = (error: unknown): boolean => (error as { response?: { status?: number } })?.response?.status == 404
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -57,7 +59,7 @@ const queryClient = new QueryClient({
       refetchOnWindowFocus: false,
       refetchOnMount: false,
       refetchOnReconnect: false,
-      retry: 4,
+      retry: (failureCount: number, error: unknown) => !isNotFoundError(error) && failureCount < 4,
       retryDelay: (attempt: number) => Math.min(1000 * 2 ** attempt, 8000)
     }
   }

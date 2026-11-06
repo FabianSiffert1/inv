@@ -10,6 +10,7 @@ const focusableSelector = [
 ].join(',')
 
 const openModals: RefObject<HTMLElement>[] = []
+let overflowBeforeModals = ''
 
 export interface ModalArrowKeyHandlers {
   onPrevious?: () => void
@@ -24,7 +25,6 @@ export const useModalBehaviour = (containerRef: RefObject<HTMLElement>, onClose:
 
   useEffect(() => {
     const previouslyFocused = document.activeElement as HTMLElement | null
-    const previousOverflow = document.body.style.overflow
 
     const focusableElements = () => Array.from(containerRef.current?.querySelectorAll<HTMLElement>(focusableSelector) ?? [])
 
@@ -67,15 +67,20 @@ export const useModalBehaviour = (containerRef: RefObject<HTMLElement>, onClose:
       }
     }
 
+    if (openModals.length == 0) {
+      overflowBeforeModals = document.body.style.overflow
+      document.body.style.overflow = 'hidden'
+    }
     openModals.push(containerRef)
-    document.body.style.overflow = 'hidden'
     document.addEventListener('keydown', onKeyDown)
     focusableElements()[0]?.focus()
 
     return () => {
       openModals.splice(openModals.indexOf(containerRef), 1)
       document.removeEventListener('keydown', onKeyDown)
-      document.body.style.overflow = previousOverflow
+      if (openModals.length == 0) {
+        document.body.style.overflow = overflowBeforeModals
+      }
       previouslyFocused?.focus()
     }
   }, [containerRef])
