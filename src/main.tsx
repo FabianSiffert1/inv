@@ -10,6 +10,7 @@ import Home from './Pages/Home/Home'
 import Inventory from './Pages/Inventory/Inventory'
 import Market from './Pages/Market/Market'
 import Pokemon from './Pages/Pokemon/Pokemon'
+import AuthProvider from './util/auth/AuthProvider'
 import FavoritesProvider from './util/ui/favorites/FavoritesProvider'
 import LanguageProvider from './util/ui/language/LanguageProvider'
 import SearchProvider from './util/ui/search/SearchProvider'
@@ -101,9 +102,11 @@ root.render(
         <LanguageProvider>
           <SortProvider>
             <SearchProvider>
-              <FavoritesProvider>
-                <RouterProvider router={router} />
-              </FavoritesProvider>
+              <AuthProvider>
+                <FavoritesProvider>
+                  <RouterProvider router={router} />
+                </FavoritesProvider>
+              </AuthProvider>
             </SearchProvider>
           </SortProvider>
         </LanguageProvider>
