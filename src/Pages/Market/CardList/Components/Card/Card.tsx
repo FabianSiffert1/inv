@@ -42,7 +42,7 @@ export function Card({ card, isDetailsOpen, navigation, onOpen, onClose }: CardW
   const cardName = useLocalizedName(card)
 
   return (
-    <div className={`${styles.cardWrapper} ${tintClassName(card)}`}>
+    <div className={`${styles.cardWrapper} ${tintClassName(card)} ${isDetailsOpen ? styles.detailsOpen : ''}`}>
       {isDetailsOpen &&
         (isMobile ? (
           <MobileCardDetails card={card} navigation={navigation} onClose={onClose} />
