@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { MouseEvent, useEffect, useRef, useState } from 'react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { CardBackIcon, PikachuIcon } from './ModeIcons'
 import styles from './Title.module.scss'
 
@@ -29,12 +29,17 @@ const withoutOpenCard = (search: string): string => {
   return remaining == '' ? '' : `?${remaining}`
 }
 
+const isPlainLeftClick = (event: MouseEvent) => event.button == 0 && !event.metaKey && !event.altKey && !event.ctrlKey && !event.shiftKey
+
+const afterNextPaint = (callback: () => void) => window.requestAnimationFrame(() => window.requestAnimationFrame(callback))
+
 export default function Title() {
   const location = useLocation()
+  const navigate = useNavigate()
   const isDexMode = location.pathname.startsWith('/pokemon')
-  const [hasToggled, setToggled] = useState(false)
   const [pendingDexMode, setPendingDexMode] = useState<boolean | undefined>(undefined)
   const isShowingDexMode = pendingDexMode ?? isDexMode
+  const isNavigating = useRef(false)
 
   useEffect(() => {
     storeLocation(isDexMode ? dexLocationStorageKey : cardsLocationStorageKey, `${location.pathname}${withoutOpenCard(location.search)}`)
@@ -42,22 +47,29 @@ export default function Title() {
 
   useEffect(() => {
     setPendingDexMode(undefined)
+    isNavigating.current = false
   }, [isDexMode])
 
   const target = isShowingDexMode ? readLocation(cardsLocationStorageKey, '/') : readLocation(dexLocationStorageKey, '/pokemon')
   const label = isShowingDexMode ? 'Switch to cards' : 'Switch to Pokédex'
 
-  const toggle = () => {
-    setToggled(true)
+  const toggle = (event: MouseEvent<HTMLAnchorElement>) => {
+    if (!isPlainLeftClick(event)) {
+      return
+    }
+    event.preventDefault()
+    if (isNavigating.current) {
+      return
+    }
+    isNavigating.current = true
     setPendingDexMode(!isShowingDexMode)
+    afterNextPaint(() => navigate(target))
   }
 
   return (
     <div className={styles.title}>
       <Link className={styles.modeToggle} to={target} aria-label={label} title={label} onClick={toggle}>
-        <span key={isShowingDexMode ? 'dex' : 'cards'} className={hasToggled ? `${styles.modeIcon} ${styles.flipIn}` : styles.modeIcon}>
-          {isShowingDexMode ? <PikachuIcon /> : <CardBackIcon />}
-        </span>
+        <span className={styles.modeIcon}>{isShowingDexMode ? <PikachuIcon /> : <CardBackIcon />}</span>
         <span className={styles.modeLabel}>{isShowingDexMode ? 'Dex' : 'Cards'}</span>
       </Link>
     </div>

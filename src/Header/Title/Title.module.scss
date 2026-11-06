@@ -14,7 +14,7 @@
   font-size: inherit;
   color: var(--color);
   text-decoration: none;
-  outline: 1px solid var(--card-border-color);
+  box-shadow: 0 0.15rem 0.5rem color-mix(in srgb, var(--color) 10%, transparent);
 }
 
 .modeIcon {
@@ -23,11 +23,6 @@
   justify-content: center;
   width: 1.9rem;
   height: 1.9rem;
-  perspective: 10rem;
-}
-
-.flipIn {
-  animation: flipIn 280ms $archEase both;
 }
 
 .cardBack {
@@ -44,19 +39,4 @@
 
 .modeLabel {
   min-width: 3.4em;
-}
-
-@keyframes flipIn {
-  from {
-    transform: rotateY(90deg);
-  }
-  to {
-    transform: rotateY(0deg);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .flipIn {
-    animation: none;
-  }
 }
