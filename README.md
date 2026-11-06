@@ -101,7 +101,9 @@ and its hot-reload WebSocket makes phones prompt for local network access.
   so the link buttons next to the set selector and the card title can share them.
 - A dot next to a set name means that set is already stored offline.
 - **Prices** come from TCGdex, which mirrors Cardmarket and TCGplayer price guides. Each card
-  carries the timestamp of its last price update, shown under the price panels. The daily refresh
+  carries the timestamp of its last price update, shown under the price panels. When TCGdex maps
+  several cards of a set to one Cardmarket product, only the lowest-numbered card keeps that
+  product and price; the others get a Cardmarket search link and no price. The daily refresh
   only picks up what TCGdex has re-synced, so prices can be older than the snapshot.
 - **Sprites** are PokeAPI's 96×96 PNGs. Pokémon detail pages show the animated Showdown GIF when
   one exists and fall back to the PNG otherwise, or when the system asks for reduced motion.

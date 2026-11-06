@@ -157,6 +157,27 @@ const toCard = (card, set, germanNames) => ({
   cardmarket: toCardmarket(card.pricing?.cardmarket)
 })
 
+const cardNumberCollator = new Intl.Collator('en', { numeric: true })
+
+const cardmarketSearchUrl = (card, set) => {
+  const searchString = [card.name, set.ptcgoCode, card.number].filter((part) => part != undefined).join(' ')
+  return `https://www.cardmarket.com/en/Pokemon/Products/Search?searchString=${encodeURIComponent(searchString)}`
+}
+
+const withoutSharedCardmarketProducts = (cards, set) => {
+  const cardsOfProduct = groupBy(cards, (card) => (card.cardmarket?.url == undefined ? [] : [card.cardmarket.url]))
+  cardsOfProduct.forEach((sharing) => {
+    if (sharing.length < 2) {
+      return
+    }
+    const [, ...others] = [...sharing].sort((a, b) => cardNumberCollator.compare(a.number, b.number))
+    others.forEach((card) => {
+      card.cardmarket = { url: cardmarketSearchUrl(card, set) }
+    })
+  })
+  return cards
+}
+
 const fetchGermanNames = async (setId) => {
   try {
     const germanSet = await get(`sets/${encodeURIComponent(setId)}`, 'de')
@@ -398,10 +419,10 @@ const main = async () => {
           throw error
         }
       })
-      const cards = cardDetails
-        .filter((card) => card != undefined)
-        .map((card) => toCard(card, set, germanNames.cardNames))
-        .sort(byTrendPriceDescending)
+      const cards = withoutSharedCardmarketProducts(
+        cardDetails.filter((card) => card != undefined).map((card) => toCard(card, set, germanNames.cardNames)),
+        set
+      ).sort(byTrendPriceDescending)
       await writeJsonAtomically(path.join(cardsDirectory, `${set.id}.json`), cards)
       cards.forEach((card) => card.nationalPokedexNumbers?.forEach((number) => pokedexNumbers.add(number)))
       sets.push(set)
