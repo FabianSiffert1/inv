@@ -25,17 +25,19 @@ export default function Header() {
 
   return (
     <div className={styles.header} ref={headerRef}>
-      <div className={styles.title}>
-        <Title />
-      </div>
-      {isBusy && (
-        <div className={styles.headerSpinner}>
-          <LoadingSpinner small />
+      <div className={styles.headerContent}>
+        <div className={styles.title}>
+          <Title />
         </div>
-      )}
-      <div className={styles.middleItem}>{headerItem}</div>
-      <div className={styles.navigation}>
-        <WebNavigation />
+        {isBusy && (
+          <div className={styles.headerSpinner}>
+            <LoadingSpinner small />
+          </div>
+        )}
+        <div className={styles.middleItem}>{headerItem}</div>
+        <div className={styles.navigation}>
+          <WebNavigation />
+        </div>
       </div>
     </div>
   )

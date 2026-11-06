@@ -3,37 +3,17 @@
 .home {
   box-sizing: border-box;
   margin: 0 auto;
-  padding: max(7rem, var(--header-height, 0px)) 7rem 4rem 7rem;
+  padding: max(7rem, var(--header-height, 0px)) 2rem 4rem 2rem;
 
   @media (min-width: $bigScreen) {
-    max-width: $bigScreen;
+    max-width: 80%;
   }
 
   @media (max-width: $smallScreen - 1px) {
-    padding: max(7rem, var(--header-height, 0px)) 2rem 4rem 2rem;
+    padding: max(7rem, var(--header-height, 0px)) 1rem 4rem 1rem;
   }
 }
 
 .pageContainer {
   min-width: 0;
-}
-
-.spectrum {
-  @include spectrum;
-  position: fixed;
-  left: 0;
-  right: 0;
-  z-index: $zHeader;
-  height: 0.25rem;
-  pointer-events: none;
-}
-
-.spectrumTop {
-  top: 0;
-  opacity: 0.55;
-}
-
-.spectrumBottom {
-  bottom: env(safe-area-inset-bottom, 0);
-  opacity: 0.85;
 }
