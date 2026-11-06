@@ -13,6 +13,7 @@ import { useIsMobile } from '../../util/ui/useIsMobile'
 import CardList from '../Market/CardList/CardList'
 import CardListStatus from '../Market/CardListStatus'
 import styles from '../Pokemon/Pokemon.module.scss'
+import PokemonSuggestions from '../Pokemon/PokemonSuggestions'
 import ArtistGrid from './ArtistGrid'
 import ArtistSelector from './ArtistSelector'
 import { matchingArtists } from './artistSearch'
@@ -49,6 +50,7 @@ export default function Artists() {
 
   return (
     <div className={styles.pokemonPage}>
+      <PokemonSuggestions />
       {slug == undefined ? (
         <ArtistOverview artists={artists} isFetching={isIndexFetching} error={indexError} />
       ) : (
