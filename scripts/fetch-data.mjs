@@ -450,6 +450,27 @@ const writeArtistData = async (allCards) => {
   console.log(`Artists: ${artists.length}`)
 }
 
+const searchMarketVariantOrder = [
+  'normal',
+  'holofoil',
+  'reverseHolofoil',
+  'unlimited',
+  'unlimitedHolofoil',
+  '1stEdition',
+  '1stEditionHolofoil'
+]
+
+const searchMarketPrice = (tcgplayer) => {
+  for (const variant of searchMarketVariantOrder) {
+    const priceSet = tcgplayer?.prices?.[variant]
+    const marketPrice = priceSet?.market ?? priceSet?.mid
+    if (marketPrice != undefined) {
+      return marketPrice
+    }
+  }
+  return undefined
+}
+
 const toSearchEntry = (card) => ({
   id: card.id,
   name: card.name,
@@ -458,6 +479,7 @@ const toSearchEntry = (card) => ({
   number: card.number,
   image: card.images.small,
   trendPrice: card.cardmarket?.prices?.trendPrice,
+  marketPrice: searchMarketPrice(card.tcgplayer),
   rarity: card.rarity,
   type: card.types?.[0]
 })

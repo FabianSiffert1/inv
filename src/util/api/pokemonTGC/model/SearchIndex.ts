@@ -9,6 +9,7 @@ export interface SearchIndexEntry {
   number: string
   image?: string
   trendPrice?: number
+  marketPrice?: number
   rarity?: string
   type?: string
 }
@@ -27,5 +28,6 @@ export const toLightCard = (entry: SearchIndexEntry, set: PokemonSet): PokemonCa
   rarity: entry.rarity,
   types: entry.type == undefined ? undefined : [entry.type],
   images: { small: entry.image },
-  cardmarket: entry.trendPrice == undefined ? undefined : { prices: { trendPrice: entry.trendPrice } }
+  cardmarket: entry.trendPrice == undefined ? undefined : { prices: { trendPrice: entry.trendPrice } },
+  tcgplayer: entry.marketPrice == undefined ? undefined : { prices: { normal: { market: entry.marketPrice } } }
 })
