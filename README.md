@@ -43,6 +43,7 @@ npm run build       # typecheck, then production build into dist/
 npm run start       # serve dist/ on 0.0.0.0:3030 (what the server runs)
 npm run preview     # serve dist/ on localhost only
 npm run fetch-data  # refresh the set and card snapshot in data/
+npm run build-indexes  # rebuild pokemon, artist and search indexes from the card files, no network
 npm run typecheck   # tsc for the app and for vite.config.ts
 npm run lint        # eslint
 npm run format      # prettier
@@ -91,6 +92,10 @@ and its hot-reload WebSocket makes phones prompt for local network access.
   `artists.json` index the same cards by Pokémon and by illustrator, with per-entry card files
   under `pokemon/` and `artists/`. A small Vite plugin serves the directory under `/data` in both
   `dev` and `preview`, JSON with `Cache-Control: no-cache` and an ETag, images with a 30-day cache.
+  `scripts/fetch-data.mjs` drives the download; the TCGdex client, the card mapping, the index
+  writers and the file helpers live in `scripts/lib/`. `npm run build-indexes` reuses the index
+  writers to regenerate `pokemon.json`, `artists.json`, `search.json` and the per-entry files from
+  the card files already on disk, which is enough after a change to the index shape.
 - **TanStack Query** fetches the snapshot and persists it to IndexedDB so a revisit is instant.
   The set list is revalidated hourly; card queries are keyed by `generatedAt`, so a new snapshot
   drops the old cards. Only the eight most recently viewed card lists plus the sets behind your
@@ -130,8 +135,9 @@ and its hot-reload WebSocket makes phones prompt for local network access.
   them as chips, and the search box matches them, so "cosmos" finds the cosmos holos of a set.
 - **Prices panel**: card details show one table, a row per printing (normal, reverse holo, and where
   TCGdex lists them, holo patterns, jumbo, stamped promos, 1st edition), a column per marketplace.
-  Each cell is the trend or market price and links to that printing's product page. The row marked
-  "on tile" is the price the grid shows; the sort and the totals use it too.
+  Each cell is the trend or market price and links to that printing's product page. The bold row
+  is the price the grid shows; the sort and the totals use it too. The set view sums those prices
+  into a set value under the status line, next to the set's release month.
 - **Sprites** are PokeAPI's 96×96 PNGs. Pokémon detail pages show the animated Showdown GIF when
   one exists and fall back to the PNG otherwise, or when the system asks for reduced motion.
 - **Favorites** live in `localStorage` for guests. Signed-in users get them from Firestore instead.
