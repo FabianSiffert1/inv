@@ -4,7 +4,7 @@ import { Artist } from './model/Artist'
 import { Pokemon } from './model/Pokemon'
 import { PokemonCard } from './model/PokemonCard'
 import { PokemonSet, PokemonSetName } from './model/PokemonSet'
-import { SearchIndexEntry } from './model/SearchIndex'
+import { prepareSearchIndex, SearchableEntry, SearchIndexEntry } from './model/SearchIndex'
 import {
   fetchAllCardsOfASet,
   fetchArtistIndex,
@@ -130,9 +130,10 @@ export const useSearchIndex = (enabled: boolean) => {
   const { data: snapshot } = useSetsSnapshot()
   const generatedAt = snapshot?.generatedAt
 
-  return useQuery<SearchIndexEntry[]>({
+  return useQuery<SearchIndexEntry[], Error, SearchableEntry[]>({
     queryKey: ['search', 'index', generatedAt],
     queryFn: ({ signal }) => fetchSearchIndex(signal),
+    select: prepareSearchIndex,
     enabled: enabled && generatedAt != undefined,
     staleTime: Infinity
   })

@@ -471,13 +471,15 @@ const searchMarketPrice = (tcgplayer) => {
   return undefined
 }
 
+const cardImageBaseOf = (cards) => cards.find((card) => card.images.small != undefined)?.images.small.replace(/\/[^/]+\/low\.webp$/, '')
+
 const toSearchEntry = (card) => ({
   id: card.id,
   name: card.name,
   germanName: card.germanName,
   setId: card.set.id,
   number: card.number,
-  image: card.images.small,
+  noImage: card.images.small == undefined ? true : undefined,
   trendPrice: card.cardmarket?.prices?.trendPrice,
   marketPrice: searchMarketPrice(card.tcgplayer),
   rarity: card.rarity,
@@ -529,6 +531,7 @@ const main = async () => {
         set
       ).sort(byTrendPriceDescending)
       await writeJsonAtomically(path.join(cardsDirectory, `${set.id}.json`), cards)
+      set.cardImageBase = cardImageBaseOf(cards)
       cards.forEach((card) => card.nationalPokedexNumbers?.forEach((number) => pokedexNumbers.add(number)))
       sets.push(set)
       console.log(`${progress}: ${cards.length} cards`)
