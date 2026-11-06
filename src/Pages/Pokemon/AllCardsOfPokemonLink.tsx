@@ -22,9 +22,6 @@ export default function AllCardsOfPokemonLink(props: AllCardsOfPokemonLinkProps)
   return (
     <Link className={styles.link} to={pokemonPath(pokemon.number)} onClick={() => window.scrollTo(0, 0)}>
       All {pokemon.cardCount} {localizedName(pokemon, germanNames)} cards
-      <span className={styles.arrow} aria-hidden='true'>
-        →
-      </span>
     </Link>
   )
 }

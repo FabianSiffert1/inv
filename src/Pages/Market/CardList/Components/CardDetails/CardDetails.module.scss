@@ -238,6 +238,21 @@
   @include typoFieldValue;
 }
 
+.panelAction {
+  display: inline-flex;
+  margin-left: auto;
+}
+
+.panelLink {
+  @include surfaceInteractive($surfaceRadiusSmall);
+  @include pastel(var(--elementBlue), 55%);
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.6rem;
+  color: var(--color);
+  text-decoration: none;
+}
+
 .setSymbol {
   width: 1.2rem;
   height: 1.2rem;
@@ -296,12 +311,19 @@
 }
 
 .priceUpdated {
-  padding-top: 0.5rem;
-  font-size: 0.75rem;
+  margin-top: auto;
+  padding-top: 0.4rem;
+  border-top: 1px solid var(--card-border-color);
+  font-size: 0.7rem;
+  text-align: right;
   color: var(--secondary-color);
 }
 
-.metaLink {
-  font: inherit;
-  color: inherit;
+.artistChip {
+  @include surfaceInteractive($surfaceRadiusSmall);
+  @include pastel(var(--elementLavender), 45%);
+  @include typoFieldValue;
+  padding: 0.3rem 0.7rem;
+  color: var(--color);
+  text-decoration: none;
 }

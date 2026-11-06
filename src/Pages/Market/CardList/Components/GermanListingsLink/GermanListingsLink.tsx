@@ -26,7 +26,6 @@ export function GermanListingsLink({ cardmarketUrl }: GermanListingsLinkProps) {
     >
       <PretzelIcon />
       <span className={styles.label}>DE</span>
-      <span aria-hidden='true'>↗</span>
     </a>
   )
 }

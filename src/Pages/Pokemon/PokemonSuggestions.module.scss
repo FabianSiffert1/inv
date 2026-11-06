@@ -36,18 +36,3 @@
   font-size: 0.85rem;
   color: var(--secondary-color);
 }
-
-.arrow {
-  color: var(--secondary-color);
-  transition: transform $surfaceTransition;
-}
-
-.suggestion:hover .arrow {
-  transform: translateX(0.15rem);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .arrow {
-    transition: none;
-  }
-}

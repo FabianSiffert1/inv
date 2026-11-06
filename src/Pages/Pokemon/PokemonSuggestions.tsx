@@ -45,9 +45,6 @@ export default function PokemonSuggestions(props: PokemonSuggestionsProps) {
             <img className={styles.sprite} src={spriteUrl(entry.number)} alt='' onError={(event) => (event.currentTarget.hidden = true)} />
             <span className={styles.name}>{localizedName(entry, germanNames)}</span>
             <span className={styles.count}>{entry.cardCount} cards in all sets</span>
-            <span className={styles.arrow} aria-hidden='true'>
-              →
-            </span>
           </Link>
         </li>
       ))}

@@ -130,11 +130,7 @@ export function CardBaseDetails(props: PokemonCardProp) {
           {props.card.number}/{props.card.set.printedTotal}
         </span>
         {props.card.evolvesFrom && <span className={styles.metaMuted}>Evolves from {props.card.evolvesFrom}</span>}
-        {props.card.artist && (
-          <span className={styles.metaMuted}>
-            Illus. <ArtistLink name={props.card.artist} className={styles.metaLink} />
-          </span>
-        )}
+        {props.card.artist && <ArtistLink name={props.card.artist} className={styles.artistChip} fallbackClassName={styles.metaMuted} />}
       </div>
       {pokedexNumber != undefined && <AllCardsOfPokemonLink pokedexNumber={pokedexNumber} />}
     </div>
@@ -196,11 +192,13 @@ export function CardMarketPrices(props: PokemonCardProp) {
       <div className={styles.panelHeader}>
         {props.card.cardmarket?.url ? (
           <>
-            <ExternalLink href={props.card.cardmarket.url}>
+            <ExternalLink href={props.card.cardmarket.url} className={styles.panelLink}>
               <span className={styles.panelTitle}>Cardmarket</span>
             </ExternalLink>
-            <CopyButton value={props.card.cardmarket.url} label='Copy Cardmarket link' />
             <GermanListingsLink cardmarketUrl={props.card.cardmarket.url} />
+            <span className={styles.panelAction}>
+              <CopyButton value={props.card.cardmarket.url} label='Copy Cardmarket link' />
+            </span>
           </>
         ) : (
           <span className={styles.panelTitle}>Cardmarket</span>
@@ -258,10 +256,12 @@ export function TcgPlayerPrices(props: PokemonCardProp) {
       <div className={styles.panelHeader}>
         {props.card.tcgplayer?.url ? (
           <>
-            <ExternalLink href={props.card.tcgplayer.url}>
+            <ExternalLink href={props.card.tcgplayer.url} className={styles.panelLink}>
               <span className={styles.panelTitle}>TCGPlayer</span>
             </ExternalLink>
-            <CopyButton value={props.card.tcgplayer.url} label='Copy TCGPlayer link' />
+            <span className={styles.panelAction}>
+              <CopyButton value={props.card.tcgplayer.url} label='Copy TCGPlayer link' />
+            </span>
           </>
         ) : (
           <span className={styles.panelTitle}>TCGPlayer</span>
