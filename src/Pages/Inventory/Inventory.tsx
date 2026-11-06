@@ -1,16 +1,12 @@
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useContext, useEffect, useMemo } from 'react'
 import { HeaderContext } from '../../Header/HeaderProvider'
 import { AuthContext } from '../../util/auth/AuthProvider'
 import { useCardsOfSets } from '../../util/api/pokemonTGC/hooks'
 import { PokemonCard } from '../../util/api/pokemonTGC/model/PokemonCard'
-import { PokemonSet, PokemonTCGSeries } from '../../util/api/pokemonTGC/model/PokemonSet'
 import { noBaseParams, useCardNavigation } from '../../util/ui/cards/useCardNavigation'
 import { useVisibleCards } from '../../util/ui/cards/useVisibleCards'
-import { FavoritesContext } from '../../util/ui/favorites/FavoritesProvider'
-import { StarIcon } from '../../Components/FavoriteButton/FavoriteButton'
+import { FavoritesContext, FavoritesSource } from '../../util/ui/favorites/FavoritesProvider'
 import CardList from '../Market/CardList/CardList'
-import SetSelector from '../Market/Selector/SetSelector'
 import PokemonSuggestions from '../Pokemon/PokemonSuggestions'
 import styles from './Inventory.module.scss'
 
@@ -19,9 +15,7 @@ export default function Inventory() {
   const { favorites, source, isLoading, error } = useContext(FavoritesContext)
   const { status, signIn } = useContext(AuthContext)
 
-  const navigate = useNavigate()
   const { openCardId, openCard, stepToCard, closeCard } = useCardNavigation(noBaseParams)
-  const [chosenPokemonSeries, setChosenPokemonSeries] = useState<PokemonTCGSeries | undefined>(undefined)
 
   const setIds = useMemo(() => [...new Set(favorites.map((favorite) => favorite.setId))], [favorites])
   const setQueries = useCardsOfSets(setIds)
@@ -31,17 +25,9 @@ export default function Inventory() {
   const favoriteIds = new Set(favorites.map((favorite) => favorite.cardId))
   const favoriteCards = useVisibleCards(loadedCards.filter((card: PokemonCard) => favoriteIds.has(card.id))) ?? []
 
-  const selectSet = useCallback(
-    (set: PokemonSet) => {
-      window.scrollTo(0, 0)
-      navigate({ pathname: '/market', search: `?${new URLSearchParams({ set: set.id })}` })
-    },
-    [navigate]
-  )
-
   useEffect(() => {
-    setHeaderItem(<SetSelector selectedSeries={chosenPokemonSeries} onSelectEra={setChosenPokemonSeries} onSelectSet={selectSet} />)
-  }, [setHeaderItem, chosenPokemonSeries, selectSet])
+    setHeaderItem(<FavoritesStatus count={favorites.length} source={source} isLoading={isLoading} />)
+  }, [setHeaderItem, favorites.length, source, isLoading])
 
   useEffect(() => {
     setBusy(isFetching)
@@ -53,12 +39,6 @@ export default function Inventory() {
     <div className={styles.inventoryPage}>
       <div className={styles.backdrop} aria-hidden='true' />
       <PokemonSuggestions />
-      <div className={styles.pageTitle}>
-        <StarIcon />
-        <h1 className={styles.pageHeadline}>Favorites</h1>
-        {favorites.length > 0 && <span className={styles.pageCount}>{favorites.length}</span>}
-        {source == 'cloud' && <span className={styles.syncTag}>synced</span>}
-      </div>
       {error && (
         <div className={styles.error} role='alert'>
           {error}
@@ -82,6 +62,23 @@ export default function Inventory() {
           <CardList cards={favoriteCards} openCardId={openCardId} onOpenCard={openCard} onStepToCard={stepToCard} onCloseCard={closeCard} />
         </div>
       )}
+    </div>
+  )
+}
+
+interface FavoritesStatusProps {
+  count: number
+  source: FavoritesSource
+  isLoading: boolean
+}
+
+function FavoritesStatus(props: FavoritesStatusProps) {
+  const countLabel = props.isLoading ? 'Loading favorites' : `${props.count} ${props.count == 1 ? 'favorite' : 'favorites'}`
+
+  return (
+    <div className={styles.headerStatus}>
+      <span className={styles.pageCount}>{countLabel}</span>
+      <span className={styles.syncTag}>{props.source == 'cloud' ? 'synced' : 'on this device'}</span>
     </div>
   )
 }

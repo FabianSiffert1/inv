@@ -16,23 +16,6 @@
   );
 }
 
-.pageTitle {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-
-  svg {
-    width: 1.5rem;
-    height: 1.5rem;
-  }
-}
-
-.pageHeadline {
-  @include typoDisplay;
-  margin: 0;
-  font-size: 1.4rem;
-}
-
 .pageCount {
   @include surface($surfaceRadiusSmall);
   @include pastel(var(--elementYellow), 60%);
@@ -65,8 +48,6 @@
 }
 
 .favorites {
-  padding-top: 1.5rem;
-
   @media (max-width: $smallScreen - 1px) {
     padding-bottom: 5.5rem;
   }
@@ -95,4 +76,11 @@
   font-family: $monoFont;
   font-size: 0.85rem;
   color: var(--elementRed);
+}
+
+.headerStatus {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
 }

@@ -1,13 +1,27 @@
 import { ReactElement, useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import { StarIcon } from '../../Components/FavoriteButton/FavoriteButton'
 import { CardBackIcon, PikachuIcon, SmeargleIcon } from './ModeIcons'
 import styles from './Title.module.scss'
 
-type Mode = 'cards' | 'dex' | 'artists'
+type BrowseMode = 'cards' | 'dex' | 'artists'
+type Mode = BrowseMode | 'favorites'
 
-const modes: Mode[] = ['cards', 'dex', 'artists']
+const browseModes: BrowseMode[] = ['cards', 'dex', 'artists']
+const lastBrowseModeStorageKey = 'inv-last-mode'
 
-const modeSettings: Record<Mode, { storageKey: string; fallbackPath: string; label: string; switchLabel: string; icon: ReactElement }> = {
+interface ModeSettings {
+  label: string
+  icon: ReactElement
+}
+
+interface BrowseModeSettings extends ModeSettings {
+  storageKey: string
+  fallbackPath: string
+  switchLabel: string
+}
+
+const browseModeSettings: Record<BrowseMode, BrowseModeSettings> = {
   cards: {
     storageKey: 'inv-last-cards-location',
     fallbackPath: '/',
@@ -31,16 +45,30 @@ const modeSettings: Record<Mode, { storageKey: string; fallbackPath: string; lab
   }
 }
 
+const favoritesSettings: ModeSettings = {
+  label: 'Favorites',
+  icon: (
+    <span className={styles.modeStar}>
+      <StarIcon />
+    </span>
+  )
+}
+
+const isBrowseMode = (mode: Mode): mode is BrowseMode => mode != 'favorites'
+
 const modeOfPath = (pathname: string): Mode => {
+  if (pathname.startsWith('/inventory')) {
+    return 'favorites'
+  }
   if (pathname.startsWith('/pokemon')) {
     return 'dex'
   }
   return pathname.startsWith('/artists') ? 'artists' : 'cards'
 }
 
-const nextMode = (mode: Mode): Mode => modes[(modes.indexOf(mode) + 1) % modes.length]
+const nextBrowseMode = (mode: BrowseMode): BrowseMode => browseModes[(browseModes.indexOf(mode) + 1) % browseModes.length]
 
-const readLocation = (key: string, fallback: string): string => {
+const readStored = (key: string, fallback: string): string => {
   try {
     return window.localStorage.getItem(key) ?? fallback
   } catch {
@@ -48,12 +76,23 @@ const readLocation = (key: string, fallback: string): string => {
   }
 }
 
-const storeLocation = (key: string, value: string) => {
+const store = (key: string, value: string) => {
   try {
     window.localStorage.setItem(key, value)
   } catch {
     return
   }
+}
+
+const readLastBrowseMode = (): BrowseMode => {
+  const stored = readStored(lastBrowseModeStorageKey, 'cards')
+  return browseModes.find((mode) => mode == stored) ?? 'cards'
+}
+
+const readBrowseLocation = (mode: BrowseMode): string => {
+  const { storageKey, fallbackPath } = browseModeSettings[mode]
+  const stored = readStored(storageKey, fallbackPath)
+  return modeOfPath(stored.split('?')[0]) == mode ? stored : fallbackPath
 }
 
 const withoutOpenCard = (search: string): string => {
@@ -70,22 +109,28 @@ export default function Title() {
   const shownMode = pendingMode ?? currentMode
 
   useEffect(() => {
-    storeLocation(modeSettings[currentMode].storageKey, `${location.pathname}${withoutOpenCard(location.search)}`)
+    if (!isBrowseMode(currentMode)) {
+      return
+    }
+    store(lastBrowseModeStorageKey, currentMode)
+    store(browseModeSettings[currentMode].storageKey, `${location.pathname}${withoutOpenCard(location.search)}`)
   }, [currentMode, location.pathname, location.search])
 
   useEffect(() => {
     setPendingMode(undefined)
   }, [currentMode])
 
-  const targetMode = nextMode(shownMode)
-  const target = readLocation(modeSettings[targetMode].storageKey, modeSettings[targetMode].fallbackPath)
-  const label = modeSettings[targetMode].switchLabel
+  const targetMode = isBrowseMode(shownMode) ? nextBrowseMode(shownMode) : readLastBrowseMode()
+  const targetSettings = browseModeSettings[targetMode]
+  const target = readBrowseLocation(targetMode)
+  const label = isBrowseMode(shownMode) ? targetSettings.switchLabel : `Back to ${targetSettings.label.toLowerCase()}`
+  const shownSettings = isBrowseMode(shownMode) ? browseModeSettings[shownMode] : favoritesSettings
 
   return (
     <div className={styles.title}>
       <Link className={styles.modeToggle} to={target} aria-label={label} title={label} onClick={() => setPendingMode(targetMode)}>
-        <span className={styles.modeIcon}>{modeSettings[shownMode].icon}</span>
-        <span className={styles.modeLabel}>{modeSettings[shownMode].label}</span>
+        <span className={styles.modeIcon}>{shownSettings.icon}</span>
+        <span className={styles.modeLabel}>{shownSettings.label}</span>
       </Link>
     </div>
   )
