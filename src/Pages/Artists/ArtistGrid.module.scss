@@ -1,0 +1,13 @@
+.tile {
+  color: var(--color);
+  text-decoration: none;
+
+  &:focus-visible {
+    outline: 2px solid var(--marker);
+    outline-offset: 3px;
+  }
+}
+
+.cardFrame {
+  cursor: inherit;
+}

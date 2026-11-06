@@ -13,6 +13,7 @@ const cardsDirectory = path.join(dataDirectory, 'cards')
 const spritesDirectory = path.join(dataDirectory, 'sprites')
 const animatedSpritesDirectory = path.join(spritesDirectory, 'animated')
 const pokemonDirectory = path.join(dataDirectory, 'pokemon')
+const artistsDirectory = path.join(dataDirectory, 'artists')
 const spriteHost = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon'
 const animatedSpriteHost = `${spriteHost}/other/showdown`
 const speciesNamesUrl = 'https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/pokemon_species_names.csv'
@@ -277,19 +278,26 @@ const mostCommon = (values) => {
 
 const byReleaseDateDescending = (a, b) => b.set.releaseDate.localeCompare(a.set.releaseDate)
 
-const writePokemonData = async (sets) => {
-  const cardsOfPokemon = new Map()
-  for (const set of sets) {
-    const cards = JSON.parse(await readFile(path.join(cardsDirectory, `${set.id}.json`), 'utf8'))
-    cards.forEach((card) =>
-      card.nationalPokedexNumbers?.forEach((number) => {
-        if (!cardsOfPokemon.has(number)) {
-          cardsOfPokemon.set(number, [])
-        }
-        cardsOfPokemon.get(number).push(card)
-      })
-    )
-  }
+const readCardsOfSets = async (sets) => {
+  const cardsOfSets = await Promise.all(sets.map((set) => readFile(path.join(cardsDirectory, `${set.id}.json`), 'utf8')))
+  return cardsOfSets.flatMap((json) => JSON.parse(json))
+}
+
+const groupBy = (items, keysOf) => {
+  const groups = new Map()
+  items.forEach((item) =>
+    keysOf(item).forEach((key) => {
+      if (!groups.has(key)) {
+        groups.set(key, [])
+      }
+      groups.get(key).push(item)
+    })
+  )
+  return groups
+}
+
+const writePokemonData = async (allCards) => {
+  const cardsOfPokemon = groupBy(allCards, (card) => card.nationalPokedexNumbers ?? [])
 
   const speciesNames = await fetchSpeciesNames()
   if (speciesNames.size == 0) {
@@ -312,11 +320,55 @@ const writePokemonData = async (sets) => {
   console.log(`Pokémon: ${pokemon.length} with cards`)
 }
 
+const unknownArtist = 'N/A'
+
+const artistSlug = (name) =>
+  name
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+
+const artistSlugsOf = (card) => {
+  const name = card.artist?.trim()
+  if (!name || name == unknownArtist) {
+    return []
+  }
+  const slug = artistSlug(name)
+  return slug == '' ? [] : [slug]
+}
+
+const byCardCountDescendingThenName = (a, b) => b.cardCount - a.cardCount || a.name.localeCompare(b.name)
+
+const writeArtistData = async (allCards) => {
+  const cardsOfArtist = groupBy(allCards, artistSlugsOf)
+
+  const artists = []
+  for (const [slug, cards] of cardsOfArtist.entries()) {
+    await writeJsonAtomically(path.join(artistsDirectory, `${slug}.json`), cards.sort(byReleaseDateDescending))
+    const topCard = [...cards].sort(byTrendPriceDescending)[0]
+    artists.push({
+      slug,
+      name: mostCommon(cards.map((card) => card.artist.trim())),
+      cardCount: cards.length,
+      setCount: new Set(cards.map((card) => card.set.id)).size,
+      pokemonNumber: mostCommon(cards.flatMap((card) => card.nationalPokedexNumbers ?? [])),
+      topCardImage: topCard?.images.small,
+      topCardType: topCard?.types?.[0]
+    })
+  }
+  artists.sort(byCardCountDescendingThenName)
+  await writeJsonAtomically(path.join(dataDirectory, 'artists.json'), artists)
+  console.log(`Artists: ${artists.length}`)
+}
+
 const main = async () => {
   await mkdir(cardsDirectory, { recursive: true })
   await mkdir(spritesDirectory, { recursive: true })
   await mkdir(animatedSpritesDirectory, { recursive: true })
   await mkdir(pokemonDirectory, { recursive: true })
+  await mkdir(artistsDirectory, { recursive: true })
 
   const previousSets = await readPreviousSets()
   const pokedexNumbers = new Set()
@@ -364,7 +416,9 @@ const main = async () => {
   }
 
   sets.sort((a, b) => a.releaseDate.localeCompare(b.releaseDate))
-  await writePokemonData(sets)
+  const allCards = await readCardsOfSets(sets)
+  await writePokemonData(allCards)
+  await writeArtistData(allCards)
   await writeJsonAtomically(path.join(dataDirectory, 'sets.json'), { generatedAt: new Date().toISOString(), sets })
 
   const sortedPokedexNumbers = [...pokedexNumbers].sort((a, b) => a - b)

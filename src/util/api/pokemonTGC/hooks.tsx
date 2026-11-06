@@ -1,9 +1,18 @@
 import { useQueries, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
+import { Artist } from './model/Artist'
 import { Pokemon } from './model/Pokemon'
 import { PokemonCard } from './model/PokemonCard'
 import { PokemonSet, PokemonSetName } from './model/PokemonSet'
-import { fetchAllCardsOfASet, fetchCardsOfPokemon, fetchPokemonIndex, fetchSetsSnapshot, SetsSnapshot } from './querys'
+import {
+  fetchAllCardsOfASet,
+  fetchArtistIndex,
+  fetchCardsOfArtist,
+  fetchCardsOfPokemon,
+  fetchPokemonIndex,
+  fetchSetsSnapshot,
+  SetsSnapshot
+} from './querys'
 
 const setsSnapshotStaleTime = 1000 * 60 * 60
 
@@ -75,6 +84,30 @@ export const usePokemonIndex = () => {
     queryKey: ['pokemon', 'index', generatedAt],
     queryFn: ({ signal }) => fetchPokemonIndex(signal),
     enabled: generatedAt != undefined,
+    staleTime: Infinity
+  })
+}
+
+export const useArtistIndex = () => {
+  const { data: snapshot } = useSetsSnapshot()
+  const generatedAt = snapshot?.generatedAt
+
+  return useQuery<Artist[]>({
+    queryKey: ['artists', 'index', generatedAt],
+    queryFn: ({ signal }) => fetchArtistIndex(signal),
+    enabled: generatedAt != undefined,
+    staleTime: Infinity
+  })
+}
+
+export const useCardsOfArtist = (slug?: string) => {
+  const { data: snapshot } = useSetsSnapshot()
+  const generatedAt = snapshot?.generatedAt
+
+  return useQuery<PokemonCard[]>({
+    queryKey: ['cards', 'artist', slug, generatedAt],
+    queryFn: ({ signal }) => fetchCardsOfArtist(slug as string, signal),
+    enabled: slug != undefined && generatedAt != undefined,
     staleTime: Infinity
   })
 }

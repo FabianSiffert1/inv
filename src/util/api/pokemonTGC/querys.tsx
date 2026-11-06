@@ -1,3 +1,4 @@
+import { Artist } from './model/Artist'
 import { Pokemon } from './model/Pokemon'
 import { PokemonCard } from './model/PokemonCard'
 import { PokemonSet } from './model/PokemonSet'
@@ -38,3 +39,8 @@ export const fetchPokemonIndex = (signal?: AbortSignal) => getJson<Pokemon[]>('/
 
 export const fetchCardsOfPokemon = (pokedexNumber: number, signal?: AbortSignal) =>
   getJson<PokemonCard[]>(`/data/pokemon/${pokedexNumber}.json`, signal)
+
+export const fetchArtistIndex = (signal?: AbortSignal) => getJson<Artist[]>('/data/artists.json', signal)
+
+export const fetchCardsOfArtist = (slug: string, signal?: AbortSignal) =>
+  getJson<PokemonCard[]>(`/data/artists/${encodeURIComponent(slug)}.json`, signal)

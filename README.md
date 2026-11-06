@@ -81,7 +81,9 @@ and its hot-reload WebSocket makes phones prompt for local network access.
 
 - **React + Vite + TypeScript**, SCSS modules for styling.
 - **Snapshot** in `data/`: `sets.json` holds every set plus a `generatedAt` timestamp, and
-  `cards/<setId>.json` holds each set's cards sorted by trend price. A small Vite plugin serves the
+  `cards/<setId>.json` holds each set's cards sorted by trend price. `pokemon.json` and
+  `artists.json` index the same cards by Pokémon and by illustrator, with per-entry card files
+  under `pokemon/` and `artists/`. A small Vite plugin serves the
   directory under `/data` in both `dev` and `preview`, with `Cache-Control: no-cache` and an ETag.
 - **TanStack Query** fetches the snapshot and persists it to IndexedDB so a revisit is instant.
   The set list is revalidated hourly; card queries are keyed by `generatedAt`, so a new snapshot
@@ -93,6 +95,8 @@ and its hot-reload WebSocket makes phones prompt for local network access.
 - **Card images** load lazily via the native `loading="lazy"` attribute, with the aspect ratio
   reserved up front so the grid does not shift as they arrive. Cards without an image, or whose
   image fails to load after one retry, show a tinted placeholder with the card name.
+- **Modes**: the toggle top left cycles Cards, Dex and Artists. Dex lists Pokémon by generation,
+  Artists lists illustrators by card count. Each mode remembers its last page.
 - **Links**: the selected set and the open card live in the URL (`/market?set=<setId>&card=<cardId>`),
   so the link buttons next to the set selector and the card title can share them.
 - A dot next to a set name means that set is already stored offline.

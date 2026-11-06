@@ -7,6 +7,7 @@ import { del, get, set } from 'idb-keyval'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import './index.scss'
 import ErrorPage from './Pages/404/404'
+import Artists from './Pages/Artists/Artists'
 import Home from './Pages/Home/Home'
 import Inventory from './Pages/Inventory/Inventory'
 import Market from './Pages/Market/Market'
@@ -46,6 +47,10 @@ const router = createBrowserRouter(
         {
           path: 'pokemon/:pokedexNumber?',
           element: <Pokemon />
+        },
+        {
+          path: 'artists/:slug?',
+          element: <Artists />
         }
       ]
     }

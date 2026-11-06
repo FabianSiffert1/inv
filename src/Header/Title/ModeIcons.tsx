@@ -50,3 +50,9 @@ const pikachuPokedexNumber = 25
 export function PikachuIcon() {
   return <img className={styles.sprite} src={spriteUrl(pikachuPokedexNumber)} alt='' />
 }
+
+const smearglePokedexNumber = 235
+
+export function SmeargleIcon() {
+  return <img className={styles.sprite} src={spriteUrl(smearglePokedexNumber)} alt='' />
+}
