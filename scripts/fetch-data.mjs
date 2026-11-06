@@ -21,22 +21,34 @@ const germanLanguageId = '6'
 
 const sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds))
 
+class HttpError extends Error {
+  constructor(status, statusText, url) {
+    super(`${status} ${statusText} for ${url}`)
+    this.status = status
+  }
+}
+
+const isNotFound = (error) => error instanceof HttpError && error.status == 404
+
 const get = async (resource, language = 'en') => {
   const url = `${host}/${language}/${resource}`
   for (let attempt = 1; ; attempt++) {
+    let response
     try {
-      const response = await fetch(url, { signal: AbortSignal.timeout(requestTimeoutMilliseconds) })
-      if (response.ok) {
-        return await response.json()
-      }
-      const isRetryable = response.status == 429 || response.status >= 500
-      if (!isRetryable || attempt >= maximumAttempts) {
-        throw new Error(`${response.status} ${response.statusText} for ${url}`)
-      }
+      response = await fetch(url, { signal: AbortSignal.timeout(requestTimeoutMilliseconds) })
     } catch (error) {
       if (attempt >= maximumAttempts) {
         throw error
       }
+      await sleep(Math.min(1000 * 2 ** attempt, 30_000))
+      continue
+    }
+    if (response.ok) {
+      return await response.json()
+    }
+    const isRetryable = response.status == 429 || response.status >= 500
+    if (!isRetryable || attempt >= maximumAttempts) {
+      throw new HttpError(response.status, response.statusText, url)
     }
     await sleep(Math.min(1000 * 2 ** attempt, 30_000))
   }
@@ -323,10 +335,21 @@ const main = async () => {
       }
       const germanNames = await fetchGermanNames(setDetail.id)
       const set = toSet(setDetail, germanNames.setName, germanNames.seriesName)
-      const cardDetails = await mapConcurrently(setDetail.cards ?? [], cardConcurrency, (card) =>
-        get(`cards/${encodeURIComponent(card.id)}`)
-      )
-      const cards = cardDetails.map((card) => toCard(card, set, germanNames.cardNames)).sort(byTrendPriceDescending)
+      const cardDetails = await mapConcurrently(setDetail.cards ?? [], cardConcurrency, async (card) => {
+        try {
+          return await get(`cards/${encodeURIComponent(card.id)}`)
+        } catch (error) {
+          if (isNotFound(error)) {
+            console.error(`${progress}: card ${card.id} not found, skipped`)
+            return undefined
+          }
+          throw error
+        }
+      })
+      const cards = cardDetails
+        .filter((card) => card != undefined)
+        .map((card) => toCard(card, set, germanNames.cardNames))
+        .sort(byTrendPriceDescending)
       await writeJsonAtomically(path.join(cardsDirectory, `${set.id}.json`), cards)
       cards.forEach((card) => card.nationalPokedexNumbers?.forEach((number) => pokedexNumbers.add(number)))
       sets.push(set)
