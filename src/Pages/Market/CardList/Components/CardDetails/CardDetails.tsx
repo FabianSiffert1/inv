@@ -1,17 +1,11 @@
-import { ReactElement, useContext, useRef, useState } from 'react'
+import { useContext, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { CopyButton } from '../../../../../Components/CopyButton/CopyButton'
 import { FavoriteButton } from '../../../../../Components/FavoriteButton/FavoriteButton'
-import {
-  CardMarketPriceSet,
-  PokemonCard,
-  PokemonCardProp,
-  TcgPlayer,
-  TcgPlayerPriceSet
-} from '../../../../../util/api/pokemonTGC/model/PokemonCard'
+import { PokemonCard, PokemonCardProp } from '../../../../../util/api/pokemonTGC/model/PokemonCard'
 import { spriteUrl } from '../../../../../util/api/pokemonTGC/model/Pokemon'
 import { setPath } from '../../../../../util/api/pokemonTGC/model/PokemonSet'
-import { variantLabels } from '../../../../../util/cardVariants'
+import { cardPriceRows, PriceCell } from '../../../../../util/cardPrice'
 import { Currency, formatPrice } from '../../../../../util/format/price'
 import { formatPriceDate, formatSetReleaseDate } from '../../../../../util/format/date'
 import { useLocalizedName } from '../../../../../util/ui/language/LanguageProvider'
@@ -39,17 +33,6 @@ interface CardDetailsProps {
   onClose: () => void
 }
 
-interface PriceSetProps {
-  cardType: string
-  priceSet?: TcgPlayerPriceSet
-}
-
-interface PriceRowProps {
-  label: string
-  price?: number
-  currency?: Currency
-}
-
 export function CardDetails(props: CardDetailsProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   useModalBehaviour(containerRef, props.onClose, props.navigation)
@@ -75,10 +58,7 @@ export function CardDetails(props: CardDetailsProps) {
           <div className={styles.detailsColumn}>
             <CardBaseDetails card={props.card} onClose={props.onClose} />
             <SetInformation card={props.card} />
-            <div className={styles.panelRow}>
-              <CardMarketPrices card={props.card} />
-              <TcgPlayerPrices card={props.card} />
-            </div>
+            <CardPrices card={props.card} />
           </div>
         </div>
       </div>
@@ -115,12 +95,6 @@ interface CardBaseDetailsProps extends PokemonCardProp {
 
 export function CardBaseDetails(props: CardBaseDetailsProps) {
   const cardName = useLocalizedName(props.card)
-  const { setQuery, openSearch } = useContext(SearchContext)
-  const searchFor = (label: string) => {
-    setQuery(label)
-    openSearch()
-    props.onClose?.()
-  }
   const pokedexNumber = props.card.nationalPokedexNumbers?.[0]
 
   return (
@@ -144,17 +118,6 @@ export function CardBaseDetails(props: CardBaseDetailsProps) {
         <span className={styles.metaChip}>
           {props.card.number}/{props.card.set.printedTotal}
         </span>
-        {variantLabels(props.card).map((label) => (
-          <button
-            key={label}
-            type='button'
-            className={`${styles.metaChip} ${styles.variantChip}`}
-            title={`Search for `}
-            onClick={() => searchFor(label)}
-          >
-            {label}
-          </button>
-        ))}
         {props.card.evolvesFrom && <span className={styles.metaMuted}>Evolves from {props.card.evolvesFrom}</span>}
         {props.card.artist && <ArtistLink name={props.card.artist} className={styles.artistChip} fallbackClassName={styles.metaMuted} />}
       </div>
@@ -171,7 +134,7 @@ export function SetInformation(props: PokemonCardProp) {
   const { closeSearch } = useContext(SearchContext)
 
   return (
-    <section className={`${styles.panel} ${styles.setPanel}`}>
+    <section className={styles.panel}>
       <div className={styles.panelHeader}>
         {isCurrentSet ? (
           <span className={styles.panelTitle}>{setName}</span>
@@ -220,57 +183,6 @@ export function SetInformation(props: PokemonCardProp) {
   )
 }
 
-export function PriceRow(props: PriceRowProps) {
-  const formatted = formatPrice(props.price, props.currency)
-  if (formatted == undefined) {
-    return null
-  }
-  return (
-    <div className={styles.definitionRow}>
-      <dt>{props.label}</dt>
-      <dd className={styles.priceValue}>{formatted}</dd>
-    </div>
-  )
-}
-
-export function CardMarketPrices(props: PokemonCardProp) {
-  const prices = props.card.cardmarket?.prices
-
-  return (
-    <section className={styles.panel}>
-      <div className={styles.panelHeader}>
-        {props.card.cardmarket?.url ? (
-          <>
-            <ExternalLink href={props.card.cardmarket.url} className={styles.panelLink}>
-              <span className={styles.panelTitle}>Cardmarket</span>
-            </ExternalLink>
-            <GermanListingsLink cardmarketUrl={props.card.cardmarket.url} />
-            <span className={styles.panelAction}>
-              <CopyButton value={props.card.cardmarket.url} label='Copy Cardmarket link' />
-            </span>
-          </>
-        ) : (
-          <span className={styles.panelTitle}>Cardmarket</span>
-        )}
-      </div>
-      {prices == undefined ? (
-        <div className={styles.emptyPanel}>No prices available.</div>
-      ) : (
-        <>
-          <dl className={styles.definitionList}>
-            <PriceRow label='Trend' price={prices.trendPrice} />
-            <PriceRow label='Average' price={prices.averageSellPrice} />
-            <PriceRow label='Avg. 30 days' price={prices.avg30} />
-            <PriceRow label='Suggested' price={prices.suggestedPrice} />
-          </dl>
-          <ReverseHoloPrices prices={prices} />
-          <PriceUpdatedAt updatedAt={props.card.cardmarket?.updatedAt} />
-        </>
-      )}
-    </section>
-  )
-}
-
 function PriceUpdatedAt({ updatedAt }: { updatedAt?: string }) {
   const formatted = formatPriceDate(updatedAt)
   if (formatted == undefined) {
@@ -279,92 +191,67 @@ function PriceUpdatedAt({ updatedAt }: { updatedAt?: string }) {
   return <div className={styles.priceUpdated}>Prices from {formatted}</div>
 }
 
-function ReverseHoloPrices({ prices }: { prices: CardMarketPriceSet }) {
-  const hasReverseHoloPrices = [prices.reverseHoloTrend, prices.reverseHoloSell, prices.reverseHoloAvg30, prices.reverseHoloLow].some(
-    (price) => price != undefined
-  )
-  if (!hasReverseHoloPrices) {
-    return null
+function PriceCellContent({ cell, currency, emphasized }: { cell?: PriceCell; currency: Currency; emphasized: boolean }) {
+  if (cell == undefined) {
+    return <span className={styles.priceMissing}>–</span>
   }
-  return (
-    <div className={styles.tcgPlayerPriceSet}>
-      <div className={styles.priceSetTitle}>Reverse Holofoil</div>
-      <dl className={styles.definitionList}>
-        <PriceRow label='Trend' price={prices.reverseHoloTrend} />
-        <PriceRow label='Average' price={prices.reverseHoloSell} />
-        <PriceRow label='Avg. 30 days' price={prices.reverseHoloAvg30} />
-        <PriceRow label='Low' price={prices.reverseHoloLow} />
-      </dl>
-    </div>
+  const amount = formatPrice(cell.amount, currency)
+  const highest = formatPrice(cell.highestAmount, currency)
+  const text = highest != undefined && highest != amount ? `${amount} to ${highest}` : amount
+  const className = emphasized ? `${styles.priceAmount} ${styles.priceAmountMain}` : styles.priceAmount
+  return cell.url ? (
+    <ExternalLink href={cell.url} className={`${className} ${styles.priceLink}`} plain>
+      {text}
+    </ExternalLink>
+  ) : (
+    <span className={className}>{text}</span>
   )
 }
 
-export function TcgPlayerPrices(props: PokemonCardProp) {
+export function CardPrices(props: PokemonCardProp) {
+  const rows = cardPriceRows(props.card)
+  const cardmarketUrl = props.card.cardmarket?.url
+
   return (
     <section className={styles.panel}>
-      <div className={styles.panelHeader}>
-        {props.card.tcgplayer?.url ? (
-          <>
-            <ExternalLink href={props.card.tcgplayer.url} className={styles.panelLink}>
-              <span className={styles.panelTitle}>TCGPlayer</span>
-            </ExternalLink>
-            <span className={styles.panelAction}>
-              <CopyButton value={props.card.tcgplayer.url} label='Copy TCGPlayer link' />
-            </span>
-          </>
-        ) : (
-          <span className={styles.panelTitle}>TCGPlayer</span>
-        )}
-      </div>
-      {props.card.tcgplayer == undefined ? (
+      {rows.length == 0 ? (
         <div className={styles.emptyPanel}>No prices available.</div>
       ) : (
         <>
-          <TcgPlayerPriceList tcgPlayer={props.card.tcgplayer} />
-          <PriceUpdatedAt updatedAt={props.card.tcgplayer.updatedAt} />
+          <table className={styles.priceTable}>
+            <thead>
+              <tr>
+                <th scope='col' />
+                <th scope='col'>
+                  <span className={styles.priceColumn}>
+                    <span className={styles.priceColumnLabel}>Cardmarket</span>
+                    <GermanListingsLink cardmarketUrl={cardmarketUrl} />
+                  </span>
+                </th>
+                <th scope='col'>
+                  <span className={styles.priceColumnLabel}>TCGplayer</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row) => (
+                <tr key={row.label}>
+                  <th scope='row' className={styles.priceRowLabel}>
+                    {row.label}
+                  </th>
+                  <td>
+                    <PriceCellContent cell={row.cardmarket} currency='EUR' emphasized={row.isMain} />
+                  </td>
+                  <td>
+                    <PriceCellContent cell={row.tcgplayer} currency='USD' emphasized={row.isMain} />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <PriceUpdatedAt updatedAt={props.card.cardmarket?.updatedAt ?? props.card.tcgplayer?.updatedAt} />
         </>
       )}
     </section>
-  )
-}
-
-export function TcgPlayerPriceList({ tcgPlayer }: { tcgPlayer: TcgPlayer }) {
-  if (tcgPlayer.prices == undefined) {
-    return <div className={styles.emptyPanel}>No prices available.</div>
-  }
-  return (
-    <div className={styles.tcgPlayerPriceList}>
-      <PriceSet cardType='Normal' priceSet={tcgPlayer.prices.normal} />
-      <PriceSet cardType='1st Edition Holofoil' priceSet={tcgPlayer.prices['1stEditionHolofoil']} />
-      <PriceSet cardType='1st Edition' priceSet={tcgPlayer.prices['1stEdition']} />
-      <PriceSet cardType='Unlimited Holofoil' priceSet={tcgPlayer.prices.unlimitedHolofoil} />
-      <PriceSet cardType='Unlimited' priceSet={tcgPlayer.prices.unlimited} />
-      <PriceSet cardType='Holofoil' priceSet={tcgPlayer.prices.holofoil} />
-      <PriceSet cardType='Reverse Holofoil' priceSet={tcgPlayer.prices.reverseHolofoil} />
-    </div>
-  )
-}
-
-const tcgPlayerPriceLabels: Record<keyof TcgPlayerPriceSet, string> = {
-  low: 'Low',
-  mid: 'Mid',
-  high: 'High',
-  market: 'Market',
-  directLow: 'Direct low'
-}
-
-export function PriceSet({ cardType, priceSet }: PriceSetProps): ReactElement | null {
-  if (priceSet == undefined) {
-    return null
-  }
-  return (
-    <div className={styles.tcgPlayerPriceSet}>
-      <div className={styles.priceSetTitle}>{cardType}</div>
-      <dl className={styles.definitionList}>
-        {(Object.keys(tcgPlayerPriceLabels) as (keyof TcgPlayerPriceSet)[]).map((key) => (
-          <PriceRow key={key} label={tcgPlayerPriceLabels[key]} price={priceSet[key]} currency='USD' />
-        ))}
-      </dl>
-    </div>
   )
 }

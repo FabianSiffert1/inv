@@ -121,6 +121,10 @@ and its hot-reload WebSocket makes phones prompt for local network access.
 - **Variants**: the snapshot keeps which printings a card has (holo, reverse, 1st edition) and, where
   TCGdex names it, the holo pattern (cosmos, galaxy, cracked ice, rainbow, gold). Card details show
   them as chips, and the search box matches them, so "cosmos" finds the cosmos holos of a set.
+- **Prices panel**: card details show one table, a row per printing (normal, reverse holo, and where
+  TCGdex lists them, holo patterns, jumbo, stamped promos, 1st edition), a column per marketplace.
+  Each cell is the trend or market price and links to that printing's product page. The row marked
+  "on tile" is the price the grid shows; the sort and the totals use it too.
 - **Sprites** are PokeAPI's 96×96 PNGs. Pokémon detail pages show the animated Showdown GIF when
   one exists and fall back to the PNG otherwise, or when the system asks for reduced motion.
 - **Favorites** live in `localStorage` for guests. Signed-in users get them from Firestore instead.

@@ -2,14 +2,7 @@ import { useRef, useState } from 'react'
 import { PokemonCard } from '../../../../../util/api/pokemonTGC/model/PokemonCard'
 import { useLocalizedName } from '../../../../../util/ui/language/LanguageProvider'
 import { useModalBehaviour } from '../../../../../util/ui/useModalBehaviour'
-import {
-  CardBaseDetails,
-  CardMarketPrices,
-  CardNavigation,
-  CardNavigationProps,
-  SetInformation,
-  TcgPlayerPrices
-} from '../CardDetails/CardDetails'
+import { CardBaseDetails, CardNavigation, CardNavigationProps, CardPrices, SetInformation } from '../CardDetails/CardDetails'
 import { CardImage } from '../CardImage/CardImage'
 import { ImageZoom } from '../ImageZoom/ImageZoom'
 import styles from './MobileCardDetails.module.scss'
@@ -46,8 +39,7 @@ export function MobileCardDetails(props: MobileCardDetailsProps) {
             <CardBaseDetails card={props.card} onClose={props.onClose} />
           </div>
           <SetInformation card={props.card} />
-          <CardMarketPrices card={props.card} />
-          <TcgPlayerPrices card={props.card} />
+          <CardPrices card={props.card} />
         </div>
       </div>
       {isZoomOpen && <ImageZoom sources={imageSources} alt={cardName} pokedexNumber={pokedexNumber} onClose={() => setZoomOpen(false)} />}

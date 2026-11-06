@@ -88,13 +88,12 @@ const toSet = (set, germanName, germanSeries) => ({
   }
 })
 
+const cardmarketProductUrl = (idProduct) => `https://www.cardmarket.com/en/Pokemon/Products?idProduct=${idProduct}&language=1`
+
 const toCardmarket = (cardmarket) =>
   cardmarket
     ? {
-        url:
-          cardmarket.idProduct != undefined
-            ? `https://www.cardmarket.com/en/Pokemon/Products?idProduct=${cardmarket.idProduct}&language=1`
-            : undefined,
+        url: cardmarket.idProduct != undefined ? cardmarketProductUrl(cardmarket.idProduct) : undefined,
         updatedAt: cardmarket.updated,
         prices: {
           averageSellPrice: price(cardmarket.avg),
@@ -140,6 +139,68 @@ const toTcgplayer = (tcgplayer) => {
 
 const foilsOf = (card) => [...new Set((card.variants_detailed ?? []).map((variant) => variant.foil).filter((foil) => foil != undefined))]
 
+const titleCase = (value) =>
+  value
+    .split('-')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ')
+
+const printLabel = (variant) => {
+  const parts = [
+    variant.foil
+      ? `${titleCase(variant.foil)} Holo`
+      : variant.type == 'reverse'
+        ? 'Reverse Holo'
+        : variant.type == 'holo'
+          ? 'Holo'
+          : 'Normal'
+  ]
+  if (variant.subtype != undefined && variant.subtype != 'unlimited') {
+    parts.push(titleCase(variant.subtype))
+  }
+  if (variant.size != undefined && variant.size != 'standard') {
+    parts.push(titleCase(variant.size))
+  }
+  parts.push(...(variant.stamp ?? []).map(titleCase))
+  return parts.join(' · ')
+}
+
+const tcgPlayerVariantOfType = { normal: 'normal', holo: 'holofoil', reverse: 'reverseHolofoil' }
+
+const marketPriceFor = (prices, type) => {
+  const preferred = prices?.[tcgPlayerVariantOfType[type]]?.market
+  return preferred ?? Object.values(prices ?? {}).map((priceSet) => priceSet.market)[0]
+}
+
+const printsOf = (card) => {
+  const printsByLabel = new Map()
+  for (const variant of card.variants_detailed ?? []) {
+    const label = printLabel(variant)
+    const print = printsByLabel.get(label) ?? { label }
+    const cardmarket = variant.pricing?.cardmarket
+    const trendPrice = price(variant.type == 'reverse' ? cardmarket?.['trend-holo'] : cardmarket?.trend)
+    if (cardmarket?.idProduct != undefined && print.cardmarket == undefined) {
+      print.cardmarket = { url: cardmarketProductUrl(cardmarket.idProduct), trendPrice }
+    } else if (trendPrice != undefined && print.cardmarket != undefined) {
+      print.cardmarket.lowestTrendPrice = Math.min(
+        print.cardmarket.lowestTrendPrice ?? print.cardmarket.trendPrice ?? trendPrice,
+        trendPrice
+      )
+      print.cardmarket.highestTrendPrice = Math.max(
+        print.cardmarket.highestTrendPrice ?? print.cardmarket.trendPrice ?? trendPrice,
+        trendPrice
+      )
+    }
+    const tcgplayer = toTcgplayer(variant.pricing?.tcgplayer)
+    if (tcgplayer?.url != undefined && print.tcgplayer == undefined) {
+      print.tcgplayer = { url: tcgplayer.url, marketPrice: marketPriceFor(tcgplayer.prices, variant.type) }
+    }
+    printsByLabel.set(label, print)
+  }
+  const prints = [...printsByLabel.values()]
+  return prints.length > 1 ? prints : undefined
+}
+
 const toCard = (card, set, germanNames) => ({
   id: card.id,
   name: card.name,
@@ -156,6 +217,7 @@ const toCard = (card, set, germanNames) => ({
   nationalPokedexNumbers: card.dexId,
   variants: card.variants,
   foils: foilsOf(card),
+  prints: printsOf(card),
   images: card.image ? { small: `${card.image}/low.webp`, large: `${card.image}/high.webp` } : {},
   tcgplayer: toTcgplayer(card.pricing?.tcgplayer),
   cardmarket: toCardmarket(card.pricing?.cardmarket)

@@ -76,6 +76,20 @@ export interface CardVariants {
   wPromo?: boolean
 }
 
+export interface CardPrint {
+  label: string
+  cardmarket?: {
+    url: string
+    trendPrice?: number
+    lowestTrendPrice?: number
+    highestTrendPrice?: number
+  }
+  tcgplayer?: {
+    url: string
+    marketPrice?: number
+  }
+}
+
 export interface PokemonCard {
   id: string
   name: string
@@ -97,6 +111,7 @@ export interface PokemonCard {
   nationalPokedexNumbers?: number[]
   variants?: CardVariants
   foils?: string[]
+  prints?: CardPrint[]
   legalities?: {
     unlimited?: string
   }
