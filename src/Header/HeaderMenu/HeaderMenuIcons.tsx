@@ -92,3 +92,40 @@ export function PokeBallIcon() {
 export function MasterBallIcon() {
   return <PixelIcon rows={masterBallRows} />
 }
+
+const signOutRows: [y: number, x: number, width: number][] = [
+  [1, 2, 7],
+  [2, 2, 2],
+  [2, 7, 2],
+  [3, 2, 2],
+  [3, 7, 2],
+  [4, 2, 2],
+  [5, 2, 2],
+  [5, 11, 2],
+  [6, 2, 2],
+  [6, 12, 2],
+  [7, 2, 2],
+  [7, 6, 8],
+  [8, 2, 2],
+  [8, 6, 8],
+  [9, 2, 2],
+  [9, 12, 2],
+  [10, 2, 2],
+  [10, 11, 2],
+  [11, 2, 2],
+  [12, 2, 2],
+  [12, 7, 2],
+  [13, 2, 2],
+  [13, 7, 2],
+  [14, 2, 7]
+]
+
+export function SignOutIcon() {
+  return (
+    <svg viewBox='0 0 16 16' shapeRendering='crispEdges' aria-hidden='true' focusable='false'>
+      {signOutRows.map(([y, x, width]) => (
+        <rect key={`${y}-${x}`} x={x} y={y} width={width} height='1' fill='currentColor' />
+      ))}
+    </svg>
+  )
+}

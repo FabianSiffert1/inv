@@ -1,10 +1,8 @@
 import { NavLink } from 'react-router-dom'
 import { StarIcon } from '../../../Components/FavoriteButton/FavoriteButton'
-import AccountToggle from '../../AccountToggle/AccountToggle'
-import LanguageToggle from '../../LanguageToggle/LanguageToggle'
+import HeaderMenu from '../../HeaderMenu/HeaderMenu'
 import SearchToggle from '../../SearchToggle/SearchToggle'
 import SortToggle from '../../SortToggle/SortToggle'
-import ThemeToggle from '../../ThemeToggle/ThemeToggle'
 import { useIsMobile } from '../../../util/ui/useIsMobile'
 import styles from './WebNavigation.module.scss'
 
@@ -37,19 +35,9 @@ export default function WebNavigation() {
               <SortToggle />
             </div>
           </li>
-          <li key={'languageToggle'}>
+          <li key={'headerMenu'}>
             <div className={styles.themeToggle}>
-              <LanguageToggle />
-            </div>
-          </li>
-          <li key={'themeToggle'}>
-            <div className={styles.themeToggle}>
-              <ThemeToggle />
-            </div>
-          </li>
-          <li key={'accountToggle'}>
-            <div className={styles.themeToggle}>
-              <AccountToggle />
+              <HeaderMenu />
             </div>
           </li>
         </ul>
