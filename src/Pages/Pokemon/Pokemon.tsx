@@ -15,7 +15,7 @@ import CardList from '../Market/CardList/CardList'
 import CardListStatus from '../Market/CardListStatus'
 import { Generation, generationByNumber, generationLabel, generationOfPokemon, generationPath, isInGeneration } from './generations'
 import PokedexSelector from './PokedexSelector'
-import styles from './Pokemon.module.scss'
+import styles from '../Page.module.scss'
 import PokemonGrid from './PokemonGrid'
 import { matchingPokemon } from './pokemonSearch'
 import PokemonSuggestions from './PokemonSuggestions'
@@ -75,7 +75,7 @@ export default function Pokemon() {
   }
 
   return (
-    <div className={styles.pokemonPage}>
+    <div className={styles.page}>
       {pokedexNumber == undefined ? (
         <GenerationOverview generation={selectedGeneration} pokemonIndex={pokemonIndex} isFetching={isIndexFetching} error={indexError} />
       ) : (
@@ -179,10 +179,10 @@ function PokemonCards(props: PokemonCardsProps) {
         <div className={styles.pageTitle}>
           <AnimatedSprite className={styles.sprite} pokedexNumber={pokemon.number} />
           <h1 className={styles.pageHeadline}>{localizedName(pokemon, germanNames)}</h1>
-          <span className={styles.pokedexNumber}>#{pokemon.number.toString().padStart(4, '0')}</span>
+          <span className={styles.pageMeta}>#{pokemon.number.toString().padStart(4, '0')}</span>
           <span className={styles.pageCount}>{pokemon.cardCount} cards</span>
           {generation && (
-            <Link className={styles.generationLink} to={generationPath(generation)} onClick={() => window.scrollTo(0, 0)}>
+            <Link className={styles.backLink} to={generationPath(generation)} onClick={() => window.scrollTo(0, 0)}>
               <span aria-hidden='true'>←</span> {generationLabel(generation, germanNames)}
             </Link>
           )}

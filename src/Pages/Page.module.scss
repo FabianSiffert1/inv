@@ -1,6 +1,6 @@
 @use 'globalDesignElements.module' as *;
 
-.pokemonPage {
+.page {
   padding-top: 1.5rem;
 }
 
@@ -25,7 +25,7 @@
   font-size: 1.4rem;
 }
 
-.pokedexNumber {
+.pageMeta {
   font-family: $monoFont;
   font-size: 0.9rem;
   color: var(--secondary-color);
@@ -39,7 +39,7 @@
   font-size: 0.85rem;
 }
 
-.generationLink {
+.backLink {
   @include surfaceInteractive($surfaceRadiusSmall);
   @include pastel(var(--elementBlue));
   padding: 0.2rem 0.7rem;

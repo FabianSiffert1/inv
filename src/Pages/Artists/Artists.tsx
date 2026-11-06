@@ -12,7 +12,7 @@ import { SearchContext } from '../../util/ui/search/SearchProvider'
 import { useIsMobile } from '../../util/ui/useIsMobile'
 import CardList from '../Market/CardList/CardList'
 import CardListStatus from '../Market/CardListStatus'
-import styles from '../Pokemon/Pokemon.module.scss'
+import styles from '../Page.module.scss'
 import PokemonSuggestions from '../Pokemon/PokemonSuggestions'
 import ArtistGrid from './ArtistGrid'
 import ArtistSelector from './ArtistSelector'
@@ -49,7 +49,7 @@ export default function Artists() {
   useEffect(() => () => setBusy(false), [setBusy])
 
   return (
-    <div className={styles.pokemonPage}>
+    <div className={styles.page}>
       <PokemonSuggestions />
       {slug == undefined ? (
         <ArtistOverview artists={artists} isFetching={isIndexFetching} error={indexError} />
@@ -135,8 +135,8 @@ function ArtistCards(props: ArtistCardsProps) {
           )}
           <h1 className={styles.pageHeadline}>{artist.name}</h1>
           <span className={styles.pageCount}>{artist.cardCount} cards</span>
-          <span className={styles.pokedexNumber}>{artist.setCount} sets</span>
-          <Link className={styles.generationLink} to={artistsPath} onClick={() => window.scrollTo(0, 0)}>
+          <span className={styles.pageMeta}>{artist.setCount} sets</span>
+          <Link className={styles.backLink} to={artistsPath} onClick={() => window.scrollTo(0, 0)}>
             <span aria-hidden='true'>←</span> All artists
           </Link>
         </div>

@@ -12,7 +12,7 @@ import { SortContext, sortEntries } from '../../util/ui/sort/SortProvider'
 import { useIsMobile } from '../../util/ui/useIsMobile'
 import CardList from '../Market/CardList/CardList'
 import CardListStatus from '../Market/CardListStatus'
-import styles from '../Pokemon/Pokemon.module.scss'
+import styles from '../Page.module.scss'
 
 export default function Search() {
   const { setHeaderItem, setBusy } = useContext(HeaderContext)
@@ -81,7 +81,7 @@ export default function Search() {
   useEffect(() => () => setBusy(false), [setBusy])
 
   return (
-    <div className={styles.pokemonPage}>
+    <div className={styles.page}>
       {query == '' ? (
         <div className={styles.status}>
           <div className={styles.hint}>

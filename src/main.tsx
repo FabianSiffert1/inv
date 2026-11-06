@@ -100,7 +100,7 @@ const persistOptions = {
     throttleTime: 2000
   }),
   maxAge: cacheMaxAge,
-  buster: 'server-snapshot',
+  buster: 'server-snapshot-2',
   dehydrateOptions: {
     shouldDehydrateQuery: (query: Query) => {
       if (query.state.data == undefined || query.state.status != 'success' || isSearchIndexQuery(query.queryKey)) {
