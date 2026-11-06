@@ -1,0 +1,113 @@
+@use 'globalDesignElements.module' as *;
+
+.account {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.accountToggle {
+  @include surfaceInteractive($surfaceRadiusSmall);
+  @include pastel(var(--elementPeach), 50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  padding: 0;
+  border: none;
+  color: var(--color);
+  overflow: hidden;
+
+  svg {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.5;
+    transform: none;
+  }
+}
+
+.signedIn {
+  @include pastel(var(--elementLavender), 60%);
+}
+
+.avatar {
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.initial {
+  @include typoFieldValue;
+  font-size: 0.9rem;
+}
+
+.panel {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  right: 0;
+  z-index: $zTopLevel;
+  width: max-content;
+  max-width: min(20rem, calc(100vw - 4rem));
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem 1.25rem;
+  background-color: var(--background-color);
+  border: 1px solid var(--card-border-color);
+  border-radius: $surfaceRadiusSmall;
+  box-shadow: 0 0.75rem 2rem var(--shadow-color);
+  animation: panelIn $surfaceTransition both;
+}
+
+.name {
+  @include typoDisplay;
+  font-size: 0.95rem;
+}
+
+.email {
+  font-family: $monoFont;
+  font-size: 0.8rem;
+  color: var(--secondary-color);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.signOut {
+  @include surfaceInteractive($surfaceRadiusSmall);
+  @include pastel(var(--elementPeach), 50%);
+  @include typoFieldValue;
+  align-self: flex-start;
+  margin-top: 0.25rem;
+  padding: 0.45rem 0.9rem;
+  border: none;
+  color: var(--color);
+}
+
+.error {
+  font-family: $monoFont;
+  font-size: 0.8rem;
+  color: var(--elementRed);
+}
+
+@keyframes panelIn {
+  from {
+    opacity: 0;
+    transform: translateY(-0.35rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel {
+    animation: none;
+  }
+}

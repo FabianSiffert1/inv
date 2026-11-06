@@ -95,9 +95,35 @@ and its hot-reload WebSocket makes phones prompt for local network access.
 - **Links**: the selected set and the open card live in the URL (`/market?set=<setId>&card=<cardId>`),
   so the link buttons next to the set selector and the card title can share them.
 - A dot next to a set name means that set is already stored offline.
+- **Favorites** live in `localStorage` for guests. Signed-in users get them from Firestore instead,
+  one document per user at `users/<uid>`, with offline persistence so toggles work without a
+  connection. The first sign-in merges the local list into the cloud one. Firebase is loaded lazily,
+  so guests never download it.
+
+## Accounts
+
+Sign-in is Google only, through Firebase Auth. It exists solely to sync favorites across devices.
+
+The Firebase web config lives in `.env` as `VITE_FIREBASE_*` keys. Those values are public by
+design; access is controlled by `firestore.rules`, which only lets a user read and write their own
+`users/<uid>` document.
+
+To set up a new Firebase project:
+
+1. Create a project, add a Web app, and copy its config into `.env`.
+2. Authentication → Sign-in method: enable Google. Authentication → Settings: add the site domain
+   to the authorized domains.
+3. Firestore: create a database (Standard edition, production mode).
+4. Deploy the rules:
+
+```
+npx firebase login
+npx firebase deploy --only firestore:rules
+```
+
+`.firebaserc` names the project and `firebase.json` points at the rules file.
 
 ## Known gaps
 
-- The inventory page is a placeholder and does nothing.
 - There is no test suite.
 - Prices are whatever the API reports and are not validated, and are at most one refresh old.

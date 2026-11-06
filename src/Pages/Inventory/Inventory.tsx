@@ -1,6 +1,7 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { HeaderContext } from '../../Header/HeaderProvider'
+import { AuthContext } from '../../util/auth/AuthProvider'
 import { useCardsOfSets } from '../../util/api/pokemonTGC/hooks'
 import { PokemonCard } from '../../util/api/pokemonTGC/model/PokemonCard'
 import { PokemonSet, PokemonTCGSeries } from '../../util/api/pokemonTGC/model/PokemonSet'
@@ -16,7 +17,8 @@ import styles from './Inventory.module.scss'
 
 export default function Inventory() {
   const { setHeaderItem, setBusy } = useContext(HeaderContext)
-  const { favorites } = useContext(FavoritesContext)
+  const { favorites, source, isLoading, error } = useContext(FavoritesContext)
+  const { status, signIn } = useContext(AuthContext)
   const { sortMode } = useContext(SortContext)
   const { germanNames } = useContext(LanguageContext)
   const { query } = useContext(SearchContext)
@@ -80,11 +82,25 @@ export default function Inventory() {
         <StarIcon />
         <h1 className={styles.pageHeadline}>Favorites</h1>
         {favorites.length > 0 && <span className={styles.pageCount}>{favorites.length}</span>}
+        {source == 'cloud' && <span className={styles.syncTag}>synced</span>}
       </div>
-      {favorites.length == 0 ? (
+      {error && (
+        <div className={styles.error} role='alert'>
+          {error}
+        </div>
+      )}
+      {isLoading ? null : favorites.length == 0 ? (
         <div className={styles.inventory}>
           <div className={styles.headline}>No favorites yet</div>
           <div className={styles.detail}>Open a card and tap the star next to its name to keep it here.</div>
+          {status == 'signedOut' && (
+            <>
+              <div className={styles.detail}>Sign in to keep favorites on every device.</div>
+              <button type='button' className={styles.signIn} onClick={() => void signIn()}>
+                Sign in with Google
+              </button>
+            </>
+          )}
         </div>
       ) : (
         <div className={styles.favorites}>

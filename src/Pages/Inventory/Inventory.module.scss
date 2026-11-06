@@ -71,3 +71,28 @@
     padding-bottom: 5.5rem;
   }
 }
+
+.syncTag {
+  @include surface($surfaceRadiusSmall);
+  @include pastel(var(--elementLavender), 60%);
+  @include typoFieldValue;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.7rem;
+}
+
+.signIn {
+  @include surfaceInteractive($surfaceRadiusSmall);
+  @include pastel(var(--elementLavender), 60%);
+  @include typoFieldValue;
+  margin-top: 0.5rem;
+  padding: 0.6rem 1.1rem;
+  border: none;
+  color: var(--color);
+}
+
+.error {
+  margin-top: 1rem;
+  font-family: $monoFont;
+  font-size: 0.85rem;
+  color: var(--elementRed);
+}
