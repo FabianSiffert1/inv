@@ -10,7 +10,7 @@ import { Currency, formatPrice } from '../../../../../util/format/price'
 import { formatPriceDate, formatSetReleaseDate } from '../../../../../util/format/date'
 import { useLocalizedName } from '../../../../../util/ui/language/LanguageProvider'
 import { SearchContext } from '../../../../../util/ui/search/SearchProvider'
-import { cardShareLink } from '../../../../../util/shareLinks'
+import { cardShareLink, priceChartingSearchLink } from '../../../../../util/shareLinks'
 import { useModalBehaviour } from '../../../../../util/ui/useModalBehaviour'
 import { CardImage } from '../CardImage/CardImage'
 import { ExternalLink } from '../ExternalLink/ExternalLink'
@@ -190,7 +190,11 @@ function PriceUpdatedAt({ updatedAt }: { updatedAt?: string }) {
   if (formatted == undefined) {
     return null
   }
-  return <div className={styles.priceUpdated}>Prices from {formatted}</div>
+  return (
+    <div className={styles.priceUpdated}>
+      Prices from <span className={styles.priceDate}>{formatted}</span>
+    </div>
+  )
 }
 
 function PriceCellContent({ cell, currency, emphasized }: { cell?: PriceCell; currency: Currency; emphasized: boolean }) {
@@ -252,7 +256,16 @@ export function CardPrices(props: PokemonCardProp) {
               ))}
             </tbody>
           </table>
-          <PriceUpdatedAt updatedAt={props.card.cardmarket?.updatedAt ?? props.card.tcgplayer?.updatedAt} />
+          <div className={styles.priceFooter}>
+            <ExternalLink
+              href={priceChartingSearchLink(props.card)}
+              className={styles.panelLink}
+              title='Graded and raw prices on PriceCharting'
+            >
+              <span className={styles.panelTitle}>PriceCharting</span>
+            </ExternalLink>
+            <PriceUpdatedAt updatedAt={props.card.cardmarket?.updatedAt ?? props.card.tcgplayer?.updatedAt} />
+          </div>
         </>
       )}
     </section>

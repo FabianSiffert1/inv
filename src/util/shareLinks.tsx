@@ -10,3 +10,6 @@ export const cardShareLink = (card: PokemonCard) => marketLink({ set: card.set.i
 export const pokemonShareLink = (pokedexNumber: number) => `${window.location.origin}${import.meta.env.BASE_URL}pokemon/${pokedexNumber}`
 
 export const artistShareLink = (slug: string) => `${window.location.origin}${import.meta.env.BASE_URL}artists/${slug}`
+
+export const priceChartingSearchLink = (card: PokemonCard) =>
+  `https://www.pricecharting.com/search-products?type=prices&q=${encodeURIComponent(`pokemon ${card.set.name} ${card.name} ${card.number}`)}`

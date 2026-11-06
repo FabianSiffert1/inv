@@ -17,5 +17,5 @@ export const formatPriceDate = (updatedAt?: string): string | undefined => {
   if (Number.isNaN(parsed.getTime())) {
     return undefined
   }
-  return parsed.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })
+  return parsed.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })
 }
