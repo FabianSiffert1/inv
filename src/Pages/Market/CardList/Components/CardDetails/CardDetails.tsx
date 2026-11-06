@@ -237,6 +237,7 @@ export function CardPrices(props: PokemonCardProp) {
               {rows.map((row) => (
                 <tr key={row.label}>
                   <th scope='row' className={styles.priceRowLabel}>
+                    <FavoriteButton card={props.card} print={row.isMain ? undefined : row.label} small />
                     {row.label}
                   </th>
                   <td>

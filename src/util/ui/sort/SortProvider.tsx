@@ -1,7 +1,7 @@
 import React, { createContext, useCallback, useEffect, useMemo, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { PokemonCard } from '../../api/pokemonTGC/model/PokemonCard'
-import { cardDisplayPrice } from '../../cardPrice'
+import { CardEntry, PokemonCard, toCardEntries } from '../../api/pokemonTGC/model/PokemonCard'
+import { printDisplayPrice } from '../../cardPrice'
 import { localizedName } from '../language/LanguageProvider'
 import { rarityOf, rarityRank } from './rarity'
 
@@ -72,19 +72,24 @@ const SortProvider: React.FC<Props> = ({ children }) => {
   return <SortContext.Provider value={contextValue}>{children}</SortContext.Provider>
 }
 
-const trendPrice = (card: PokemonCard): number => cardDisplayPrice(card)?.amount ?? -1
+const priceOf = (entry: CardEntry): number => printDisplayPrice(entry.card, entry.print)?.amount ?? -1
 
-export const sortCards = (cards: PokemonCard[], sortMode: SortMode, germanNames: boolean): PokemonCard[] => {
+export const sortEntries = (entries: CardEntry[], sortMode: SortMode, germanNames: boolean): CardEntry[] => {
   const collator = new Intl.Collator(germanNames ? 'de' : 'en', { numeric: true, sensitivity: 'base' })
-  const compare: Record<SortMode, (a: PokemonCard, b: PokemonCard) => number> = {
-    price: (a, b) => trendPrice(b) - trendPrice(a),
-    number: (a, b) => collator.compare(a.number, b.number),
-    name: (a, b) => collator.compare(localizedName(a, germanNames), localizedName(b, germanNames)),
+  const compare: Record<SortMode, (a: CardEntry, b: CardEntry) => number> = {
+    price: (a, b) => priceOf(b) - priceOf(a),
+    number: (a, b) => collator.compare(a.card.number, b.card.number),
+    name: (a, b) => collator.compare(localizedName(a.card, germanNames), localizedName(b.card, germanNames)),
     rarity: (a, b) =>
-      rarityRank(rarityOf(a)) - rarityRank(rarityOf(b)) || rarityOf(a).localeCompare(rarityOf(b)) || trendPrice(b) - trendPrice(a),
-    release: (a, b) => b.set.releaseDate.localeCompare(a.set.releaseDate) || collator.compare(a.number, b.number)
+      rarityRank(rarityOf(a.card)) - rarityRank(rarityOf(b.card)) ||
+      rarityOf(a.card).localeCompare(rarityOf(b.card)) ||
+      priceOf(b) - priceOf(a),
+    release: (a, b) => b.card.set.releaseDate.localeCompare(a.card.set.releaseDate) || collator.compare(a.card.number, b.card.number)
   }
-  return [...cards].sort(compare[sortMode])
+  return [...entries].sort(compare[sortMode])
 }
+
+export const sortCards = (cards: PokemonCard[], sortMode: SortMode, germanNames: boolean): PokemonCard[] =>
+  sortEntries(toCardEntries(cards), sortMode, germanNames).map((entry) => entry.card)
 
 export default SortProvider

@@ -5,23 +5,26 @@ import styles from './FavoriteButton.module.scss'
 
 interface FavoriteButtonProps {
   card: PokemonCard
+  print?: string
+  small?: boolean
 }
 
-export function FavoriteButton({ card }: FavoriteButtonProps) {
+export function FavoriteButton({ card, print, small = false }: FavoriteButtonProps) {
   const { isFavorite, toggleFavorite } = useContext(FavoritesContext)
-  const isFavorited = isFavorite(card.id)
-  const label = isFavorited ? 'Remove from favorites' : 'Add to favorites'
+  const isFavorited = isFavorite(card.id, print)
+  const subject = print == undefined ? '' : ` ${print}`
+  const label = isFavorited ? `Remove${subject} from favorites` : `Add${subject} to favorites`
 
   return (
     <button
       type='button'
-      className={`${styles.favoriteButton} ${isFavorited ? styles.favorited : ''}`}
+      className={`${styles.favoriteButton} ${isFavorited ? styles.favorited : ''} ${small ? styles.small : ''}`}
       aria-label={label}
       aria-pressed={isFavorited}
       title={label}
       onClick={(event) => {
         event.stopPropagation()
-        toggleFavorite(card)
+        toggleFavorite(card, print)
       }}
     >
       <StarIcon filled={isFavorited} />

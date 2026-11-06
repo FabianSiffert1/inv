@@ -116,6 +116,15 @@
   color: var(--secondary-color);
 }
 
+.cardPrint {
+  @include surface($surfaceRadiusSmall);
+  @include pastel(var(--elementLavender), 50%);
+  @include typoFieldValue;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.55rem;
+  white-space: nowrap;
+}
+
 .cardPrice {
   @include typoDisplay;
   margin-top: auto;

@@ -2,9 +2,10 @@ import { useContext, useEffect, useMemo } from 'react'
 import CardsValue from '../../Components/CardsValue/CardsValue'
 import { HeaderContext } from '../../Header/HeaderProvider'
 import { AuthContext } from '../../util/auth/AuthProvider'
+import { CardEntry } from '../../util/api/pokemonTGC/model/PokemonCard'
 import { useCardsOfSets } from '../../util/api/pokemonTGC/hooks'
 import { noBaseParams, useCardNavigation } from '../../util/ui/cards/useCardNavigation'
-import { useVisibleCards } from '../../util/ui/cards/useVisibleCards'
+import { useVisibleEntries } from '../../util/ui/cards/useVisibleCards'
 import { FavoritesContext, FavoritesSource } from '../../util/ui/favorites/FavoritesProvider'
 import CardList from '../Market/CardList/CardList'
 import cardListStyles from '../Market/CardList/CardList.module.scss'
@@ -23,11 +24,14 @@ export default function Inventory() {
   const setQueries = useCardsOfSets(setIds)
   const isFetching = setQueries.some((setQuery) => setQuery.isFetching)
 
-  const allFavoriteCards = useMemo(() => {
-    const favoriteIds = new Set(favorites.map((favorite) => favorite.cardId))
-    return setQueries.flatMap((setQuery) => setQuery.data ?? []).filter((card) => favoriteIds.has(card.id))
+  const allFavoriteEntries = useMemo(() => {
+    const cardsById = new Map(setQueries.flatMap((setQuery) => setQuery.data ?? []).map((card) => [card.id, card]))
+    return favorites.flatMap((favorite): CardEntry[] => {
+      const card = cardsById.get(favorite.cardId)
+      return card == undefined ? [] : [favorite.print == undefined ? { card } : { card, print: favorite.print }]
+    })
   }, [setQueries, favorites])
-  const favoriteCards = useVisibleCards(allFavoriteCards) ?? []
+  const favoriteEntries = useVisibleEntries(allFavoriteEntries) ?? []
 
   useEffect(() => {
     setHeaderItem(<FavoritesStatus count={favorites.length} source={source} isLoading={isLoading} />)
@@ -43,7 +47,7 @@ export default function Inventory() {
     <div className={styles.inventoryPage}>
       <div className={styles.backdrop} aria-hidden='true' />
       <PokemonSuggestions />
-      {!isLoading && !isFetching && allFavoriteCards.length > 0 && <CardsValue cards={allFavoriteCards} label='Favorites value' />}
+      {!isLoading && !isFetching && allFavoriteEntries.length > 0 && <CardsValue entries={allFavoriteEntries} label='Favorites value' />}
       {error && (
         <div className={styles.error} role='alert'>
           {error}
@@ -68,7 +72,7 @@ export default function Inventory() {
             <FavoritesSkeleton count={favorites.length} />
           ) : (
             <CardList
-              cards={favoriteCards}
+              entries={favoriteEntries}
               openCardId={openCardId}
               onOpenCard={openCard}
               onStepToCard={stepToCard}

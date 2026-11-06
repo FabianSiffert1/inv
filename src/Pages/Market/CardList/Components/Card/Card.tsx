@@ -1,7 +1,7 @@
 import { MouseEvent } from 'react'
 import { PokemonCard } from '../../../../../util/api/pokemonTGC/model/PokemonCard'
 import { useLocalizedName } from '../../../../../util/ui/language/LanguageProvider'
-import { cardDisplayPrice } from '../../../../../util/cardPrice'
+import { printDisplayPrice } from '../../../../../util/cardPrice'
 import { formatPriceParts } from '../../../../../util/format/price'
 import { CardDetails, CardNavigationProps } from '../CardDetails/CardDetails'
 import { CardImage } from '../CardImage/CardImage'
@@ -14,6 +14,7 @@ interface CardProps {
 }
 
 interface CardWithDetailsProps extends CardProps {
+  print?: string
   isDetailsOpen: boolean
   isMobile: boolean
   showNumber?: boolean
@@ -40,7 +41,7 @@ export const tintClassNameOfType = (type?: string): string => typeTintClassNames
 
 const tintClassName = (card: PokemonCard): string => tintClassNameOfType(card.types?.[0])
 
-export function Card({ card, isDetailsOpen, isMobile, showNumber = false, navigation, onOpen, onClose }: CardWithDetailsProps) {
+export function Card({ card, print, isDetailsOpen, isMobile, showNumber = false, navigation, onOpen, onClose }: CardWithDetailsProps) {
   const cardName = useLocalizedName(card)
 
   const openFromTile = (event: MouseEvent<HTMLDivElement>) => {
@@ -69,19 +70,20 @@ export function Card({ card, isDetailsOpen, isMobile, showNumber = false, naviga
       </button>
       <div className={styles.cardInformationWrapper}>
         <div className={styles.cardName}>{cardName}</div>
+        {print != undefined && <div className={styles.cardPrint}>{print}</div>}
         {showNumber && (
           <div className={styles.cardNumber}>
             {card.number}/{card.set.printedTotal}
           </div>
         )}
-        <CardPrice card={card} />
+        <CardPrice card={card} print={print} />
       </div>
     </div>
   )
 }
 
-function CardPrice({ card }: CardProps) {
-  const displayPrice = cardDisplayPrice(card)
+function CardPrice({ card, print }: CardProps & { print?: string }) {
+  const displayPrice = printDisplayPrice(card, print)
   const formatted = displayPrice && formatPriceParts(displayPrice.amount, displayPrice.currency)
   const priceLabel = formatted && (
     <>

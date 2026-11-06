@@ -128,7 +128,9 @@ and its hot-reload WebSocket makes phones prompt for local network access.
 - **Sprites** are PokeAPI's 96×96 PNGs. Pokémon detail pages show the animated Showdown GIF when
   one exists and fall back to the PNG otherwise, or when the system asks for reduced motion.
 - **Favorites** live in `localStorage` for guests. Signed-in users get them from Firestore instead.
-  Firebase is loaded lazily, so guests never download it. Details below.
+  Firebase is loaded lazily, so guests never download it. The star next to a card name favorites the
+  card; the small stars in the Prices table favorite one printing, which then shows on the favorites
+  page with its own chip and price. Details below.
 
 ## Accounts
 
@@ -161,13 +163,21 @@ One document per user at `users/<uid>`, with a single field, `favorites`, a map 
 {
   "favorites": {
     "sv03-125": { "setId": "sv03", "addedAt": 1762436400000 },
-    "xy8-61": { "setId": "xy8", "addedAt": 1762437000000 }
+    "xy8-61": { "setId": "xy8", "addedAt": 1762437000000 },
+    "swsh4-25#Cracked Ice Holo": {
+      "setId": "swsh4",
+      "addedAt": 1762438000000,
+      "cardId": "swsh4-25",
+      "print": "Cracked Ice Holo"
+    }
   }
 }
 ```
 
 `setId` tells the favorites page which card files to load, `addedAt` keeps the order. Keying by card
-id makes every toggle a single-field write and rules out duplicates.
+id makes every toggle a single-field write and rules out duplicates. A favorite for one specific
+printing, starred from the Prices table, is keyed `cardId#print` and carries both fields, so it can
+sit next to the plain card favorite. Entries without `print` are the card itself.
 
 - **Writes**: starring is a `setDoc` with `merge: true` on that one key, unstarring is an `updateDoc`
   with `deleteField()`. Two devices changing different cards at the same time never overwrite each

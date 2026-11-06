@@ -354,6 +354,9 @@
 
 .priceRowLabel {
   @include typoFieldLabel;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
   font-weight: 400;
   color: var(--secondary-color);
   white-space: nowrap;

@@ -1,5 +1,5 @@
 import { useContext } from 'react'
-import { PokemonCard } from '../../../util/api/pokemonTGC/model/PokemonCard'
+import { CardEntry, cardEntryKey, PokemonCard } from '../../../util/api/pokemonTGC/model/PokemonCard'
 import { formatSetReleaseDate } from '../../../util/format/date'
 import { rarityOf, rarityTier, RarityTier } from '../../../util/ui/sort/rarity'
 import { releaseAgeBucketOf } from '../../../util/ui/sort/releaseAge'
@@ -10,7 +10,7 @@ import { Card } from './Components/Card/Card'
 import { CardNavigationProps } from './Components/CardDetails/CardDetails'
 
 export interface CardListProps {
-  cards?: PokemonCard[]
+  entries?: CardEntry[]
   openCardId?: string
   onOpenCard: (cardId: string) => void
   onStepToCard: (cardId: string) => void
@@ -22,42 +22,42 @@ interface CardSection {
   title: string
   subtitle?: string
   tier: RarityTier
-  cards: PokemonCard[]
+  entries: CardEntry[]
 }
 
-const groupConsecutive = (cards: PokemonCard[], keyOf: (card: PokemonCard) => string): PokemonCard[][] =>
-  cards.reduce<PokemonCard[][]>((groups, card) => {
+const groupConsecutive = (entries: CardEntry[], keyOf: (card: PokemonCard) => string): CardEntry[][] =>
+  entries.reduce<CardEntry[][]>((groups, entry) => {
     const lastGroup = groups[groups.length - 1]
-    if (lastGroup != undefined && keyOf(lastGroup[0]) == keyOf(card)) {
-      lastGroup.push(card)
+    if (lastGroup != undefined && keyOf(lastGroup[0].card) == keyOf(entry.card)) {
+      lastGroup.push(entry)
     } else {
-      groups.push([card])
+      groups.push([entry])
     }
     return groups
   }, [])
 
-const raritySections = (cards: PokemonCard[]): CardSection[] =>
-  groupConsecutive(cards, rarityOf).map((group) => {
-    const rarity = rarityOf(group[0])
-    return { key: rarity, title: rarity, tier: rarityTier(rarity), cards: group }
+const raritySections = (entries: CardEntry[]): CardSection[] =>
+  groupConsecutive(entries, rarityOf).map((group) => {
+    const rarity = rarityOf(group[0].card)
+    return { key: rarity, title: rarity, tier: rarityTier(rarity), entries: group }
   })
 
-const releaseSpan = (cards: PokemonCard[]): string => {
-  const newest = formatSetReleaseDate(cards[0].set.releaseDate)
-  const oldest = formatSetReleaseDate(cards[cards.length - 1].set.releaseDate)
+const releaseSpan = (entries: CardEntry[]): string => {
+  const newest = formatSetReleaseDate(entries[0].card.set.releaseDate)
+  const oldest = formatSetReleaseDate(entries[entries.length - 1].card.set.releaseDate)
   return newest == oldest ? newest : `${oldest} to ${newest}`
 }
 
-const releaseAgeSections = (cards: PokemonCard[]): CardSection[] => {
+const releaseAgeSections = (entries: CardEntry[]): CardSection[] => {
   const now = new Date()
   const bucketOf = (card: PokemonCard) => releaseAgeBucketOf(card.set.releaseDate, now)
-  return groupConsecutive(cards, (card) => bucketOf(card).label).map((group) => {
-    const bucket = bucketOf(group[0])
-    return { key: bucket.label, title: bucket.label, subtitle: releaseSpan(group), tier: bucket.tier, cards: group }
+  return groupConsecutive(entries, (card) => bucketOf(card).label).map((group) => {
+    const bucket = bucketOf(group[0].card)
+    return { key: bucket.label, title: bucket.label, subtitle: releaseSpan(group), tier: bucket.tier, entries: group }
   })
 }
 
-const spansSeveralSets = (cards: PokemonCard[]): boolean => new Set(cards.map((card) => card.set.id)).size > 1
+const spansSeveralSets = (entries: CardEntry[]): boolean => new Set(entries.map((entry) => entry.card.set.id)).size > 1
 
 const tierClassNames: Record<RarityTier, string> = {
   top: styles.tierTop,
@@ -68,38 +68,47 @@ const tierClassNames: Record<RarityTier, string> = {
 export default function CardList(props: CardListProps) {
   const { sortMode } = useContext(SortContext)
   const isMobile = useIsMobile()
-  const cards = props.cards ?? []
-  const openIndex = cards.findIndex((card) => card.id == props.openCardId)
-  const previousCard = cards[openIndex - 1]
-  const nextCard = cards[openIndex + 1]
+  const entries = props.entries ?? []
+  const openIndex = entries.findIndex((entry) => cardEntryKey(entry) == props.openCardId)
+  const previousEntry = entries[openIndex - 1]
+  const nextEntry = entries[openIndex + 1]
   const navigation: CardNavigationProps | undefined =
     openIndex < 0
       ? undefined
       : {
           position: openIndex + 1,
-          count: cards.length,
-          onPrevious: previousCard && (() => props.onStepToCard(previousCard.id)),
-          onNext: nextCard && (() => props.onStepToCard(nextCard.id))
+          count: entries.length,
+          onPrevious: previousEntry && (() => props.onStepToCard(cardEntryKey(previousEntry))),
+          onNext: nextEntry && (() => props.onStepToCard(cardEntryKey(nextEntry)))
         }
 
-  const renderCard = (card: PokemonCard) => (
-    <Card
-      key={card.id}
-      card={card}
-      isDetailsOpen={card.id == props.openCardId}
-      isMobile={isMobile}
-      showNumber={sortMode == 'number'}
-      navigation={card.id == props.openCardId ? navigation : undefined}
-      onOpen={() => props.onOpenCard(card.id)}
-      onClose={props.onCloseCard}
-    />
-  )
+  const renderCard = (entry: CardEntry) => {
+    const key = cardEntryKey(entry)
+    const isOpen = key == props.openCardId
+    return (
+      <Card
+        key={key}
+        card={entry.card}
+        print={entry.print}
+        isDetailsOpen={isOpen}
+        isMobile={isMobile}
+        showNumber={sortMode == 'number'}
+        navigation={isOpen ? navigation : undefined}
+        onOpen={() => props.onOpenCard(key)}
+        onClose={props.onCloseCard}
+      />
+    )
+  }
 
   const sections =
-    sortMode == 'rarity' ? raritySections(cards) : sortMode == 'release' && spansSeveralSets(cards) ? releaseAgeSections(cards) : undefined
+    sortMode == 'rarity'
+      ? raritySections(entries)
+      : sortMode == 'release' && spansSeveralSets(entries)
+        ? releaseAgeSections(entries)
+        : undefined
 
   if (sections == undefined) {
-    return <div className={styles.cardList}>{cards.map(renderCard)}</div>
+    return <div className={styles.cardList}>{entries.map(renderCard)}</div>
   }
 
   return (
@@ -111,11 +120,11 @@ export default function CardList(props: CardListProps) {
               {section.title}
             </h2>
             <span className={styles.sectionCount}>
-              {section.cards.length} {section.cards.length == 1 ? 'card' : 'cards'}
+              {section.entries.length} {section.entries.length == 1 ? 'card' : 'cards'}
             </span>
             <span className={styles.sectionRule} aria-hidden='true' />
           </div>
-          <div className={styles.cardList}>{section.cards.map(renderCard)}</div>
+          <div className={styles.cardList}>{section.entries.map(renderCard)}</div>
         </section>
       ))}
     </div>

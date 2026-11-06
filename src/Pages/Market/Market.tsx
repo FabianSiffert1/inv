@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import CardsValue from '../../Components/CardsValue/CardsValue'
 import SearchToggle from '../../Header/SearchToggle/SearchToggle'
 import { HeaderContext } from '../../Header/HeaderProvider'
+import { toCardEntries } from '../../util/api/pokemonTGC/model/PokemonCard'
 import { PokemonSet, PokemonTCGSeries } from '../../util/api/pokemonTGC/model/PokemonSet'
 import { useAllSets, useCardsOfSet } from '../../util/api/pokemonTGC/hooks'
 import { useCardNavigation } from '../../util/ui/cards/useCardNavigation'
@@ -79,10 +80,16 @@ export default function Market() {
         hasNoSearchMatches={(cards?.length ?? 0) > 0 && visibleCards?.length == 0}
       />
 
-      {!isFetching && cards != undefined && <CardsValue cards={cards} label='Set value' />}
+      {!isFetching && cards != undefined && <CardsValue entries={toCardEntries(cards)} label='Set value' />}
 
       <div className={styles.cardListWrapper}>
-        <CardList cards={visibleCards} openCardId={openCardId} onOpenCard={openCard} onStepToCard={stepToCard} onCloseCard={closeCard} />
+        <CardList
+          entries={toCardEntries(visibleCards ?? [])}
+          openCardId={openCardId}
+          onOpenCard={openCard}
+          onStepToCard={stepToCard}
+          onCloseCard={closeCard}
+        />
       </div>
       {isMobile && selectedSet && <SearchToggle floating />}
     </div>

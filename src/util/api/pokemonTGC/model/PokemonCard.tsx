@@ -122,3 +122,12 @@ export interface PokemonCard {
   tcgplayer?: TcgPlayer
   cardmarket?: CardMarket
 }
+
+export interface CardEntry {
+  card: PokemonCard
+  print?: string
+}
+
+export const cardEntryKey = (entry: CardEntry): string => (entry.print == undefined ? entry.card.id : `${entry.card.id}#${entry.print}`)
+
+export const toCardEntries = (cards: PokemonCard[]): CardEntry[] => cards.map((card) => ({ card }))

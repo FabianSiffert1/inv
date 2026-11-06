@@ -133,3 +133,17 @@ export const cardPriceRows = (card: PokemonCard): PriceTableRow[] => {
 
   return rows
 }
+
+export const printDisplayPrice = (card: PokemonCard, print?: string): DisplayPrice | undefined => {
+  if (print == undefined) {
+    return cardDisplayPrice(card)
+  }
+  const row = cardPriceRows(card).find((candidate) => candidate.label == print)
+  if (row?.cardmarket != undefined) {
+    return { amount: row.cardmarket.amount, currency: 'EUR', source: 'cardmarket', url: row.cardmarket.url }
+  }
+  if (row?.tcgplayer != undefined) {
+    return { amount: row.tcgplayer.amount, currency: 'USD', source: 'tcgplayer', url: row.tcgplayer.url }
+  }
+  return undefined
+}

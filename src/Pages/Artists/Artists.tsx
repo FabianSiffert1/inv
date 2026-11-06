@@ -4,7 +4,7 @@ import { HeaderContext } from '../../Header/HeaderProvider'
 import SearchToggle from '../../Header/SearchToggle/SearchToggle'
 import { useArtistIndex, useCardsOfArtist } from '../../util/api/pokemonTGC/hooks'
 import { Artist, artistPath } from '../../util/api/pokemonTGC/model/Artist'
-import { PokemonCard } from '../../util/api/pokemonTGC/model/PokemonCard'
+import { PokemonCard, toCardEntries } from '../../util/api/pokemonTGC/model/PokemonCard'
 import { spriteUrl } from '../../util/api/pokemonTGC/model/Pokemon'
 import { noBaseParams, useCardNavigation } from '../../util/ui/cards/useCardNavigation'
 import { useVisibleCards } from '../../util/ui/cards/useVisibleCards'
@@ -148,7 +148,13 @@ function ArtistCards(props: ArtistCardsProps) {
         hasNoSearchMatches={(cards?.length ?? 0) > 0 && visibleCards?.length == 0}
       />
       <div className={styles.listWrapper}>
-        <CardList cards={visibleCards} openCardId={openCardId} onOpenCard={openCard} onStepToCard={stepToCard} onCloseCard={closeCard} />
+        <CardList
+          entries={toCardEntries(visibleCards ?? [])}
+          openCardId={openCardId}
+          onOpenCard={openCard}
+          onStepToCard={stepToCard}
+          onCloseCard={closeCard}
+        />
       </div>
     </>
   )

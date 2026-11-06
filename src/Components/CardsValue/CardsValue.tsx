@@ -1,18 +1,22 @@
 import { useMemo } from 'react'
-import { PokemonCard } from '../../util/api/pokemonTGC/model/PokemonCard'
+import { CardEntry } from '../../util/api/pokemonTGC/model/PokemonCard'
+import { printDisplayPrice } from '../../util/cardPrice'
 import { formatPrice } from '../../util/format/price'
 import styles from './CardsValue.module.scss'
 
 interface CardsValueProps {
-  cards: PokemonCard[]
+  entries: CardEntry[]
   label: string
 }
 
-export default function CardsValue({ cards, label }: CardsValueProps) {
+export default function CardsValue({ entries, label }: CardsValueProps) {
   const { total, pricedCount } = useMemo(() => {
-    const trendPrices = cards.map((card) => card.cardmarket?.prices?.trendPrice).filter((price): price is number => price != undefined)
-    return { total: trendPrices.reduce((sum, price) => sum + price, 0), pricedCount: trendPrices.length }
-  }, [cards])
+    const euroPrices = entries
+      .map((entry) => printDisplayPrice(entry.card, entry.print))
+      .filter((price) => price?.currency == 'EUR')
+      .map((price) => price!.amount)
+    return { total: euroPrices.reduce((sum, price) => sum + price, 0), pricedCount: euroPrices.length }
+  }, [entries])
 
   if (pricedCount == 0) {
     return null
@@ -22,9 +26,9 @@ export default function CardsValue({ cards, label }: CardsValueProps) {
     <div className={styles.value}>
       <span className={styles.label}>{label}</span>
       <span className={styles.amount}>{formatPrice(total)}</span>
-      {pricedCount < cards.length && (
+      {pricedCount < entries.length && (
         <span className={styles.coverage}>
-          {pricedCount} of {cards.length} cards priced
+          {pricedCount} of {entries.length} cards priced
         </span>
       )}
     </div>

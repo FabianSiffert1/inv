@@ -5,6 +5,7 @@ import SearchToggle from '../../Header/SearchToggle/SearchToggle'
 import { useCardsOfPokemon, usePokemonIndex } from '../../util/api/pokemonTGC/hooks'
 import { AnimatedSprite } from '../../Components/AnimatedSprite/AnimatedSprite'
 import { Pokemon as PokemonEntry, pokemonPath } from '../../util/api/pokemonTGC/model/Pokemon'
+import { toCardEntries } from '../../util/api/pokemonTGC/model/PokemonCard'
 import { noBaseParams, useCardNavigation } from '../../util/ui/cards/useCardNavigation'
 import { useVisibleCards } from '../../util/ui/cards/useVisibleCards'
 import { LanguageContext, localizedName } from '../../util/ui/language/LanguageProvider'
@@ -196,7 +197,13 @@ function PokemonCards(props: PokemonCardsProps) {
         hasNoSearchMatches={(cards?.length ?? 0) > 0 && visibleCards?.length == 0}
       />
       <div className={styles.listWrapper}>
-        <CardList cards={visibleCards} openCardId={openCardId} onOpenCard={openCard} onStepToCard={stepToCard} onCloseCard={closeCard} />
+        <CardList
+          entries={toCardEntries(visibleCards ?? [])}
+          openCardId={openCardId}
+          onOpenCard={openCard}
+          onStepToCard={stepToCard}
+          onCloseCard={closeCard}
+        />
       </div>
     </>
   )
