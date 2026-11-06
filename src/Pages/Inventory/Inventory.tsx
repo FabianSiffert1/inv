@@ -1,14 +1,13 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { HeaderContext } from '../../Header/HeaderProvider'
 import { AuthContext } from '../../util/auth/AuthProvider'
 import { useCardsOfSets } from '../../util/api/pokemonTGC/hooks'
 import { PokemonCard } from '../../util/api/pokemonTGC/model/PokemonCard'
 import { PokemonSet, PokemonTCGSeries } from '../../util/api/pokemonTGC/model/PokemonSet'
+import { noBaseParams, useCardNavigation } from '../../util/ui/cards/useCardNavigation'
+import { useVisibleCards } from '../../util/ui/cards/useVisibleCards'
 import { FavoritesContext } from '../../util/ui/favorites/FavoritesProvider'
-import { LanguageContext } from '../../util/ui/language/LanguageProvider'
-import { matchesSearch, SearchContext } from '../../util/ui/search/SearchProvider'
-import { SortContext, sortCards } from '../../util/ui/sort/SortProvider'
 import { StarIcon } from '../../Components/FavoriteButton/FavoriteButton'
 import CardList from '../Market/CardList/CardList'
 import SetSelector from '../Market/Selector/SetSelector'
@@ -19,14 +18,9 @@ export default function Inventory() {
   const { setHeaderItem, setBusy } = useContext(HeaderContext)
   const { favorites, source, isLoading, error } = useContext(FavoritesContext)
   const { status, signIn } = useContext(AuthContext)
-  const { sortMode } = useContext(SortContext)
-  const { germanNames } = useContext(LanguageContext)
-  const { query } = useContext(SearchContext)
 
-  const [searchParams, setSearchParams] = useSearchParams()
-  const location = useLocation()
   const navigate = useNavigate()
-  const openCardId = searchParams.get('card') ?? undefined
+  const { openCardId, openCard, stepToCard, closeCard } = useCardNavigation(noBaseParams)
   const [chosenPokemonSeries, setChosenPokemonSeries] = useState<PokemonTCGSeries | undefined>(undefined)
 
   const setIds = useMemo(() => [...new Set(favorites.map((favorite) => favorite.setId))], [favorites])
@@ -35,26 +29,7 @@ export default function Inventory() {
   const loadedCards = setQueries.flatMap((setQuery) => setQuery.data ?? [])
 
   const favoriteIds = new Set(favorites.map((favorite) => favorite.cardId))
-  const favoriteCards = sortCards(
-    loadedCards.filter((card: PokemonCard) => favoriteIds.has(card.id)),
-    sortMode,
-    germanNames
-  ).filter((card) => matchesSearch(card, query))
-
-  const openCard = useCallback((cardId: string) => setSearchParams({ card: cardId }, { state: { openedInApp: true } }), [setSearchParams])
-
-  const stepToCard = useCallback(
-    (cardId: string) => setSearchParams({ card: cardId }, { replace: true, state: location.state }),
-    [setSearchParams, location.state]
-  )
-
-  const closeCard = useCallback(() => {
-    if ((location.state as { openedInApp?: boolean } | null)?.openedInApp) {
-      navigate(-1)
-    } else {
-      setSearchParams({}, { replace: true })
-    }
-  }, [location.state, navigate, setSearchParams])
+  const favoriteCards = useVisibleCards(loadedCards.filter((card: PokemonCard) => favoriteIds.has(card.id))) ?? []
 
   const selectSet = useCallback(
     (set: PokemonSet) => {

@@ -1,13 +1,14 @@
 import { useCallback, useContext, useEffect, useMemo } from 'react'
-import { Link, Navigate, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { Link, Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { HeaderContext } from '../../Header/HeaderProvider'
 import SearchToggle from '../../Header/SearchToggle/SearchToggle'
 import { useCardsOfPokemon, usePokemonIndex } from '../../util/api/pokemonTGC/hooks'
 import { AnimatedSprite } from '../../Components/AnimatedSprite/AnimatedSprite'
 import { Pokemon as PokemonEntry, pokemonPath } from '../../util/api/pokemonTGC/model/Pokemon'
+import { noBaseParams, useCardNavigation } from '../../util/ui/cards/useCardNavigation'
+import { useVisibleCards } from '../../util/ui/cards/useVisibleCards'
 import { LanguageContext, localizedName } from '../../util/ui/language/LanguageProvider'
-import { matchesSearch, SearchContext } from '../../util/ui/search/SearchProvider'
-import { SortContext, sortCards } from '../../util/ui/sort/SortProvider'
+import { SearchContext } from '../../util/ui/search/SearchProvider'
 import { useIsMobile } from '../../util/ui/useIsMobile'
 import CardList from '../Market/CardList/CardList'
 import CardListStatus from '../Market/CardListStatus'
@@ -165,35 +166,10 @@ interface PokemonCardsProps {
 }
 
 function PokemonCards(props: PokemonCardsProps) {
-  const { sortMode } = useContext(SortContext)
   const { germanNames } = useContext(LanguageContext)
-  const { query } = useContext(SearchContext)
-  const [searchParams, setSearchParams] = useSearchParams()
-  const location = useLocation()
-  const navigate = useNavigate()
-  const openCardId = searchParams.get('card') ?? undefined
   const { pokemon, generation, cards } = props
-
-  const sortedCards = useMemo(
-    () => (cards == undefined ? undefined : sortCards(cards, sortMode, germanNames)),
-    [cards, sortMode, germanNames]
-  )
-  const visibleCards = useMemo(() => sortedCards?.filter((card) => matchesSearch(card, query)), [sortedCards, query])
-
-  const openCard = useCallback((cardId: string) => setSearchParams({ card: cardId }, { state: { openedInApp: true } }), [setSearchParams])
-
-  const stepToCard = useCallback(
-    (cardId: string) => setSearchParams({ card: cardId }, { replace: true, state: location.state }),
-    [setSearchParams, location.state]
-  )
-
-  const closeCard = useCallback(() => {
-    if ((location.state as { openedInApp?: boolean } | null)?.openedInApp) {
-      navigate(-1)
-    } else {
-      setSearchParams({}, { replace: true })
-    }
-  }, [location.state, navigate, setSearchParams])
+  const visibleCards = useVisibleCards(cards)
+  const { openCardId, openCard, stepToCard, closeCard } = useCardNavigation(noBaseParams)
 
   return (
     <>

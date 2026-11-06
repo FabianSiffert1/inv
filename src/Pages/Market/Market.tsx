@@ -1,14 +1,13 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import SearchToggle from '../../Header/SearchToggle/SearchToggle'
 import { HeaderContext } from '../../Header/HeaderProvider'
 import { PokemonSet, PokemonTCGSeries } from '../../util/api/pokemonTGC/model/PokemonSet'
 import { useAllSets, useCardsOfSet } from '../../util/api/pokemonTGC/hooks'
 import { PokemonCard } from '../../util/api/pokemonTGC/model/PokemonCard'
 import { formatPrice } from '../../util/format/price'
-import { LanguageContext } from '../../util/ui/language/LanguageProvider'
-import { matchesSearch, SearchContext } from '../../util/ui/search/SearchProvider'
-import { SortContext, sortCards } from '../../util/ui/sort/SortProvider'
+import { useCardNavigation } from '../../util/ui/cards/useCardNavigation'
+import { useVisibleCards } from '../../util/ui/cards/useVisibleCards'
 import { useIsMobile } from '../../util/ui/useIsMobile'
 import CardList from './CardList/CardList'
 import CardListStatus from './CardListStatus'
@@ -20,10 +19,9 @@ export default function Market() {
   const { setHeaderItem, setBusy } = useContext(HeaderContext)
 
   const [searchParams, setSearchParams] = useSearchParams()
-  const location = useLocation()
-  const navigate = useNavigate()
   const selectedSetId = searchParams.get('set') ?? undefined
-  const openCardId = searchParams.get('card') ?? undefined
+  const baseParams = useMemo(() => (selectedSetId == undefined ? undefined : { set: selectedSetId }), [selectedSetId])
+  const { openCardId, openCard, stepToCard, closeCard } = useCardNavigation(baseParams)
 
   const [chosenPokemonSeries, setChosenPokemonSeries] = useState<PokemonTCGSeries | undefined>(undefined)
 
@@ -32,14 +30,7 @@ export default function Market() {
   const currentlySelectedPokemonSet = selectedSet?.name
   const currentlySelectedPokemonSeries = selectedSet?.series ?? chosenPokemonSeries
   const { data: cards, isFetching: areCardsFetching, error: cardsError } = useCardsOfSet(currentlySelectedPokemonSet)
-  const { sortMode } = useContext(SortContext)
-  const { germanNames } = useContext(LanguageContext)
-  const { query } = useContext(SearchContext)
-  const sortedCards = useMemo(
-    () => (cards == undefined ? undefined : sortCards(cards, sortMode, germanNames)),
-    [cards, sortMode, germanNames]
-  )
-  const visibleCards = useMemo(() => sortedCards?.filter((card) => matchesSearch(card, query)), [sortedCards, query])
+  const visibleCards = useVisibleCards(cards)
 
   const isFetching = areSetsFetching || areCardsFetching
   const isMobile = useIsMobile()
@@ -59,32 +50,6 @@ export default function Market() {
     },
     [setSearchParams]
   )
-
-  const openCard = useCallback(
-    (cardId: string) => {
-      if (selectedSetId != undefined) {
-        setSearchParams({ set: selectedSetId, card: cardId }, { state: { openedInApp: true } })
-      }
-    },
-    [selectedSetId, setSearchParams]
-  )
-
-  const stepToCard = useCallback(
-    (cardId: string) => {
-      if (selectedSetId != undefined) {
-        setSearchParams({ set: selectedSetId, card: cardId }, { replace: true, state: location.state })
-      }
-    },
-    [selectedSetId, setSearchParams, location.state]
-  )
-
-  const closeCard = useCallback(() => {
-    if ((location.state as { openedInApp?: boolean } | null)?.openedInApp) {
-      navigate(-1)
-    } else if (selectedSetId != undefined) {
-      setSearchParams({ set: selectedSetId }, { replace: true })
-    }
-  }, [location.state, navigate, selectedSetId, setSearchParams])
 
   useEffect(() => {
     setHeaderItem(
