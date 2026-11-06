@@ -81,6 +81,8 @@ const queryClient = new QueryClient({
 
 const isCardListQuery = (queryKey: unknown): boolean => Array.isArray(queryKey) && queryKey[0] == 'cards'
 
+const isSearchIndexQuery = (queryKey: unknown): boolean => Array.isArray(queryKey) && queryKey[0] == 'search'
+
 const isFavoriteSetQuery = (query: Query): boolean => {
   const key = query.queryKey
   if (!Array.isArray(key) || key[0] != 'cards' || key[1] != 'set') {
@@ -101,7 +103,7 @@ const persistOptions = {
   buster: 'server-snapshot',
   dehydrateOptions: {
     shouldDehydrateQuery: (query: Query) => {
-      if (query.state.data == undefined || query.state.status != 'success') {
+      if (query.state.data == undefined || query.state.status != 'success' || isSearchIndexQuery(query.queryKey)) {
         return false
       }
       if (!isCardListQuery(query.queryKey)) {
