@@ -109,6 +109,13 @@
   overflow-wrap: anywhere;
 }
 
+.cardNumber {
+  font-family: $monoFont;
+  font-size: 0.65rem;
+  letter-spacing: 0.04em;
+  color: var(--secondary-color);
+}
+
 .cardPrice {
   @include typoDisplay;
   margin-top: auto;

@@ -16,6 +16,7 @@ interface CardProps {
 interface CardWithDetailsProps extends CardProps {
   isDetailsOpen: boolean
   isMobile: boolean
+  showNumber?: boolean
   navigation?: CardNavigationProps
   onOpen: () => void
   onClose: () => void
@@ -39,7 +40,7 @@ export const tintClassNameOfType = (type?: string): string => typeTintClassNames
 
 const tintClassName = (card: PokemonCard): string => tintClassNameOfType(card.types?.[0])
 
-export function Card({ card, isDetailsOpen, isMobile, navigation, onOpen, onClose }: CardWithDetailsProps) {
+export function Card({ card, isDetailsOpen, isMobile, showNumber = false, navigation, onOpen, onClose }: CardWithDetailsProps) {
   const cardName = useLocalizedName(card)
 
   const openFromTile = (event: MouseEvent<HTMLDivElement>) => {
@@ -68,6 +69,11 @@ export function Card({ card, isDetailsOpen, isMobile, navigation, onOpen, onClos
       </button>
       <div className={styles.cardInformationWrapper}>
         <div className={styles.cardName}>{cardName}</div>
+        {showNumber && (
+          <div className={styles.cardNumber}>
+            {card.number}/{card.set.printedTotal}
+          </div>
+        )}
         <CardPrice card={card} />
       </div>
     </div>

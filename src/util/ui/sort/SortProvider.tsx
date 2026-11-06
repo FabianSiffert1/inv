@@ -1,10 +1,9 @@
 import React, { createContext, useCallback, useEffect, useMemo, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import { PokemonCard } from '../../api/pokemonTGC/model/PokemonCard'
 import { cardDisplayPrice } from '../../cardPrice'
 import { localizedName } from '../language/LanguageProvider'
 import { rarityOf, rarityRank } from './rarity'
-
-export const sortStorageKey = 'inv-sort'
 
 export type SortMode = 'price' | 'number' | 'name' | 'rarity' | 'release'
 
@@ -12,6 +11,15 @@ export const sortModes: SortMode[] = ['price', 'number', 'name', 'rarity', 'rele
 
 export const nextSortMode = (sortMode: SortMode, modes: SortMode[] = sortModes): SortMode =>
   modes[(modes.indexOf(sortMode) + 1) % modes.length]
+
+type SortScope = 'browse' | 'favorites'
+
+const sortScopeSettings: Record<SortScope, { storageKey: string; defaultMode: SortMode }> = {
+  browse: { storageKey: 'inv-sort', defaultMode: 'price' },
+  favorites: { storageKey: 'inv-sort-favorites', defaultMode: 'release' }
+}
+
+const sortScopeOfPath = (pathname: string): SortScope => (pathname.startsWith('/inventory') ? 'favorites' : 'browse')
 
 interface ContextProps {
   sortMode: SortMode
@@ -27,27 +35,37 @@ interface Props {
   children?: React.ReactNode
 }
 
-const preferredSortMode = (): SortMode => {
+const preferredSortMode = (scope: SortScope): SortMode => {
+  const { storageKey, defaultMode } = sortScopeSettings[scope]
   try {
-    const stored = window.localStorage.getItem(sortStorageKey)
-    return sortModes.find((sortMode) => sortMode == stored) ?? 'price'
+    const stored = window.localStorage.getItem(storageKey)
+    return sortModes.find((sortMode) => sortMode == stored) ?? defaultMode
   } catch {
-    return 'price'
+    return defaultMode
   }
 }
 
 const SortProvider: React.FC<Props> = ({ children }) => {
-  const [sortMode, setSortMode] = useState(preferredSortMode)
+  const location = useLocation()
+  const scope = sortScopeOfPath(location.pathname)
+  const [sortModeOfScope, setSortModeOfScope] = useState<Record<SortScope, SortMode>>(() => ({
+    browse: preferredSortMode('browse'),
+    favorites: preferredSortMode('favorites')
+  }))
+  const sortMode = sortModeOfScope[scope]
 
   useEffect(() => {
     try {
-      window.localStorage.setItem(sortStorageKey, sortMode)
+      window.localStorage.setItem(sortScopeSettings[scope].storageKey, sortMode)
     } catch {
       return
     }
-  }, [sortMode])
+  }, [scope, sortMode])
 
-  const cycleSortMode = useCallback((modes?: SortMode[]) => setSortMode((previous) => nextSortMode(previous, modes)), [])
+  const cycleSortMode = useCallback(
+    (modes?: SortMode[]) => setSortModeOfScope((previous) => ({ ...previous, [scope]: nextSortMode(previous[scope], modes) })),
+    [scope]
+  )
 
   const contextValue = useMemo(() => ({ sortMode, cycleSortMode }), [sortMode, cycleSortMode])
 

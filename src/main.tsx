@@ -17,7 +17,6 @@ import AuthProvider from './util/auth/AuthProvider'
 import FavoritesProvider from './util/ui/favorites/FavoritesProvider'
 import LanguageProvider from './util/ui/language/LanguageProvider'
 import SearchProvider from './util/ui/search/SearchProvider'
-import SortProvider from './util/ui/sort/SortProvider'
 import ThemeProvider from './util/ui/theme/ThemeProvider'
 
 const cacheMaxAge = 1000 * 60 * 60 * 24 * 7
@@ -119,15 +118,13 @@ root.render(
     <PersistQueryClientProvider client={queryClient} persistOptions={persistOptions}>
       <ThemeProvider>
         <LanguageProvider>
-          <SortProvider>
-            <SearchProvider>
-              <AuthProvider>
-                <FavoritesProvider>
-                  <RouterProvider router={router} />
-                </FavoritesProvider>
-              </AuthProvider>
-            </SearchProvider>
-          </SortProvider>
+          <SearchProvider>
+            <AuthProvider>
+              <FavoritesProvider>
+                <RouterProvider router={router} />
+              </FavoritesProvider>
+            </AuthProvider>
+          </SearchProvider>
         </LanguageProvider>
       </ThemeProvider>
     </PersistQueryClientProvider>

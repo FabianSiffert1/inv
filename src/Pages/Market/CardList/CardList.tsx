@@ -88,6 +88,7 @@ export default function CardList(props: CardListProps) {
       card={card}
       isDetailsOpen={card.id == props.openCardId}
       isMobile={isMobile}
+      showNumber={sortMode == 'number'}
       navigation={card.id == props.openCardId ? navigation : undefined}
       onOpen={() => props.onOpenCard(card.id)}
       onClose={props.onCloseCard}
@@ -106,9 +107,12 @@ export default function CardList(props: CardListProps) {
       {sections.map((section) => (
         <section key={section.key} className={styles.section} aria-label={section.title}>
           <div className={`${styles.sectionHeader} ${tierClassNames[section.tier]}`}>
-            <h2 className={styles.sectionTitle}>{section.title}</h2>
-            <span className={styles.sectionCount}>{section.cards.length}</span>
-            {section.subtitle && <span className={styles.sectionSubtitle}>{section.subtitle}</span>}
+            <h2 className={styles.sectionTitle} title={section.subtitle}>
+              {section.title}
+            </h2>
+            <span className={styles.sectionCount}>
+              {section.cards.length} {section.cards.length == 1 ? 'card' : 'cards'}
+            </span>
             <span className={styles.sectionRule} aria-hidden='true' />
           </div>
           <div className={styles.cardList}>{section.cards.map(renderCard)}</div>

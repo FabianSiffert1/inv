@@ -3,20 +3,23 @@ import MergeFavoritesDialog from '../../Components/MergeFavoritesDialog/MergeFav
 import Header from '../../Header/Header'
 import HeaderProvider from '../../Header/HeaderProvider'
 import { useSnapshotCacheEviction } from '../../util/api/pokemonTGC/hooks'
+import SortProvider from '../../util/ui/sort/SortProvider'
 import styles from './Home.module.scss'
 
 export default function Home() {
   useSnapshotCacheEviction()
 
   return (
-    <HeaderProvider>
-      <MergeFavoritesDialog />
-      <Header />
-      <div className={styles.home}>
-        <div className={styles.pageContainer}>
-          <Outlet />
+    <SortProvider>
+      <HeaderProvider>
+        <MergeFavoritesDialog />
+        <Header />
+        <div className={styles.home}>
+          <div className={styles.pageContainer}>
+            <Outlet />
+          </div>
         </div>
-      </div>
-    </HeaderProvider>
+      </HeaderProvider>
+    </SortProvider>
   )
 }
