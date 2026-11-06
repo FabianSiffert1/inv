@@ -5,13 +5,13 @@ import styles from './Home.module.scss'
 
 export default function Home() {
   return (
-    <div className={styles.home}>
-      <HeaderProvider>
-        <Header />
+    <HeaderProvider>
+      <Header />
+      <div className={styles.home}>
         <div className={styles.pageContainer}>
           <Outlet />
         </div>
-      </HeaderProvider>
-    </div>
+      </div>
+    </HeaderProvider>
   )
 }

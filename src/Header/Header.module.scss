@@ -1,11 +1,9 @@
 @use 'globalDesignElements.module' as *;
 
 .header {
-  position: fixed;
+  position: sticky;
   z-index: $zHeader;
   top: 0;
-  left: 0;
-  right: 0;
   background-color: color-mix(in srgb, var(--background-color) 85%, transparent);
   backdrop-filter: blur(0.75rem);
   -webkit-backdrop-filter: blur(0.75rem);

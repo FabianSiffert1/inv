@@ -3,14 +3,14 @@
 .home {
   box-sizing: border-box;
   margin: 0 auto;
-  padding: max(7rem, var(--header-height, 0px)) 2rem 4rem 2rem;
+  padding: 0 2rem 4rem 2rem;
 
   @media (min-width: $bigScreen) {
     max-width: 80%;
   }
 
   @media (max-width: $smallScreen - 1px) {
-    padding: max(7rem, var(--header-height, 0px)) 1rem 4rem 1rem;
+    padding: 0 1rem 4rem 1rem;
   }
 }
 
