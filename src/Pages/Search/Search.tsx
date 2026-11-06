@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useMemo } from 'react'
+import { useCallback, useContext, useEffect, useMemo, useRef } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { HeaderContext } from '../../Header/HeaderProvider'
 import SearchToggle from '../../Header/SearchToggle/SearchToggle'
@@ -7,6 +7,7 @@ import { CardEntry } from '../../util/api/pokemonTGC/model/PokemonCard'
 import { cardPath } from '../../util/api/pokemonTGC/model/PokemonSet'
 import { matchesSearchIndex, toLightCard } from '../../util/api/pokemonTGC/model/SearchIndex'
 import { LanguageContext } from '../../util/ui/language/LanguageProvider'
+import { SearchContext } from '../../util/ui/search/SearchProvider'
 import { SortContext, sortEntries } from '../../util/ui/sort/SortProvider'
 import { useIsMobile } from '../../util/ui/useIsMobile'
 import CardList from '../Market/CardList/CardList'
@@ -21,9 +22,28 @@ export default function Search() {
   const { germanNames } = useContext(LanguageContext)
   const isMobile = useIsMobile()
   const navigate = useNavigate()
-  const [searchParams] = useSearchParams()
-  const query = (searchParams.get('q') ?? '').trim()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const { query: liveQuery, isSearchOpen, setQuery, openSearch } = useContext(SearchContext)
+  const urlQuery = searchParams.get('q') ?? ''
+  const query = urlQuery.trim()
   const normalizedQuery = query.toLowerCase()
+
+  const seededQuery = useRef<string | undefined>(undefined)
+
+  useEffect(() => {
+    if (urlQuery != '' && seededQuery.current != urlQuery && liveQuery != urlQuery) {
+      seededQuery.current = urlQuery
+      setQuery(urlQuery)
+      openSearch()
+    }
+  }, [urlQuery, liveQuery, setQuery, openSearch])
+
+  useEffect(() => {
+    if (isSearchOpen && liveQuery != urlQuery) {
+      seededQuery.current = liveQuery
+      setSearchParams(liveQuery == '' ? {} : { q: liveQuery }, { replace: true })
+    }
+  }, [isSearchOpen, liveQuery, urlQuery, setSearchParams])
 
   const { data: sets } = useAllSets()
   const { data: index, isFetching, error } = useSearchIndex(normalizedQuery != '')
