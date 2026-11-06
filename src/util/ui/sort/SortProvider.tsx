@@ -6,15 +6,16 @@ import { rarityOf, rarityRank } from './rarity'
 
 export const sortStorageKey = 'inv-sort'
 
-export type SortMode = 'price' | 'number' | 'name' | 'rarity'
+export type SortMode = 'price' | 'number' | 'name' | 'rarity' | 'release'
 
-const sortModes: SortMode[] = ['price', 'number', 'name', 'rarity']
+export const sortModes: SortMode[] = ['price', 'number', 'name', 'rarity', 'release']
 
-export const nextSortMode = (sortMode: SortMode): SortMode => sortModes[(sortModes.indexOf(sortMode) + 1) % sortModes.length]
+export const nextSortMode = (sortMode: SortMode, modes: SortMode[] = sortModes): SortMode =>
+  modes[(modes.indexOf(sortMode) + 1) % modes.length]
 
 interface ContextProps {
   sortMode: SortMode
-  cycleSortMode: () => void
+  cycleSortMode: (modes?: SortMode[]) => void
 }
 
 export const SortContext = createContext<ContextProps>({
@@ -46,7 +47,7 @@ const SortProvider: React.FC<Props> = ({ children }) => {
     }
   }, [sortMode])
 
-  const cycleSortMode = useCallback(() => setSortMode(nextSortMode), [])
+  const cycleSortMode = useCallback((modes?: SortMode[]) => setSortMode((previous) => nextSortMode(previous, modes)), [])
 
   const contextValue = useMemo(() => ({ sortMode, cycleSortMode }), [sortMode, cycleSortMode])
 
@@ -62,7 +63,8 @@ export const sortCards = (cards: PokemonCard[], sortMode: SortMode, germanNames:
     number: (a, b) => collator.compare(a.number, b.number),
     name: (a, b) => collator.compare(localizedName(a, germanNames), localizedName(b, germanNames)),
     rarity: (a, b) =>
-      rarityRank(rarityOf(a)) - rarityRank(rarityOf(b)) || rarityOf(a).localeCompare(rarityOf(b)) || trendPrice(b) - trendPrice(a)
+      rarityRank(rarityOf(a)) - rarityRank(rarityOf(b)) || rarityOf(a).localeCompare(rarityOf(b)) || trendPrice(b) - trendPrice(a),
+    release: (a, b) => b.set.releaseDate.localeCompare(a.set.releaseDate) || collator.compare(a.number, b.number)
   }
   return [...cards].sort(compare[sortMode])
 }

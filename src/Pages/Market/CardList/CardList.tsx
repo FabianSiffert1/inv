@@ -1,6 +1,8 @@
 import { useContext } from 'react'
 import { PokemonCard } from '../../../util/api/pokemonTGC/model/PokemonCard'
-import { rarityOf, rarityTier } from '../../../util/ui/sort/rarity'
+import { formatSetReleaseDate } from '../../../util/format/date'
+import { rarityOf, rarityTier, RarityTier } from '../../../util/ui/sort/rarity'
+import { releaseAgeBucketOf } from '../../../util/ui/sort/releaseAge'
 import { SortContext } from '../../../util/ui/sort/SortProvider'
 import { useIsMobile } from '../../../util/ui/useIsMobile'
 import styles from './CardList.module.scss'
@@ -15,24 +17,49 @@ export interface CardListProps {
   onCloseCard: () => void
 }
 
-interface RaritySection {
-  rarity: string
+interface CardSection {
+  key: string
+  title: string
+  subtitle?: string
+  tier: RarityTier
   cards: PokemonCard[]
 }
 
-const raritySections = (cards: PokemonCard[]): RaritySection[] =>
-  cards.reduce<RaritySection[]>((sections, card) => {
-    const rarity = rarityOf(card)
-    const lastSection = sections[sections.length - 1]
-    if (lastSection?.rarity == rarity) {
-      lastSection.cards.push(card)
+const groupConsecutive = (cards: PokemonCard[], keyOf: (card: PokemonCard) => string): PokemonCard[][] =>
+  cards.reduce<PokemonCard[][]>((groups, card) => {
+    const lastGroup = groups[groups.length - 1]
+    if (lastGroup != undefined && keyOf(lastGroup[0]) == keyOf(card)) {
+      lastGroup.push(card)
     } else {
-      sections.push({ rarity, cards: [card] })
+      groups.push([card])
     }
-    return sections
+    return groups
   }, [])
 
-const tierClassNames = {
+const raritySections = (cards: PokemonCard[]): CardSection[] =>
+  groupConsecutive(cards, rarityOf).map((group) => {
+    const rarity = rarityOf(group[0])
+    return { key: rarity, title: rarity, tier: rarityTier(rarity), cards: group }
+  })
+
+const releaseSpan = (cards: PokemonCard[]): string => {
+  const newest = formatSetReleaseDate(cards[0].set.releaseDate)
+  const oldest = formatSetReleaseDate(cards[cards.length - 1].set.releaseDate)
+  return newest == oldest ? newest : `${oldest} to ${newest}`
+}
+
+const releaseAgeSections = (cards: PokemonCard[]): CardSection[] => {
+  const now = new Date()
+  const bucketOf = (card: PokemonCard) => releaseAgeBucketOf(card.set.releaseDate, now)
+  return groupConsecutive(cards, (card) => bucketOf(card).label).map((group) => {
+    const bucket = bucketOf(group[0])
+    return { key: bucket.label, title: bucket.label, subtitle: releaseSpan(group), tier: bucket.tier, cards: group }
+  })
+}
+
+const spansSeveralSets = (cards: PokemonCard[]): boolean => new Set(cards.map((card) => card.set.id)).size > 1
+
+const tierClassNames: Record<RarityTier, string> = {
   top: styles.tierTop,
   high: styles.tierHigh,
   regular: styles.tierRegular
@@ -67,17 +94,21 @@ export default function CardList(props: CardListProps) {
     />
   )
 
-  if (sortMode != 'rarity') {
+  const sections =
+    sortMode == 'rarity' ? raritySections(cards) : sortMode == 'release' && spansSeveralSets(cards) ? releaseAgeSections(cards) : undefined
+
+  if (sections == undefined) {
     return <div className={styles.cardList}>{cards.map(renderCard)}</div>
   }
 
   return (
     <div className={styles.sections}>
-      {raritySections(cards).map((section) => (
-        <section key={section.rarity} className={styles.section} aria-label={section.rarity}>
-          <div className={`${styles.sectionHeader} ${tierClassNames[rarityTier(section.rarity)]}`}>
-            <h2 className={styles.sectionTitle}>{section.rarity}</h2>
+      {sections.map((section) => (
+        <section key={section.key} className={styles.section} aria-label={section.title}>
+          <div className={`${styles.sectionHeader} ${tierClassNames[section.tier]}`}>
+            <h2 className={styles.sectionTitle}>{section.title}</h2>
             <span className={styles.sectionCount}>{section.cards.length}</span>
+            {section.subtitle && <span className={styles.sectionSubtitle}>{section.subtitle}</span>}
             <span className={styles.sectionRule} aria-hidden='true' />
           </div>
           <div className={styles.cardList}>{section.cards.map(renderCard)}</div>
