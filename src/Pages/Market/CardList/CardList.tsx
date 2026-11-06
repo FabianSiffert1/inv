@@ -4,6 +4,7 @@ import { formatSetReleaseDate } from '../../../util/format/date'
 import { rarityOf, rarityTier, RarityTier } from '../../../util/ui/sort/rarity'
 import { releaseAgeBucketOf } from '../../../util/ui/sort/releaseAge'
 import { SortContext } from '../../../util/ui/sort/SortProvider'
+import { LanguageContext, localizedName } from '../../../util/ui/language/LanguageProvider'
 import { useIsMobile } from '../../../util/ui/useIsMobile'
 import styles from './CardList.module.scss'
 import { Card } from './Components/Card/Card'
@@ -57,6 +58,22 @@ const releaseAgeSections = (entries: CardEntry[]): CardSection[] => {
   })
 }
 
+const initialOf = (name: string): string => {
+  const first = name
+    .trim()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .charAt(0)
+    .toUpperCase()
+  return /[A-Z]/.test(first) ? first : '#'
+}
+
+const nameSections = (entries: CardEntry[], germanNames: boolean): CardSection[] =>
+  groupConsecutive(entries, (card) => initialOf(localizedName(card, germanNames))).map((group) => {
+    const letter = initialOf(localizedName(group[0].card, germanNames))
+    return { key: letter, title: letter, tier: 'regular', entries: group }
+  })
+
 const spansSeveralSets = (entries: CardEntry[]): boolean => new Set(entries.map((entry) => entry.card.set.id)).size > 1
 
 const tierClassNames: Record<RarityTier, string> = {
@@ -67,6 +84,7 @@ const tierClassNames: Record<RarityTier, string> = {
 
 export default function CardList(props: CardListProps) {
   const { sortMode } = useContext(SortContext)
+  const { germanNames } = useContext(LanguageContext)
   const isMobile = useIsMobile()
   const entries = props.entries ?? []
   const openIndex = entries.findIndex((entry) => cardEntryKey(entry) == props.openCardId)
@@ -105,7 +123,9 @@ export default function CardList(props: CardListProps) {
       ? raritySections(entries)
       : sortMode == 'release' && spansSeveralSets(entries)
         ? releaseAgeSections(entries)
-        : undefined
+        : sortMode == 'name'
+          ? nameSections(entries, germanNames)
+          : undefined
 
   if (sections == undefined) {
     return <div className={styles.cardList}>{entries.map(renderCard)}</div>
