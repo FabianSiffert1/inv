@@ -102,8 +102,9 @@ and its hot-reload WebSocket makes phones prompt for local network access.
   layout and paint for tiles off screen, so a 300-card set costs about as much as the visible rows.
   Card images load lazily with their aspect ratio reserved up front. Cards without an image, or
   whose image fails to load after one retry, show a tinted placeholder with the card name.
-- **Modes**: the toggle top left cycles Cards, Dex and Artists. Dex lists Pokémon by generation,
-  Artists lists illustrators by card count, each with the illustrator's most expensive card as the
+- **Modes**: the toggle top left cycles Sets, Pokémon and Artists, and reads Favorites while you are
+  there. Sets is the market view by era and set, Pokémon lists Pokémon by generation, Artists lists
+  illustrators by card count, each with the illustrator's most expensive card as the
   tile. Each mode remembers its last page.
 - **Links**: the selected set and the open card live in the URL (`/market?set=<setId>&card=<cardId>`),
   so the share buttons next to the selectors and the card title can copy them. Card details link to

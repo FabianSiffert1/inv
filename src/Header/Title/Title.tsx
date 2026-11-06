@@ -25,15 +25,15 @@ const browseModeSettings: Record<BrowseMode, BrowseModeSettings> = {
   cards: {
     storageKey: 'inv-last-cards-location',
     fallbackPath: '/',
-    label: 'Cards',
-    switchLabel: 'Switch to cards',
+    label: 'Sets',
+    switchLabel: 'Switch to sets',
     icon: <CardBackIcon />
   },
   dex: {
     storageKey: 'inv-last-dex-location',
     fallbackPath: '/pokemon',
-    label: 'Dex',
-    switchLabel: 'Switch to Pokédex',
+    label: 'Pokémon',
+    switchLabel: 'Switch to Pokémon',
     icon: <PikachuIcon />
   },
   artists: {
@@ -123,7 +123,7 @@ export default function Title() {
   const targetMode = isBrowseMode(shownMode) ? nextBrowseMode(shownMode) : readLastBrowseMode()
   const targetSettings = browseModeSettings[targetMode]
   const target = readBrowseLocation(targetMode)
-  const label = isBrowseMode(shownMode) ? targetSettings.switchLabel : `Back to ${targetSettings.label.toLowerCase()}`
+  const label = isBrowseMode(shownMode) ? targetSettings.switchLabel : `Back to ${targetSettings.label}`
   const shownSettings = isBrowseMode(shownMode) ? browseModeSettings[shownMode] : favoritesSettings
 
   return (
