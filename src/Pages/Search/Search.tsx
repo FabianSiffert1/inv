@@ -1,11 +1,11 @@
-import { useCallback, useContext, useEffect, useMemo, useRef } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useContext, useEffect, useMemo, useRef } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { HeaderContext } from '../../Header/HeaderProvider'
 import SearchToggle from '../../Header/SearchToggle/SearchToggle'
-import { useAllSets, useSearchIndex } from '../../util/api/pokemonTGC/hooks'
+import { useAllSets, useCardsOfSet, useSearchIndex } from '../../util/api/pokemonTGC/hooks'
 import { CardEntry } from '../../util/api/pokemonTGC/model/PokemonCard'
-import { cardPath } from '../../util/api/pokemonTGC/model/PokemonSet'
 import { matchesSearchIndex, toLightCard } from '../../util/api/pokemonTGC/model/SearchIndex'
+import { useCardNavigation } from '../../util/ui/cards/useCardNavigation'
 import { LanguageContext } from '../../util/ui/language/LanguageProvider'
 import { SearchContext } from '../../util/ui/search/SearchProvider'
 import { SortContext, sortEntries } from '../../util/ui/sort/SortProvider'
@@ -14,14 +14,11 @@ import CardList from '../Market/CardList/CardList'
 import CardListStatus from '../Market/CardListStatus'
 import styles from '../Pokemon/Pokemon.module.scss'
 
-const noop = () => {}
-
 export default function Search() {
   const { setHeaderItem, setBusy } = useContext(HeaderContext)
   const { sortMode } = useContext(SortContext)
   const { germanNames } = useContext(LanguageContext)
   const isMobile = useIsMobile()
-  const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const { query: liveQuery, isSearchOpen, setQuery, openSearch } = useContext(SearchContext)
   const urlQuery = searchParams.get('q') ?? ''
@@ -60,15 +57,17 @@ export default function Search() {
   }, [index, sets, normalizedQuery])
   const sortedEntries = useMemo(() => sortEntries(entries, sortMode, germanNames), [entries, sortMode, germanNames])
 
-  const openCard = useCallback(
-    (key: string) => {
-      const entry = entries.find((candidate) => candidate.card.id == key)
-      if (entry != undefined) {
-        window.scrollTo(0, 0)
-        navigate(cardPath(entry.card.set.id, entry.card.id))
-      }
-    },
-    [entries, navigate]
+  const baseParams = useMemo(() => (urlQuery == '' ? undefined : { q: urlQuery }), [urlQuery])
+  const { openCardId, openCard, stepToCard, closeCard } = useCardNavigation(baseParams)
+  const openEntry = sortedEntries.find((entry) => entry.card.id == openCardId)
+  const { data: openSetCards } = useCardsOfSet(openEntry?.card.set.name)
+  const fullOpenCard = openSetCards?.find((card) => card.id == openCardId)
+  const displayedEntries = useMemo(
+    () =>
+      fullOpenCard == undefined
+        ? sortedEntries
+        : sortedEntries.map((entry) => (entry.card.id == fullOpenCard.id ? { card: fullOpenCard } : entry)),
+    [sortedEntries, fullOpenCard]
   )
 
   useEffect(() => {
@@ -104,7 +103,13 @@ export default function Search() {
             </div>
           )}
           <div className={styles.listWrapper}>
-            <CardList entries={sortedEntries} onOpenCard={openCard} onStepToCard={noop} onCloseCard={noop} />
+            <CardList
+              entries={displayedEntries}
+              openCardId={openCardId}
+              onOpenCard={openCard}
+              onStepToCard={stepToCard}
+              onCloseCard={closeCard}
+            />
           </div>
         </>
       )}
