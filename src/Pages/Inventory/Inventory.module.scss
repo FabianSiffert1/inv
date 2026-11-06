@@ -86,3 +86,49 @@
   align-items: center;
   gap: 0.5rem;
 }
+
+.skeletonTile {
+  --tint: var(--elementEggshell);
+  align-items: center;
+  gap: 0.6rem;
+  cursor: default;
+  animation: skeletonPulse 1.4s ease-in-out infinite;
+}
+
+.skeletonImage {
+  width: 100%;
+  aspect-ratio: 63 / 88;
+  border-radius: 0.3rem;
+  background-color: color-mix(in srgb, var(--color) 8%, transparent);
+}
+
+.skeletonName {
+  width: 60%;
+  height: 0.75rem;
+  margin-top: 0.4rem;
+  border-radius: 0.3rem;
+  background-color: color-mix(in srgb, var(--color) 10%, transparent);
+}
+
+.skeletonPrice {
+  width: 40%;
+  height: 1.1rem;
+  border-radius: 0.6rem 0.2rem 0.6rem 0.2rem;
+  background-color: color-mix(in srgb, var(--color) 6%, transparent);
+}
+
+@keyframes skeletonPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeletonTile {
+    animation: none;
+  }
+}

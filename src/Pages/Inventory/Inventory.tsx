@@ -7,6 +7,8 @@ import { noBaseParams, useCardNavigation } from '../../util/ui/cards/useCardNavi
 import { useVisibleCards } from '../../util/ui/cards/useVisibleCards'
 import { FavoritesContext, FavoritesSource } from '../../util/ui/favorites/FavoritesProvider'
 import CardList from '../Market/CardList/CardList'
+import cardListStyles from '../Market/CardList/CardList.module.scss'
+import cardStyles from '../Market/CardList/Components/Card/Card.module.scss'
 import PokemonSuggestions from '../Pokemon/PokemonSuggestions'
 import styles from './Inventory.module.scss'
 
@@ -62,7 +64,17 @@ export default function Inventory() {
         </div>
       ) : (
         <div className={styles.favorites}>
-          <CardList cards={favoriteCards} openCardId={openCardId} onOpenCard={openCard} onStepToCard={stepToCard} onCloseCard={closeCard} />
+          {isFetching ? (
+            <FavoritesSkeleton count={favorites.length} />
+          ) : (
+            <CardList
+              cards={favoriteCards}
+              openCardId={openCardId}
+              onOpenCard={openCard}
+              onStepToCard={stepToCard}
+              onCloseCard={closeCard}
+            />
+          )}
         </div>
       )}
     </div>
@@ -82,6 +94,20 @@ function FavoritesStatus(props: FavoritesStatusProps) {
     <div className={styles.headerStatus}>
       <span className={styles.pageCount}>{countLabel}</span>
       <span className={styles.syncTag}>{props.source == 'cloud' ? 'synced' : 'on this device'}</span>
+    </div>
+  )
+}
+
+function FavoritesSkeleton({ count }: { count: number }) {
+  return (
+    <div className={cardListStyles.cardList} aria-busy='true' aria-label='Loading favorites'>
+      {Array.from({ length: count }, (_, index) => (
+        <div key={index} className={`${cardStyles.cardWrapper} ${styles.skeletonTile}`}>
+          <div className={styles.skeletonImage} />
+          <div className={styles.skeletonName} />
+          <div className={styles.skeletonPrice} />
+        </div>
+      ))}
     </div>
   )
 }

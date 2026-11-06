@@ -2,6 +2,7 @@ import React, { createContext, useCallback, useContext, useEffect, useMemo, useR
 import { PokemonCard } from '../../api/pokemonTGC/model/PokemonCard'
 import { AuthContext } from '../../auth/AuthProvider'
 import { Favorite } from './Favorite'
+import { rememberFavoriteSetIds } from './favoriteSets'
 import { readLocalFavorites, writeLocalFavorites } from './localFavorites'
 
 export type { Favorite } from './Favorite'
@@ -122,6 +123,10 @@ const FavoritesProvider: React.FC<Props> = ({ children }) => {
   )
 
   const favorites = useMemo(() => (uid != undefined ? (cloudFavorites ?? []) : localFavorites), [uid, cloudFavorites, localFavorites])
+
+  useEffect(() => {
+    rememberFavoriteSetIds(favorites.map((favorite) => favorite.setId))
+  }, [favorites])
   const source: FavoritesSource = uid != undefined ? 'cloud' : 'local'
   const isLoading = status == 'loading' || (uid != undefined && cloudFavorites == undefined)
 

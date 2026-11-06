@@ -12,7 +12,9 @@ import Home from './Pages/Home/Home'
 import Inventory from './Pages/Inventory/Inventory'
 import Market from './Pages/Market/Market'
 import Pokemon from './Pages/Pokemon/Pokemon'
+import { SetsSnapshot } from './util/api/pokemonTGC/querys'
 import { isNotFoundError } from './util/api/pokemonTGC/querys'
+import { isFavoriteSetId } from './util/ui/favorites/favoriteSets'
 import AuthProvider from './util/auth/AuthProvider'
 import FavoritesProvider from './util/ui/favorites/FavoritesProvider'
 import LanguageProvider from './util/ui/language/LanguageProvider'
@@ -21,6 +23,7 @@ import ThemeProvider from './util/ui/theme/ThemeProvider'
 
 const cacheMaxAge = 1000 * 60 * 60 * 24 * 7
 const persistedCardListLimit = 8
+const persistedFavoriteSetLimit = 24
 const queryCacheStorageKey = 'inv-query-cache'
 const legacyQueryCacheStorageKey = 'REACT_QUERY_OFFLINE_CACHE'
 
@@ -73,6 +76,16 @@ const queryClient = new QueryClient({
 
 const isCardListQuery = (queryKey: unknown): boolean => Array.isArray(queryKey) && queryKey[0] == 'cards'
 
+const isFavoriteSetQuery = (query: Query): boolean => {
+  const key = query.queryKey
+  if (!Array.isArray(key) || key[0] != 'cards' || key[1] != 'set') {
+    return false
+  }
+  const snapshot = queryClient.getQueryData<SetsSnapshot>(['sets', 'snapshot'])
+  const setId = snapshot?.sets.find((set) => set.name == key[2])?.id
+  return setId != undefined && isFavoriteSetId(setId)
+}
+
 const persistOptions = {
   persister: createAsyncStoragePersister({
     storage: { getItem: (key: string) => get<string>(key), setItem: set, removeItem: del },
@@ -94,9 +107,10 @@ const persistOptions = {
         .getAll()
         .filter((cached) => isCardListQuery(cached.queryKey) && cached.state.data != undefined)
         .sort((a, b) => b.state.dataUpdatedAt - a.state.dataUpdatedAt)
-        .slice(0, persistedCardListLimit)
+      const recentQueries = cardListQueries.slice(0, persistedCardListLimit)
+      const favoriteSetQueries = cardListQueries.filter(isFavoriteSetQuery).slice(0, persistedFavoriteSetLimit)
 
-      return cardListQueries.some((cached) => cached.queryHash == query.queryHash)
+      return [...recentQueries, ...favoriteSetQueries].some((cached) => cached.queryHash == query.queryHash)
     }
   }
 }
