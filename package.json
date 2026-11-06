@@ -14,6 +14,7 @@
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.node.json",
     "preview": "vite preview --port 3030",
     "fetch-data": "node scripts/fetch-data.mjs",
+    "build-indexes": "node scripts/build-indexes.mjs",
     "prepare": "husky"
   },
   "dependencies": {
