@@ -117,6 +117,9 @@ and its hot-reload WebSocket makes phones prompt for local network access.
   amounts take part in the price sort as they are, but not in the set and favorites totals, which
   stay in EUR. The daily refresh only picks up what TCGdex has re-synced, so prices can be older
   than the snapshot.
+- **Variants**: the snapshot keeps which printings a card has (holo, reverse, 1st edition) and, where
+  TCGdex names it, the holo pattern (cosmos, galaxy, cracked ice, rainbow, gold). Card details show
+  them as chips, and the search box matches them, so "cosmos" finds the cosmos holos of a set.
 - **Sprites** are PokeAPI's 96×96 PNGs. Pokémon detail pages show the animated Showdown GIF when
   one exists and fall back to the PNG otherwise, or when the system asks for reduced motion.
 - **Favorites** live in `localStorage` for guests. Signed-in users get them from Firestore instead.

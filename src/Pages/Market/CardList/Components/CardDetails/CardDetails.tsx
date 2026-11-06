@@ -1,4 +1,4 @@
-import { ReactElement, useRef, useState } from 'react'
+import { ReactElement, useContext, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { CopyButton } from '../../../../../Components/CopyButton/CopyButton'
 import { FavoriteButton } from '../../../../../Components/FavoriteButton/FavoriteButton'
@@ -11,9 +11,11 @@ import {
 } from '../../../../../util/api/pokemonTGC/model/PokemonCard'
 import { spriteUrl } from '../../../../../util/api/pokemonTGC/model/Pokemon'
 import { setPath } from '../../../../../util/api/pokemonTGC/model/PokemonSet'
+import { variantLabels } from '../../../../../util/cardVariants'
 import { Currency, formatPrice } from '../../../../../util/format/price'
 import { formatPriceDate, formatSetReleaseDate } from '../../../../../util/format/date'
 import { useLocalizedName } from '../../../../../util/ui/language/LanguageProvider'
+import { SearchContext } from '../../../../../util/ui/search/SearchProvider'
 import { cardShareLink } from '../../../../../util/shareLinks'
 import { useModalBehaviour } from '../../../../../util/ui/useModalBehaviour'
 import { CardImage } from '../CardImage/CardImage'
@@ -71,7 +73,7 @@ export function CardDetails(props: CardDetailsProps) {
             {props.navigation && <CardNavigation {...props.navigation} />}
           </div>
           <div className={styles.detailsColumn}>
-            <CardBaseDetails card={props.card} />
+            <CardBaseDetails card={props.card} onClose={props.onClose} />
             <SetInformation card={props.card} />
             <div className={styles.panelRow}>
               <CardMarketPrices card={props.card} />
@@ -107,8 +109,18 @@ export function CardNavigation(props: CardNavigationProps) {
   )
 }
 
-export function CardBaseDetails(props: PokemonCardProp) {
+interface CardBaseDetailsProps extends PokemonCardProp {
+  onClose?: () => void
+}
+
+export function CardBaseDetails(props: CardBaseDetailsProps) {
   const cardName = useLocalizedName(props.card)
+  const { setQuery, openSearch } = useContext(SearchContext)
+  const searchFor = (label: string) => {
+    setQuery(label)
+    openSearch()
+    props.onClose?.()
+  }
   const pokedexNumber = props.card.nationalPokedexNumbers?.[0]
 
   return (
@@ -132,6 +144,17 @@ export function CardBaseDetails(props: PokemonCardProp) {
         <span className={styles.metaChip}>
           {props.card.number}/{props.card.set.printedTotal}
         </span>
+        {variantLabels(props.card).map((label) => (
+          <button
+            key={label}
+            type='button'
+            className={`${styles.metaChip} ${styles.variantChip}`}
+            title={`Search for `}
+            onClick={() => searchFor(label)}
+          >
+            {label}
+          </button>
+        ))}
         {props.card.evolvesFrom && <span className={styles.metaMuted}>Evolves from {props.card.evolvesFrom}</span>}
         {props.card.artist && <ArtistLink name={props.card.artist} className={styles.artistChip} fallbackClassName={styles.metaMuted} />}
       </div>
@@ -145,6 +168,7 @@ export function SetInformation(props: PokemonCardProp) {
   const seriesName = useLocalizedName({ name: props.card.set.series, germanName: props.card.set.germanSeries })
   const [searchParams] = useSearchParams()
   const isCurrentSet = searchParams.get('set') == props.card.set.id
+  const { closeSearch } = useContext(SearchContext)
 
   return (
     <section className={`${styles.panel} ${styles.setPanel}`}>
@@ -152,7 +176,14 @@ export function SetInformation(props: PokemonCardProp) {
         {isCurrentSet ? (
           <span className={styles.panelTitle}>{setName}</span>
         ) : (
-          <Link className={`${styles.panelLink} ${styles.setLink}`} to={setPath(props.card.set.id)} onClick={() => window.scrollTo(0, 0)}>
+          <Link
+            className={`${styles.panelLink} ${styles.setLink}`}
+            to={setPath(props.card.set.id)}
+            onClick={() => {
+              closeSearch()
+              window.scrollTo(0, 0)
+            }}
+          >
             <span className={styles.panelTitle}>{setName}</span>
           </Link>
         )}

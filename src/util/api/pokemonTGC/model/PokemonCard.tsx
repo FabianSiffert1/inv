@@ -68,6 +68,14 @@ export interface PokemonCardSet {
   }
 }
 
+export interface CardVariants {
+  normal?: boolean
+  holo?: boolean
+  reverse?: boolean
+  firstEdition?: boolean
+  wPromo?: boolean
+}
+
 export interface PokemonCard {
   id: string
   name: string
@@ -87,6 +95,8 @@ export interface PokemonCard {
   rarity?: string
   flavorText?: string
   nationalPokedexNumbers?: number[]
+  variants?: CardVariants
+  foils?: string[]
   legalities?: {
     unlimited?: string
   }

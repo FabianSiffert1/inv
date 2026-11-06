@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import { usePokemonIndex } from '../../util/api/pokemonTGC/hooks'
 import { pokemonPath } from '../../util/api/pokemonTGC/model/Pokemon'
 import { LanguageContext, localizedName } from '../../util/ui/language/LanguageProvider'
+import { SearchContext } from '../../util/ui/search/SearchProvider'
 import styles from './AllCardsOfPokemonLink.module.scss'
 
 interface AllCardsOfPokemonLinkProps {
@@ -11,6 +12,7 @@ interface AllCardsOfPokemonLinkProps {
 
 export default function AllCardsOfPokemonLink(props: AllCardsOfPokemonLinkProps) {
   const { germanNames } = useContext(LanguageContext)
+  const { closeSearch } = useContext(SearchContext)
   const { data: pokemonIndex } = usePokemonIndex()
   const params = useParams()
   const pokemon = pokemonIndex?.find((entry) => entry.number == props.pokedexNumber)
@@ -20,7 +22,14 @@ export default function AllCardsOfPokemonLink(props: AllCardsOfPokemonLinkProps)
   }
 
   return (
-    <Link className={styles.link} to={pokemonPath(pokemon.number)} onClick={() => window.scrollTo(0, 0)}>
+    <Link
+      className={styles.link}
+      to={pokemonPath(pokemon.number)}
+      onClick={() => {
+        closeSearch()
+        window.scrollTo(0, 0)
+      }}
+    >
       All {pokemon.cardCount} {localizedName(pokemon, germanNames)} cards
     </Link>
   )

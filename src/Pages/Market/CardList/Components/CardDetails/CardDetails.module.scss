@@ -201,6 +201,13 @@
   padding: 0.3rem 0.7rem;
 }
 
+.variantChip {
+  @include surfaceInteractive($surfaceRadiusSmall);
+  @include pastel(var(--elementLavender), 50%);
+  border: none;
+  color: var(--color);
+}
+
 .metaMuted {
   color: var(--secondary-color);
 }

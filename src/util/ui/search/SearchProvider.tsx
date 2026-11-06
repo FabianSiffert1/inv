@@ -1,5 +1,6 @@
 import React, { createContext, useCallback, useMemo, useState } from 'react'
 import { PokemonCard } from '../../api/pokemonTGC/model/PokemonCard'
+import { variantLabels } from '../../cardVariants'
 
 interface ContextProps {
   query: string
@@ -62,7 +63,7 @@ export const matchesSearch = (card: PokemonCard, query: string): boolean => {
     return true
   }
   const types = card.types ?? []
-  const texts = [card.name, card.germanName, card.rarity, ...types, ...types.map((type) => germanTypeNames[type])]
+  const texts = [card.name, card.germanName, card.rarity, ...types, ...types.map((type) => germanTypeNames[type]), ...variantLabels(card)]
   const numberQuery = withoutLeadingZeros(normalizedQuery.replace(/^#/, ''))
   return (
     texts.some((text) => text?.toLowerCase().includes(normalizedQuery)) || withoutLeadingZeros(card.number.toLowerCase()) == numberQuery

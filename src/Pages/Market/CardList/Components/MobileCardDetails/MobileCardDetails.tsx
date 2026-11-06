@@ -43,7 +43,7 @@ export function MobileCardDetails(props: MobileCardDetailsProps) {
             <button type='button' className={styles.cardImageFrame} onClick={() => setZoomOpen(true)} aria-label={`Zoom into ${cardName}`}>
               <CardImage className={styles.cardImage} sources={imageSources} alt={cardName} pokedexNumber={pokedexNumber} />
             </button>
-            <CardBaseDetails card={props.card} />
+            <CardBaseDetails card={props.card} onClose={props.onClose} />
           </div>
           <SetInformation card={props.card} />
           <CardMarketPrices card={props.card} />

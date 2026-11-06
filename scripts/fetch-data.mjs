@@ -138,6 +138,8 @@ const toTcgplayer = (tcgplayer) => {
   }
 }
 
+const foilsOf = (card) => [...new Set((card.variants_detailed ?? []).map((variant) => variant.foil).filter((foil) => foil != undefined))]
+
 const toCard = (card, set, germanNames) => ({
   id: card.id,
   name: card.name,
@@ -152,6 +154,8 @@ const toCard = (card, set, germanNames) => ({
   rarity: card.rarity,
   flavorText: card.description,
   nationalPokedexNumbers: card.dexId,
+  variants: card.variants,
+  foils: foilsOf(card),
   images: card.image ? { small: `${card.image}/low.webp`, large: `${card.image}/high.webp` } : {},
   tcgplayer: toTcgplayer(card.pricing?.tcgplayer),
   cardmarket: toCardmarket(card.pricing?.cardmarket)

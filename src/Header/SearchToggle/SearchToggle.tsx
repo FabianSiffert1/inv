@@ -33,7 +33,7 @@ export default function SearchToggle({ floating = false }: SearchToggleProps) {
         ref={inputRef}
         className={styles.searchField}
         type='search'
-        placeholder='Name, type, rarity, #'
+        placeholder='Name, type, rarity, holo, #'
         aria-label='Search this set'
         value={query}
         onChange={(event) => setQuery(event.target.value)}
