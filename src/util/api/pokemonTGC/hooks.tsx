@@ -17,13 +17,10 @@ const useSetsSnapshot = <TData = SetsSnapshot,>(select?: (snapshot: SetsSnapshot
     select
   })
 
-export const useAllSets = () => useSetsSnapshot<PokemonSet[]>((snapshot) => snapshot.sets)
-
-export const useCardsOfSet = (setName?: PokemonSetName) => {
+export const useSnapshotCacheEviction = () => {
   const queryClient = useQueryClient()
   const { data: snapshot } = useSetsSnapshot()
   const generatedAt = snapshot?.generatedAt
-  const set = snapshot?.sets.find((candidate) => candidate.name == setName)
 
   useEffect(() => {
     if (generatedAt == undefined) {
@@ -32,10 +29,18 @@ export const useCardsOfSet = (setName?: PokemonSetName) => {
     queryClient.removeQueries({
       predicate: (query) => {
         const key = query.queryKey
-        return Array.isArray(key) && key[0] == 'cards' && key[1] == 'set' && key[3] != generatedAt
+        return key[0] != 'sets' && key[key.length - 1] != generatedAt
       }
     })
   }, [queryClient, generatedAt])
+}
+
+export const useAllSets = () => useSetsSnapshot<PokemonSet[]>((snapshot) => snapshot.sets)
+
+export const useCardsOfSet = (setName?: PokemonSetName) => {
+  const { data: snapshot } = useSetsSnapshot()
+  const generatedAt = snapshot?.generatedAt
+  const set = snapshot?.sets.find((candidate) => candidate.name == setName)
 
   return useQuery<PokemonCard[]>({
     queryKey: ['cards', 'set', setName, generatedAt],
@@ -63,21 +68,8 @@ export const useCardsOfSets = (setIds: string[]) => {
 }
 
 export const usePokemonIndex = () => {
-  const queryClient = useQueryClient()
   const { data: snapshot } = useSetsSnapshot()
   const generatedAt = snapshot?.generatedAt
-
-  useEffect(() => {
-    if (generatedAt == undefined) {
-      return
-    }
-    queryClient.removeQueries({
-      predicate: (query) => {
-        const key = query.queryKey
-        return Array.isArray(key) && key[0] == 'pokemon' && key[1] == 'index' && key[2] != generatedAt
-      }
-    })
-  }, [queryClient, generatedAt])
 
   return useQuery<Pokemon[]>({
     queryKey: ['pokemon', 'index', generatedAt],
@@ -88,21 +80,8 @@ export const usePokemonIndex = () => {
 }
 
 export const useCardsOfPokemon = (pokedexNumber?: number) => {
-  const queryClient = useQueryClient()
   const { data: snapshot } = useSetsSnapshot()
   const generatedAt = snapshot?.generatedAt
-
-  useEffect(() => {
-    if (generatedAt == undefined) {
-      return
-    }
-    queryClient.removeQueries({
-      predicate: (query) => {
-        const key = query.queryKey
-        return Array.isArray(key) && key[0] == 'cards' && key[1] == 'pokemon' && key[3] != generatedAt
-      }
-    })
-  }, [queryClient, generatedAt])
 
   return useQuery<PokemonCard[]>({
     queryKey: ['cards', 'pokemon', pokedexNumber, generatedAt],
