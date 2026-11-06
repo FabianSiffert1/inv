@@ -67,7 +67,15 @@ export default function OptionGrid(props: OptionGridProps) {
             onClick={() => props.onSelect(option.id)}
             onKeyDown={(event) => handleKeyDown(event, index)}
           >
-            {option.imageUrl && <img className={styles.itemImage} src={option.imageUrl} alt='' loading='lazy' />}
+            {option.imageUrl && (
+              <img
+                className={styles.itemImage}
+                src={option.imageUrl}
+                alt=''
+                loading='lazy'
+                onError={(event) => (event.currentTarget.hidden = true)}
+              />
+            )}
             <span className={styles.itemLabel}>{option.label}</span>
             {props.cachedIds?.includes(option.id) && <span className={styles.cachedDot} role='img' aria-label='Stored offline' />}
           </button>

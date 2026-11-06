@@ -45,15 +45,11 @@
 }
 
 .headerSpinner {
-  display: flex;
-  align-items: center;
-  flex: 0 0 auto;
-  margin-left: auto;
-
-  @media (max-width: $smallScreen - 1px) {
-    order: 2;
-    margin-left: auto;
-  }
+  position: absolute;
+  left: 50%;
+  bottom: -0.4rem;
+  transform: translateX(-50%);
+  pointer-events: none;
 }
 
 .navigation {

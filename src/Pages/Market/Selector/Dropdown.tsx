@@ -60,7 +60,14 @@ export default function Dropdown(props: DropdownProps) {
         disabled={props.disabled}
         onClick={() => props.setOpen(!props.isOpen)}
       >
-        {selectedOption?.imageUrl && <img className={styles.triggerImage} src={selectedOption.imageUrl} alt='' />}
+        {selectedOption?.imageUrl && (
+          <img
+            className={styles.triggerImage}
+            src={selectedOption.imageUrl}
+            alt=''
+            onError={(event) => (event.currentTarget.hidden = true)}
+          />
+        )}
         <span className={selectedOption ? styles.triggerLabel : `${styles.triggerLabel} ${styles.placeholder}`}>
           {selectedOption ? selectedOption.label : props.placeholder}
         </span>

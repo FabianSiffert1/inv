@@ -83,7 +83,7 @@ const toSet = (set, germanName, germanSeries) => ({
   ptcgoCode: set.tcgOnline,
   releaseDate: set.releaseDate,
   images: {
-    symbol: set.symbol ? `${set.symbol}.png` : undefined,
+    symbol: set.symbol ? `${set.symbol.replace('/univ/', '/en/')}.png` : undefined,
     logo: set.logo ? `${set.logo}.png` : undefined
   }
 })

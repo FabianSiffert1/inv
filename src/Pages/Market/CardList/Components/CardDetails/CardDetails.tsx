@@ -187,7 +187,14 @@ export function SetInformation(props: PokemonCardProp) {
             <span className={styles.panelTitle}>{setName}</span>
           </Link>
         )}
-        {props.card.set.images?.symbol && <img className={styles.setSymbol} src={props.card.set.images.symbol} alt='' />}
+        {props.card.set.images?.symbol && (
+          <img
+            className={styles.setSymbol}
+            src={props.card.set.images.symbol}
+            alt=''
+            onError={(event) => (event.currentTarget.hidden = true)}
+          />
+        )}
       </div>
       <dl className={styles.definitionList}>
         <div className={styles.definitionRow}>

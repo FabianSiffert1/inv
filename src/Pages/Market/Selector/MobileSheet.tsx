@@ -39,7 +39,15 @@ export default function MobileSheet(props: MobileSheetProps) {
                   className={isSelected ? `${styles.option} ${styles.optionSelected}` : styles.option}
                   onClick={() => props.onSelect(option.id)}
                 >
-                  {option.imageUrl && <img className={styles.optionImage} src={option.imageUrl} alt='' loading='lazy' />}
+                  {option.imageUrl && (
+                    <img
+                      className={styles.optionImage}
+                      src={option.imageUrl}
+                      alt=''
+                      loading='lazy'
+                      onError={(event) => (event.currentTarget.hidden = true)}
+                    />
+                  )}
                   <span className={styles.optionLabel}>{option.label}</span>
                   {props.cachedIds?.includes(option.id) && <span className={styles.cachedDot} role='img' aria-label='Stored offline' />}
                 </button>
