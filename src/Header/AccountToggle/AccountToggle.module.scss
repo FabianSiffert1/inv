@@ -16,8 +16,6 @@
   height: 2.4rem;
   padding: 0;
   border: none;
-  color: var(--color);
-  overflow: hidden;
 
   svg {
     width: 1.5rem;
@@ -29,22 +27,6 @@
     opacity: 0.5;
     transform: none;
   }
-}
-
-.signedIn {
-  @include pastel(var(--elementLavender), 60%);
-}
-
-.avatar {
-  width: 1.6rem;
-  height: 1.6rem;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.initial {
-  @include typoFieldValue;
-  font-size: 0.9rem;
 }
 
 .panel {

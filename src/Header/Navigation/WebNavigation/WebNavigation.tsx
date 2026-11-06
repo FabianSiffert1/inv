@@ -42,14 +42,14 @@ export default function WebNavigation() {
               <LanguageToggle />
             </div>
           </li>
-          <li key={'accountToggle'}>
-            <div className={styles.themeToggle}>
-              <AccountToggle />
-            </div>
-          </li>
           <li key={'themeToggle'}>
             <div className={styles.themeToggle}>
               <ThemeToggle />
+            </div>
+          </li>
+          <li key={'accountToggle'}>
+            <div className={styles.themeToggle}>
+              <AccountToggle />
             </div>
           </li>
         </ul>

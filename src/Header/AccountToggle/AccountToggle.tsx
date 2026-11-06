@@ -1,12 +1,11 @@
 import { useContext, useEffect, useRef, useState } from 'react'
 import { AuthContext } from '../../util/auth/AuthProvider'
-import { KeyIcon } from './AccountIcons'
+import { MasterBallIcon, PokeBallIcon } from './AccountIcons'
 import styles from './AccountToggle.module.scss'
 
 export default function AccountToggle() {
   const { status, user, error, signIn, signOut } = useContext(AuthContext)
   const [isOpen, setOpen] = useState(false)
-  const [photoFailed, setPhotoFailed] = useState(false)
   const wrapperRef = useRef<HTMLDivElement>(null)
   const triggerRef = useRef<HTMLButtonElement>(null)
 
@@ -37,12 +36,7 @@ export default function AccountToggle() {
     setOpen(error != undefined)
   }, [error, status])
 
-  useEffect(() => {
-    setPhotoFailed(false)
-  }, [user?.photoUrl])
-
   const isSignedIn = status == 'signedIn'
-  const initial = (user?.displayName ?? user?.email ?? '?').charAt(0).toUpperCase()
   const label = isSignedIn
     ? `Signed in as ${user?.email ?? user?.displayName ?? 'account'}`
     : status == 'loading'
@@ -54,7 +48,7 @@ export default function AccountToggle() {
       <button
         ref={triggerRef}
         type='button'
-        className={`${styles.accountToggle} ${isSignedIn ? styles.signedIn : ''}`}
+        className={styles.accountToggle}
         onClick={isSignedIn ? () => setOpen((previous) => !previous) : () => void signIn()}
         disabled={status == 'loading'}
         aria-label={label}
@@ -62,15 +56,7 @@ export default function AccountToggle() {
         aria-expanded={isSignedIn ? isOpen : undefined}
         aria-haspopup={isSignedIn ? 'dialog' : undefined}
       >
-        {isSignedIn ? (
-          user?.photoUrl && !photoFailed ? (
-            <img className={styles.avatar} src={user.photoUrl} alt='' referrerPolicy='no-referrer' onError={() => setPhotoFailed(true)} />
-          ) : (
-            <span className={styles.initial}>{initial}</span>
-          )
-        ) : (
-          <KeyIcon />
-        )}
+        {isSignedIn ? <MasterBallIcon /> : <PokeBallIcon />}
       </button>
       {isOpen && (
         <div className={styles.panel} role='dialog' aria-label='Account'>
