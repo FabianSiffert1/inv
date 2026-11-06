@@ -107,8 +107,8 @@ and its hot-reload WebSocket makes phones prompt for local network access.
   one exists and fall back to the PNG otherwise, or when the system asks for reduced motion.
 - **Favorites** live in `localStorage` for guests. Signed-in users get them from Firestore instead,
   one document per user at `users/<uid>`, with offline persistence so toggles work without a
-  connection. The first sign-in merges the local list into the cloud one. Firebase is loaded lazily,
-  so guests never download it.
+  connection. On first sign-in with local favorites, a dialog asks before moving them to the account.
+  Firebase is loaded lazily, so guests never download it.
 
 ## Accounts
 

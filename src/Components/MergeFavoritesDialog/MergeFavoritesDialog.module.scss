@@ -1,0 +1,83 @@
+@use 'globalDesignElements.module' as *;
+
+.wrapper {
+  position: fixed;
+  inset: 0;
+  z-index: $zOverlay;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background-color: var(--scrim-color);
+  backdrop-filter: blur(0.25rem);
+  -webkit-backdrop-filter: blur(0.25rem);
+}
+
+.dialog {
+  @include surface;
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 28rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.75rem 1.5rem;
+  background-color: var(--background-color);
+  border: 1px solid var(--card-border-color);
+  box-shadow: 0 0.75rem 2rem var(--shadow-color);
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+
+  svg {
+    flex: none;
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}
+
+.headline {
+  @include typoDisplay;
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.detail {
+  margin: 0;
+  color: var(--secondary-color);
+  line-height: 1.45;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  padding-top: 0.5rem;
+}
+
+.primaryButton,
+.secondaryButton {
+  @include surfaceInteractive($surfaceRadiusSmall);
+  @include typoFieldValue;
+  padding: 0.6rem 1.1rem;
+  border: none;
+  color: var(--color);
+}
+
+.primaryButton {
+  @include pastel(var(--elementLavender), 60%);
+}
+
+.secondaryButton {
+  @include pastel(var(--elementPeach), 50%);
+}

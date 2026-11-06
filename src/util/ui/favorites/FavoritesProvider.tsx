@@ -8,11 +8,18 @@ export type { Favorite } from './Favorite'
 
 export type FavoritesSource = 'local' | 'cloud'
 
+export interface PendingMerge {
+  count: number
+  confirm: () => void
+  dismiss: () => void
+}
+
 interface ContextProps {
   favorites: Favorite[]
   source: FavoritesSource
   isLoading: boolean
   error?: string
+  pendingMerge?: PendingMerge
   isFavorite: (cardId: string) => boolean
   toggleFavorite: (card: PokemonCard) => void
 }
@@ -38,6 +45,7 @@ const FavoritesProvider: React.FC<Props> = ({ children }) => {
   const [localFavorites, setLocalFavorites] = useState(readLocalFavorites)
   const [cloudFavorites, setCloudFavorites] = useState<Favorite[] | undefined>(undefined)
   const [error, setError] = useState<string | undefined>(undefined)
+  const [unmergedFavorites, setUnmergedFavorites] = useState<Favorite[] | undefined>(undefined)
   const cloudModule = useRef<Promise<CloudFavorites> | undefined>(undefined)
 
   const loadCloud = useCallback((): Promise<CloudFavorites> => {
@@ -54,10 +62,11 @@ const FavoritesProvider: React.FC<Props> = ({ children }) => {
   useEffect(() => {
     if (uid == undefined) {
       setCloudFavorites(undefined)
+      setUnmergedFavorites(undefined)
       return
     }
     let cancelled = false
-    let merged = false
+    let compared = false
     let unsubscribe: (() => void) | undefined
     setError(undefined)
     loadCloud()
@@ -68,19 +77,16 @@ const FavoritesProvider: React.FC<Props> = ({ children }) => {
         unsubscribe = module.subscribeToFavorites(
           uid,
           (favorites) => {
-            if (!merged) {
-              merged = true
+            if (!compared) {
+              compared = true
               const stored = readLocalFavorites()
               const cloudIds = new Set(favorites.map((favorite) => favorite.cardId))
               const missing = stored.filter((favorite) => !cloudIds.has(favorite.cardId))
               if (missing.length > 0) {
-                module.addFavorites(uid, missing).then(
-                  () => setLocalFavorites([]),
-                  () => setError('Could not sync favorites.')
-                )
-                return
+                setUnmergedFavorites(missing)
+              } else {
+                setLocalFavorites([])
               }
-              setLocalFavorites([])
             }
             setCloudFavorites(favorites)
           },
@@ -93,6 +99,27 @@ const FavoritesProvider: React.FC<Props> = ({ children }) => {
       unsubscribe?.()
     }
   }, [uid, loadCloud])
+
+  const confirmMerge = useCallback(() => {
+    if (uid == undefined || unmergedFavorites == undefined) {
+      return
+    }
+    const missing = unmergedFavorites
+    setUnmergedFavorites(undefined)
+    loadCloud()
+      .then((module) => module.addFavorites(uid, missing))
+      .then(
+        () => setLocalFavorites([]),
+        () => setError('Could not move favorites online. They are still saved on this device.')
+      )
+  }, [uid, unmergedFavorites, loadCloud])
+
+  const dismissMerge = useCallback(() => setUnmergedFavorites(undefined), [])
+
+  const pendingMerge = useMemo<PendingMerge | undefined>(
+    () => (unmergedFavorites == undefined ? undefined : { count: unmergedFavorites.length, confirm: confirmMerge, dismiss: dismissMerge }),
+    [unmergedFavorites, confirmMerge, dismissMerge]
+  )
 
   const favorites = useMemo(() => (uid != undefined ? (cloudFavorites ?? []) : localFavorites), [uid, cloudFavorites, localFavorites])
   const source: FavoritesSource = uid != undefined ? 'cloud' : 'local'
@@ -118,8 +145,8 @@ const FavoritesProvider: React.FC<Props> = ({ children }) => {
   )
 
   const contextValue = useMemo(
-    () => ({ favorites, source, isLoading, error, isFavorite, toggleFavorite }),
-    [favorites, source, isLoading, error, isFavorite, toggleFavorite]
+    () => ({ favorites, source, isLoading, error, pendingMerge, isFavorite, toggleFavorite }),
+    [favorites, source, isLoading, error, pendingMerge, isFavorite, toggleFavorite]
   )
 
   return <FavoritesContext.Provider value={contextValue}>{children}</FavoritesContext.Provider>

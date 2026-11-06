@@ -1,4 +1,5 @@
 import { Outlet } from 'react-router-dom'
+import MergeFavoritesDialog from '../../Components/MergeFavoritesDialog/MergeFavoritesDialog'
 import Header from '../../Header/Header'
 import HeaderProvider from '../../Header/HeaderProvider'
 import { useSnapshotCacheEviction } from '../../util/api/pokemonTGC/hooks'
@@ -9,6 +10,7 @@ export default function Home() {
 
   return (
     <HeaderProvider>
+      <MergeFavoritesDialog />
       <Header />
       <div className={styles.home}>
         <div className={styles.pageContainer}>
