@@ -33,6 +33,8 @@
 }
 
 .closeButton {
+  @include surfaceInteractive($surfaceRadiusSmall);
+  @include pastel(var(--elementPeach), 50%);
   margin-left: auto;
   width: 2.5rem;
   height: 2.5rem;
@@ -41,17 +43,9 @@
   justify-content: center;
   font-size: 1.6rem;
   line-height: 1;
-  cursor: pointer;
   border: none;
-  border-radius: $surfaceRadiusSmall;
-  background: none;
   color: var(--secondary-color);
   font-family: inherit;
-}
-
-.closeButton:focus-visible {
-  outline: 2px solid var(--marker);
-  outline-offset: 3px;
 }
 
 .scrollArea {

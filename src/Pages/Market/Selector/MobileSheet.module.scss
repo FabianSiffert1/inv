@@ -44,6 +44,8 @@
 }
 
 .closeButton {
+  @include surfaceInteractive($surfaceRadiusSmall);
+  @include pastel(var(--elementPeach), 50%);
   width: 2.25rem;
   height: 2.25rem;
   display: flex;
@@ -53,8 +55,6 @@
   line-height: 1;
   cursor: pointer;
   border: none;
-  border-radius: $surfaceRadiusSmall;
-  background: none;
   color: var(--secondary-color);
   font-family: inherit;
 }

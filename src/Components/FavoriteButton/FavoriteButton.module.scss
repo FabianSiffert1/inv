@@ -1,4 +1,8 @@
+@use 'globalDesignElements.module' as *;
+
 .favoriteButton {
+  @include surfaceInteractive(0.4rem);
+  @include pastel(var(--elementPeach), 50%);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -6,14 +10,8 @@
   height: 1.75rem;
   padding: 0.3rem;
   border: none;
-  border-radius: 0.4rem;
-  background: none;
   color: var(--secondary-color);
   opacity: 0.6;
-  cursor: pointer;
-  transition:
-    opacity 160ms ease,
-    background-color 160ms ease;
 
   svg {
     width: 100%;
@@ -23,7 +21,6 @@
 
 .favoriteButton:hover {
   opacity: 1;
-  background-color: var(--card-background-color);
 }
 
 .favorited {

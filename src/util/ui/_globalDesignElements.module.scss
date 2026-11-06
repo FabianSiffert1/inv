@@ -48,6 +48,7 @@ $archEase: cubic-bezier(0.22, 0.61, 0.36, 1);
 @mixin surfaceInteractive($radius: $surfaceRadius) {
   @include surface($radius);
   cursor: pointer;
+  box-shadow: 0 0.15rem 0.5rem color-mix(in srgb, var(--color) 10%, transparent);
 
   &:hover {
     transform: translateY(-2px);

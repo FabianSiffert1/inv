@@ -1,4 +1,8 @@
+@use 'globalDesignElements.module' as *;
+
 .copyButton {
+  @include surfaceInteractive(0.4rem);
+  @include pastel(var(--elementPeach), 50%);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -6,13 +10,7 @@
   height: 1.75rem;
   padding: 0.35rem;
   border: none;
-  border-radius: 0.4rem;
-  background: none;
   color: var(--secondary-color);
-  cursor: pointer;
-  transition:
-    color 160ms ease,
-    background-color 160ms ease;
 
   svg {
     width: 100%;
@@ -22,5 +20,4 @@
 
 .copyButton:hover {
   color: var(--color);
-  background-color: var(--card-background-color);
 }

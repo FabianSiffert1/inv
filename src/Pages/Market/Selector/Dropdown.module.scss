@@ -21,7 +21,6 @@
   font-size: 0.95rem;
   color: var(--color);
   border: none;
-  box-shadow: 0 0.15rem 0.5rem color-mix(in srgb, var(--color) 10%, transparent);
 }
 
 .trigger:hover:not(:disabled) .chevron {
