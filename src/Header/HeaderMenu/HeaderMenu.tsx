@@ -60,19 +60,19 @@ export default function HeaderMenu() {
         aria-label={label}
         title={label}
         aria-expanded={isOpen}
-        aria-haspopup='menu'
+        aria-haspopup='dialog'
       >
         {isSignedIn ? <MasterBallIcon /> : <PokeBallIcon />}
       </button>
       {isOpen && (
-        <div className={styles.panel} role='menu' aria-label='Menu'>
+        <div className={styles.panel} role='dialog' aria-label='Menu'>
           <MenuRow icon={darkTheme ? <EspeonIcon /> : <UmbreonIcon />} onClick={() => choose(toggleTheme)}>
             Toggle Theme
           </MenuRow>
           <MenuRow icon={germanNames ? <TeacupIcon /> : <PretzelIcon />} onClick={() => choose(toggleLanguage)}>
             Toggle Language
           </MenuRow>
-          <div className={styles.divider} role='separator' />
+          <div className={styles.divider} aria-hidden='true' />
           {isSignedIn ? (
             <>
               <div className={styles.account}>
@@ -116,7 +116,6 @@ function MenuRow(props: MenuRowProps) {
   return (
     <button
       type='button'
-      role='menuitem'
       className={props.className ? `${styles.row} ${props.className}` : styles.row}
       onClick={props.onClick}
       disabled={props.disabled}
