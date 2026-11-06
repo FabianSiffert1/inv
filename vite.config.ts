@@ -8,7 +8,8 @@ const dataDirectory = fileURLToPath(new URL('./data', import.meta.url))
 
 const servedFileTypes: Record<string, { contentType: string; cacheControl: string }> = {
   '.json': { contentType: 'application/json', cacheControl: 'no-cache' },
-  '.png': { contentType: 'image/png', cacheControl: 'public, max-age=2592000' }
+  '.png': { contentType: 'image/png', cacheControl: 'public, max-age=2592000' },
+  '.gif': { contentType: 'image/gif', cacheControl: 'public, max-age=2592000' }
 }
 
 const serveDataDirectory: Connect.NextHandleFunction = (request, response) => {

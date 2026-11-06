@@ -3,7 +3,8 @@ import { Link, Navigate, useLocation, useNavigate, useParams, useSearchParams } 
 import { HeaderContext } from '../../Header/HeaderProvider'
 import SearchToggle from '../../Header/SearchToggle/SearchToggle'
 import { useCardsOfPokemon, usePokemonIndex } from '../../util/api/pokemonTGC/hooks'
-import { Pokemon as PokemonEntry, pokemonPath, spriteUrl } from '../../util/api/pokemonTGC/model/Pokemon'
+import { AnimatedSprite } from '../../Components/AnimatedSprite/AnimatedSprite'
+import { Pokemon as PokemonEntry, pokemonPath } from '../../util/api/pokemonTGC/model/Pokemon'
 import { LanguageContext, localizedName } from '../../util/ui/language/LanguageProvider'
 import { matchesSearch, SearchContext } from '../../util/ui/search/SearchProvider'
 import { SortContext, sortCards } from '../../util/ui/sort/SortProvider'
@@ -199,7 +200,7 @@ function PokemonCards(props: PokemonCardsProps) {
       <PokemonSuggestions excludedNumber={props.pokedexNumber} />
       {pokemon && (
         <div className={styles.pageTitle}>
-          <img className={styles.sprite} src={spriteUrl(pokemon.number)} alt='' onError={(event) => (event.currentTarget.hidden = true)} />
+          <AnimatedSprite className={styles.sprite} pokedexNumber={pokemon.number} />
           <h1 className={styles.pageHeadline}>{localizedName(pokemon, germanNames)}</h1>
           <span className={styles.pokedexNumber}>#{pokemon.number.toString().padStart(4, '0')}</span>
           <span className={styles.pageCount}>{pokemon.cardCount} cards</span>

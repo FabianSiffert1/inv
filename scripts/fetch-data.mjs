@@ -11,8 +11,10 @@ const requestTimeoutMilliseconds = 30_000
 const dataDirectory = fileURLToPath(new URL('../data', import.meta.url))
 const cardsDirectory = path.join(dataDirectory, 'cards')
 const spritesDirectory = path.join(dataDirectory, 'sprites')
+const animatedSpritesDirectory = path.join(spritesDirectory, 'animated')
 const pokemonDirectory = path.join(dataDirectory, 'pokemon')
 const spriteHost = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon'
+const animatedSpriteHost = `${spriteHost}/other/showdown`
 const speciesNamesUrl = 'https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/pokemon_species_names.csv'
 const englishLanguageId = '9'
 const germanLanguageId = '6'
@@ -180,13 +182,12 @@ const fileExists = async (filePath) => {
   }
 }
 
-const downloadSprite = async (pokedexNumber) => {
-  const filePath = path.join(spritesDirectory, `${pokedexNumber}.png`)
+const downloadFile = async (url, filePath) => {
   if (await fileExists(filePath)) {
     return true
   }
   try {
-    const response = await fetch(`${spriteHost}/${pokedexNumber}.png`, { signal: AbortSignal.timeout(requestTimeoutMilliseconds) })
+    const response = await fetch(url, { signal: AbortSignal.timeout(requestTimeoutMilliseconds) })
     if (!response.ok) {
       return false
     }
@@ -198,6 +199,12 @@ const downloadSprite = async (pokedexNumber) => {
     return false
   }
 }
+
+const downloadSprite = (pokedexNumber) =>
+  downloadFile(`${spriteHost}/${pokedexNumber}.png`, path.join(spritesDirectory, `${pokedexNumber}.png`))
+
+const downloadAnimatedSprite = (pokedexNumber) =>
+  downloadFile(`${animatedSpriteHost}/${pokedexNumber}.gif`, path.join(animatedSpritesDirectory, `${pokedexNumber}.gif`))
 
 const parseCsvLine = (line) => {
   const fields = []
@@ -295,6 +302,7 @@ const writePokemonData = async (sets) => {
 const main = async () => {
   await mkdir(cardsDirectory, { recursive: true })
   await mkdir(spritesDirectory, { recursive: true })
+  await mkdir(animatedSpritesDirectory, { recursive: true })
   await mkdir(pokemonDirectory, { recursive: true })
 
   const previousSets = await readPreviousSets()
@@ -342,6 +350,9 @@ const main = async () => {
   if (missingSprites.length > 0) {
     console.error(`Missing sprites: ${missingSprites.join(', ')}`)
   }
+
+  const animatedResults = await mapConcurrently(sortedPokedexNumbers, cardConcurrency, downloadAnimatedSprite)
+  console.log(`Animated sprites: ${animatedResults.filter(Boolean).length}/${sortedPokedexNumbers.length} available`)
 
   if (failedSets.length > 0) {
     console.error(`Failed sets: ${failedSets.join(', ')}`)
