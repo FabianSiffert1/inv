@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { spriteUrl } from '../../../../../util/api/pokemonTGC/model/Pokemon'
 import styles from './CardImage.module.scss'
 
 interface CardImageProps {
@@ -44,7 +45,7 @@ export function CardImage(props: CardImageProps) {
         {props.pokedexNumber != undefined && !hasSpriteFailed && (
           <img
             className={styles.placeholderSprite}
-            src={`/data/sprites/${props.pokedexNumber}.png`}
+            src={spriteUrl(props.pokedexNumber)}
             alt=''
             loading={props.lazy ? 'lazy' : undefined}
             decoding='async'

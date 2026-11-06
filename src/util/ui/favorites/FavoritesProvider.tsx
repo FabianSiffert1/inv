@@ -74,12 +74,13 @@ const FavoritesProvider: React.FC<Props> = ({ children }) => {
               const cloudIds = new Set(favorites.map((favorite) => favorite.cardId))
               const missing = stored.filter((favorite) => !cloudIds.has(favorite.cardId))
               if (missing.length > 0) {
-                module.addFavorites(uid, missing).catch(() => setError('Could not sync favorites.'))
-              }
-              setLocalFavorites([])
-              if (missing.length > 0) {
+                module.addFavorites(uid, missing).then(
+                  () => setLocalFavorites([]),
+                  () => setError('Could not sync favorites.')
+                )
                 return
               }
+              setLocalFavorites([])
             }
             setCloudFavorites(favorites)
           },

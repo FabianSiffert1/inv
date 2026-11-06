@@ -2,6 +2,7 @@ import { useContext } from 'react'
 import { PokemonCard } from '../../../util/api/pokemonTGC/model/PokemonCard'
 import { rarityOf, rarityTier } from '../../../util/ui/sort/rarity'
 import { SortContext } from '../../../util/ui/sort/SortProvider'
+import { useIsMobile } from '../../../util/ui/useIsMobile'
 import styles from './CardList.module.scss'
 import { Card } from './Components/Card/Card'
 import { CardNavigationProps } from './Components/CardDetails/CardDetails'
@@ -39,6 +40,7 @@ const tierClassNames = {
 
 export default function CardList(props: CardListProps) {
   const { sortMode } = useContext(SortContext)
+  const isMobile = useIsMobile()
   const cards = props.cards ?? []
   const openIndex = cards.findIndex((card) => card.id == props.openCardId)
   const previousCard = cards[openIndex - 1]
@@ -58,6 +60,7 @@ export default function CardList(props: CardListProps) {
       key={card.id}
       card={card}
       isDetailsOpen={card.id == props.openCardId}
+      isMobile={isMobile}
       navigation={card.id == props.openCardId ? navigation : undefined}
       onOpen={() => props.onOpenCard(card.id)}
       onClose={props.onCloseCard}

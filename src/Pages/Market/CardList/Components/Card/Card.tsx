@@ -2,7 +2,6 @@ import { MouseEvent } from 'react'
 import { PokemonCard } from '../../../../../util/api/pokemonTGC/model/PokemonCard'
 import { useLocalizedName } from '../../../../../util/ui/language/LanguageProvider'
 import { formatPriceParts } from '../../../../../util/format/price'
-import { useIsMobile } from '../../../../../util/ui/useIsMobile'
 import { CardDetails, CardNavigationProps } from '../CardDetails/CardDetails'
 import { CardImage } from '../CardImage/CardImage'
 import { ExternalLink } from '../ExternalLink/ExternalLink'
@@ -15,6 +14,7 @@ interface CardProps {
 
 interface CardWithDetailsProps extends CardProps {
   isDetailsOpen: boolean
+  isMobile: boolean
   navigation?: CardNavigationProps
   onOpen: () => void
   onClose: () => void
@@ -38,8 +38,7 @@ export const tintClassNameOfType = (type?: string): string => typeTintClassNames
 
 const tintClassName = (card: PokemonCard): string => tintClassNameOfType(card.types?.[0])
 
-export function Card({ card, isDetailsOpen, navigation, onOpen, onClose }: CardWithDetailsProps) {
-  const isMobile = useIsMobile()
+export function Card({ card, isDetailsOpen, isMobile, navigation, onOpen, onClose }: CardWithDetailsProps) {
   const cardName = useLocalizedName(card)
 
   const openFromTile = (event: MouseEvent<HTMLDivElement>) => {

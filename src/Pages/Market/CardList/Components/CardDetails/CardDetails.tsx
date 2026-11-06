@@ -8,6 +8,7 @@ import {
   TcgPlayer,
   TcgPlayerPriceSet
 } from '../../../../../util/api/pokemonTGC/model/PokemonCard'
+import { spriteUrl } from '../../../../../util/api/pokemonTGC/model/Pokemon'
 import { formatPrice } from '../../../../../util/format/price'
 import { formatPriceDate, formatSetReleaseDate } from '../../../../../util/format/date'
 import { useLocalizedName } from '../../../../../util/ui/language/LanguageProvider'
@@ -113,7 +114,7 @@ export function CardBaseDetails(props: PokemonCardProp) {
           <img
             key={pokedexNumber}
             className={styles.titleSprite}
-            src={`/data/sprites/${pokedexNumber}.png`}
+            src={spriteUrl(pokedexNumber)}
             alt=''
             onError={(event) => (event.currentTarget.hidden = true)}
           />
