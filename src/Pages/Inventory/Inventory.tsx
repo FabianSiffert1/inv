@@ -1,8 +1,8 @@
 import { useContext, useEffect, useMemo } from 'react'
+import CardsValue from '../../Components/CardsValue/CardsValue'
 import { HeaderContext } from '../../Header/HeaderProvider'
 import { AuthContext } from '../../util/auth/AuthProvider'
 import { useCardsOfSets } from '../../util/api/pokemonTGC/hooks'
-import { PokemonCard } from '../../util/api/pokemonTGC/model/PokemonCard'
 import { noBaseParams, useCardNavigation } from '../../util/ui/cards/useCardNavigation'
 import { useVisibleCards } from '../../util/ui/cards/useVisibleCards'
 import { FavoritesContext, FavoritesSource } from '../../util/ui/favorites/FavoritesProvider'
@@ -20,10 +20,12 @@ export default function Inventory() {
   const setIds = useMemo(() => [...new Set(favorites.map((favorite) => favorite.setId))], [favorites])
   const setQueries = useCardsOfSets(setIds)
   const isFetching = setQueries.some((setQuery) => setQuery.isFetching)
-  const loadedCards = setQueries.flatMap((setQuery) => setQuery.data ?? [])
 
-  const favoriteIds = new Set(favorites.map((favorite) => favorite.cardId))
-  const favoriteCards = useVisibleCards(loadedCards.filter((card: PokemonCard) => favoriteIds.has(card.id))) ?? []
+  const allFavoriteCards = useMemo(() => {
+    const favoriteIds = new Set(favorites.map((favorite) => favorite.cardId))
+    return setQueries.flatMap((setQuery) => setQuery.data ?? []).filter((card) => favoriteIds.has(card.id))
+  }, [setQueries, favorites])
+  const favoriteCards = useVisibleCards(allFavoriteCards) ?? []
 
   useEffect(() => {
     setHeaderItem(<FavoritesStatus count={favorites.length} source={source} isLoading={isLoading} />)
@@ -39,6 +41,7 @@ export default function Inventory() {
     <div className={styles.inventoryPage}>
       <div className={styles.backdrop} aria-hidden='true' />
       <PokemonSuggestions />
+      {!isLoading && !isFetching && allFavoriteCards.length > 0 && <CardsValue cards={allFavoriteCards} label='Favorites value' />}
       {error && (
         <div className={styles.error} role='alert'>
           {error}
