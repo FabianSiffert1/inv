@@ -83,7 +83,7 @@ and its hot-reload WebSocket makes phones prompt for local network access.
 - **Snapshot** in `data/`: `sets.json` holds every set plus a `generatedAt` timestamp, and
   `cards/<setId>.json` holds each set's cards sorted by trend price. A small Vite plugin serves the
   directory under `/data` in both `dev` and `preview`, with `Cache-Control: no-cache` and an ETag.
-- **react-query** fetches the snapshot and persists it to `localStorage` so a revisit is instant.
+- **TanStack Query** fetches the snapshot and persists it to IndexedDB so a revisit is instant.
   The set list is revalidated hourly; card queries are keyed by `generatedAt`, so a new snapshot
   drops the old cards. Only the eight most recently viewed sets are persisted, to stay inside the
   storage quota.

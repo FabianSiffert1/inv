@@ -1,8 +1,9 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom/client'
-import { QueryClient, QueryClientProvider } from 'react-query'
-import { createWebStoragePersistor } from 'react-query/createWebStoragePersistor-experimental'
-import { persistQueryClient } from 'react-query/persistQueryClient-experimental'
+import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister'
+import { Query, QueryClient } from '@tanstack/react-query'
+import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
+import { del, get, set } from 'idb-keyval'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import './index.scss'
 import ErrorPage from './Pages/404/404'
@@ -19,6 +20,8 @@ import ThemeProvider from './util/ui/theme/ThemeProvider'
 
 const cacheMaxAge = 1000 * 60 * 60 * 24 * 7
 const persistedCardListLimit = 8
+const queryCacheStorageKey = 'inv-query-cache'
+const legacyQueryCacheStorageKey = 'REACT_QUERY_OFFLINE_CACHE'
 
 const router = createBrowserRouter(
   [
@@ -55,7 +58,7 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 1000 * 60 * 60 * 24,
-      cacheTime: cacheMaxAge,
+      gcTime: cacheMaxAge,
       refetchOnWindowFocus: false,
       refetchOnMount: false,
       refetchOnReconnect: false,
@@ -67,16 +70,16 @@ const queryClient = new QueryClient({
 
 const isCardListQuery = (queryKey: unknown): boolean => Array.isArray(queryKey) && queryKey[0] == 'cards'
 
-persistQueryClient({
-  queryClient,
-  persistor: createWebStoragePersistor({
-    storage: window.localStorage,
+const persistOptions = {
+  persister: createAsyncStoragePersister({
+    storage: { getItem: (key: string) => get<string>(key), setItem: set, removeItem: del },
+    key: queryCacheStorageKey,
     throttleTime: 2000
   }),
   maxAge: cacheMaxAge,
   buster: 'server-snapshot',
   dehydrateOptions: {
-    shouldDehydrateQuery: (query) => {
+    shouldDehydrateQuery: (query: Query) => {
       if (query.state.data == undefined || query.state.status != 'success') {
         return false
       }
@@ -93,13 +96,23 @@ persistQueryClient({
       return cardListQueries.some((cached) => cached.queryHash == query.queryHash)
     }
   }
-})
+}
+
+const removeLegacyQueryCache = () => {
+  try {
+    window.localStorage.removeItem(legacyQueryCacheStorageKey)
+  } catch {
+    return
+  }
+}
+
+removeLegacyQueryCache()
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 
 root.render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
+    <PersistQueryClientProvider client={queryClient} persistOptions={persistOptions}>
       <ThemeProvider>
         <LanguageProvider>
           <SortProvider>
@@ -113,6 +126,6 @@ root.render(
           </SortProvider>
         </LanguageProvider>
       </ThemeProvider>
-    </QueryClientProvider>
+    </PersistQueryClientProvider>
   </React.StrictMode>
 )

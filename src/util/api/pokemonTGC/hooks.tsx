@@ -1,5 +1,5 @@
+import { useQueries, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
-import { useQueries, useQuery, useQueryClient } from 'react-query'
 import { Pokemon } from './model/Pokemon'
 import { PokemonCard } from './model/PokemonCard'
 import { PokemonSet, PokemonSetName } from './model/PokemonSet'
@@ -8,7 +8,9 @@ import { fetchAllCardsOfASet, fetchCardsOfPokemon, fetchPokemonIndex, fetchSetsS
 const setsSnapshotStaleTime = 1000 * 60 * 60
 
 const useSetsSnapshot = <TData = SetsSnapshot,>(select?: (snapshot: SetsSnapshot) => TData) =>
-  useQuery<SetsSnapshot, unknown, TData>(['sets', 'snapshot'], ({ signal }) => fetchSetsSnapshot(signal), {
+  useQuery<SetsSnapshot, Error, TData>({
+    queryKey: ['sets', 'snapshot'],
+    queryFn: ({ signal }) => fetchSetsSnapshot(signal),
     staleTime: setsSnapshotStaleTime,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
@@ -35,7 +37,9 @@ export const useCardsOfSet = (setName?: PokemonSetName) => {
     })
   }, [queryClient, generatedAt])
 
-  return useQuery<PokemonCard[]>(['cards', 'set', setName, generatedAt], ({ signal }) => fetchAllCardsOfASet(set?.id as string, signal), {
+  return useQuery<PokemonCard[]>({
+    queryKey: ['cards', 'set', setName, generatedAt],
+    queryFn: ({ signal }) => fetchAllCardsOfASet(set?.id as string, signal),
     enabled: set != undefined,
     staleTime: Infinity
   })
@@ -45,8 +49,8 @@ export const useCardsOfSets = (setIds: string[]) => {
   const { data: snapshot } = useSetsSnapshot()
   const generatedAt = snapshot?.generatedAt
 
-  return useQueries(
-    setIds.map((setId) => {
+  return useQueries({
+    queries: setIds.map((setId) => {
       const setName = snapshot?.sets.find((candidate) => candidate.id == setId)?.name
       return {
         queryKey: ['cards', 'set', setName, generatedAt],
@@ -55,7 +59,7 @@ export const useCardsOfSets = (setIds: string[]) => {
         staleTime: Infinity
       }
     })
-  )
+  })
 }
 
 export const usePokemonIndex = () => {
@@ -75,7 +79,9 @@ export const usePokemonIndex = () => {
     })
   }, [queryClient, generatedAt])
 
-  return useQuery<Pokemon[]>(['pokemon', 'index', generatedAt], ({ signal }) => fetchPokemonIndex(signal), {
+  return useQuery<Pokemon[]>({
+    queryKey: ['pokemon', 'index', generatedAt],
+    queryFn: ({ signal }) => fetchPokemonIndex(signal),
     enabled: generatedAt != undefined,
     staleTime: Infinity
   })
@@ -98,12 +104,10 @@ export const useCardsOfPokemon = (pokedexNumber?: number) => {
     })
   }, [queryClient, generatedAt])
 
-  return useQuery<PokemonCard[]>(
-    ['cards', 'pokemon', pokedexNumber, generatedAt],
-    ({ signal }) => fetchCardsOfPokemon(pokedexNumber as number, signal),
-    {
-      enabled: pokedexNumber != undefined && generatedAt != undefined,
-      staleTime: Infinity
-    }
-  )
+  return useQuery<PokemonCard[]>({
+    queryKey: ['cards', 'pokemon', pokedexNumber, generatedAt],
+    queryFn: ({ signal }) => fetchCardsOfPokemon(pokedexNumber as number, signal),
+    enabled: pokedexNumber != undefined && generatedAt != undefined,
+    staleTime: Infinity
+  })
 }
