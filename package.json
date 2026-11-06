@@ -52,5 +52,11 @@
     "*.{json,scss,md}": [
       "prettier --write"
     ]
+  },
+  "overrides": {
+    "@grpc/grpc-js": "^1.14.7",
+    "@typescript-eslint/typescript-estree": {
+      "minimatch": "^11.0.5"
+    }
   }
 }
