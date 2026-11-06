@@ -55,9 +55,9 @@ export function Card({ card, print, isDetailsOpen, isMobile, showNumber = false,
     <div className={`${styles.cardWrapper} ${tintClassName(card)} ${isDetailsOpen ? styles.detailsOpen : ''}`} onClick={openFromTile}>
       {isDetailsOpen &&
         (isMobile ? (
-          <MobileCardDetails card={card} navigation={navigation} onClose={onClose} />
+          <MobileCardDetails card={card} print={print} navigation={navigation} onClose={onClose} />
         ) : (
-          <CardDetails card={card} navigation={navigation} onClose={onClose} />
+          <CardDetails card={card} print={print} navigation={navigation} onClose={onClose} />
         ))}
       <button type='button' className={styles.card} onClick={onOpen}>
         <CardImage

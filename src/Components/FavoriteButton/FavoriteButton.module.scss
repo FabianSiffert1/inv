@@ -32,3 +32,25 @@
   height: 1.4rem;
   padding: 0.2rem;
 }
+
+.labeled {
+  @include surfaceInteractive($surfaceRadiusSmall);
+  @include pastel(var(--elementLavender), 50%);
+  width: auto;
+  height: auto;
+  gap: 0.45rem;
+  padding: 0.3rem 0.7rem 0.3rem 0.55rem;
+  opacity: 1;
+  color: var(--color);
+
+  svg {
+    width: 1rem;
+    height: 1rem;
+    flex: none;
+  }
+}
+
+.printLabel {
+  @include typoFieldValue;
+  white-space: nowrap;
+}

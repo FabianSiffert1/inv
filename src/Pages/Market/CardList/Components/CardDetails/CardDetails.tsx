@@ -29,6 +29,7 @@ export interface CardNavigationProps {
 
 interface CardDetailsProps {
   card: PokemonCard
+  print?: string
   navigation?: CardNavigationProps
   onClose: () => void
 }
@@ -56,7 +57,7 @@ export function CardDetails(props: CardDetailsProps) {
             {props.navigation && <CardNavigation {...props.navigation} />}
           </div>
           <div className={styles.detailsColumn}>
-            <CardBaseDetails card={props.card} onClose={props.onClose} />
+            <CardBaseDetails card={props.card} print={props.print} onClose={props.onClose} />
             <SetInformation card={props.card} />
             <CardPrices card={props.card} />
           </div>
@@ -90,6 +91,7 @@ export function CardNavigation(props: CardNavigationProps) {
 }
 
 interface CardBaseDetailsProps extends PokemonCardProp {
+  print?: string
   onClose?: () => void
 }
 
@@ -111,7 +113,7 @@ export function CardBaseDetails(props: CardBaseDetailsProps) {
         )}
         <h2 className={styles.cardTitle}>{cardName}</h2>
         <CopyButton variant='share' value={cardShareLink(props.card)} label='Copy link to this card' />
-        <FavoriteButton card={props.card} />
+        <FavoriteButton card={props.card} print={props.print} showPrint={props.print != undefined} />
       </div>
       <div className={styles.metaRow}>
         {props.card.rarity && <span className={styles.metaChip}>{props.card.rarity}</span>}

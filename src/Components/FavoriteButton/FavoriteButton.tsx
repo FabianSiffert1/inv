@@ -7,18 +7,25 @@ interface FavoriteButtonProps {
   card: PokemonCard
   print?: string
   small?: boolean
+  showPrint?: boolean
 }
 
-export function FavoriteButton({ card, print, small = false }: FavoriteButtonProps) {
+export function FavoriteButton({ card, print, small = false, showPrint = false }: FavoriteButtonProps) {
   const { isFavorite, toggleFavorite } = useContext(FavoritesContext)
   const isFavorited = isFavorite(card.id, print)
   const subject = print == undefined ? '' : ` ${print}`
   const label = isFavorited ? `Remove${subject} from favorites` : `Add${subject} to favorites`
+  const classNames = [
+    styles.favoriteButton,
+    isFavorited ? styles.favorited : '',
+    small ? styles.small : '',
+    showPrint ? styles.labeled : ''
+  ]
 
   return (
     <button
       type='button'
-      className={`${styles.favoriteButton} ${isFavorited ? styles.favorited : ''} ${small ? styles.small : ''}`}
+      className={classNames.join(' ')}
       aria-label={label}
       aria-pressed={isFavorited}
       title={label}
@@ -28,6 +35,7 @@ export function FavoriteButton({ card, print, small = false }: FavoriteButtonPro
       }}
     >
       <StarIcon filled={isFavorited} />
+      {showPrint && print != undefined && <span className={styles.printLabel}>{print}</span>}
     </button>
   )
 }
