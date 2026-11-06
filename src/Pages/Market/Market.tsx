@@ -10,6 +10,7 @@ import { useCardNavigation } from '../../util/ui/cards/useCardNavigation'
 import { useVisibleCards } from '../../util/ui/cards/useVisibleCards'
 import { useIsMobile } from '../../util/ui/useIsMobile'
 import CardList from './CardList/CardList'
+import { formatSetReleaseDate } from '../../util/format/date'
 import CardListStatus from './CardListStatus'
 import PokemonSuggestions from '../Pokemon/PokemonSuggestions'
 import styles from './Market.module.scss'
@@ -80,7 +81,13 @@ export default function Market() {
         hasNoSearchMatches={(cards?.length ?? 0) > 0 && visibleCards?.length == 0}
       />
 
-      {!isFetching && cards != undefined && <CardsValue entries={toCardEntries(cards)} label='Set value' />}
+      {!isFetching && cards != undefined && (
+        <CardsValue
+          entries={toCardEntries(cards)}
+          label='Set value'
+          meta={selectedSet && { label: 'Released', value: formatSetReleaseDate(selectedSet.releaseDate) }}
+        />
+      )}
 
       <div className={styles.cardListWrapper}>
         <CardList
