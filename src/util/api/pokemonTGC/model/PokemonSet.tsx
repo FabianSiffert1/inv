@@ -20,3 +20,5 @@ export interface PokemonSet {
     logo?: string
   }
 }
+
+export const setPath = (setId: string) => `/market?${new URLSearchParams({ set: setId })}`

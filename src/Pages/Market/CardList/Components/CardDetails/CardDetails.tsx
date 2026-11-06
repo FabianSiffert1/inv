@@ -1,4 +1,5 @@
 import { ReactElement, useRef, useState } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
 import { CopyButton } from '../../../../../Components/CopyButton/CopyButton'
 import { FavoriteButton } from '../../../../../Components/FavoriteButton/FavoriteButton'
 import {
@@ -9,6 +10,7 @@ import {
   TcgPlayerPriceSet
 } from '../../../../../util/api/pokemonTGC/model/PokemonCard'
 import { spriteUrl } from '../../../../../util/api/pokemonTGC/model/Pokemon'
+import { setPath } from '../../../../../util/api/pokemonTGC/model/PokemonSet'
 import { formatPrice } from '../../../../../util/format/price'
 import { formatPriceDate, formatSetReleaseDate } from '../../../../../util/format/date'
 import { useLocalizedName } from '../../../../../util/ui/language/LanguageProvider'
@@ -140,11 +142,19 @@ export function CardBaseDetails(props: PokemonCardProp) {
 export function SetInformation(props: PokemonCardProp) {
   const setName = useLocalizedName(props.card.set)
   const seriesName = useLocalizedName({ name: props.card.set.series, germanName: props.card.set.germanSeries })
+  const [searchParams] = useSearchParams()
+  const isCurrentSet = searchParams.get('set') == props.card.set.id
 
   return (
     <section className={`${styles.panel} ${styles.setPanel}`}>
       <div className={styles.panelHeader}>
-        <span className={styles.panelTitle}>{setName}</span>
+        {isCurrentSet ? (
+          <span className={styles.panelTitle}>{setName}</span>
+        ) : (
+          <Link className={`${styles.panelLink} ${styles.setLink}`} to={setPath(props.card.set.id)} onClick={() => window.scrollTo(0, 0)}>
+            <span className={styles.panelTitle}>{setName}</span>
+          </Link>
+        )}
         {props.card.set.images?.symbol && <img className={styles.setSymbol} src={props.card.set.images.symbol} alt='' />}
       </div>
       <dl className={styles.definitionList}>

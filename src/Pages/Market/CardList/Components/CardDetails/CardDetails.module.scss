@@ -253,6 +253,10 @@
   text-decoration: none;
 }
 
+.setLink {
+  @include pastel(var(--elementYellow), 45%);
+}
+
 .setSymbol {
   width: 1.2rem;
   height: 1.2rem;
