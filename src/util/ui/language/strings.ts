@@ -102,7 +102,7 @@ const en = {
 
   suggestions: 'Suggestions',
   cardsInAllSets: (count: number) => `${count == 1 ? '1 card' : `${count} cards`} in all sets`,
-  allCardsNamed: (query: string) => `All cards named “${query}”`,
+  allCardsNamed: (query: string) => `All cards matching “${query}”`,
   acrossEverySet: 'across every set',
   countAcrossEverySet: (count: number) => `${count} across every set`,
 
@@ -133,7 +133,7 @@ const en = {
 
   searchEveryCard: 'Search every card',
   searchHint: 'Type a card name into the search box, then pick “all cards” from the suggestions.',
-  noCardsNamed: (query: string) => `No cards named “${query}”`,
+  noCardsNamed: (query: string) => `No cards matching “${query}”`,
   noCardsNamedHint: 'Try a shorter name, or the English name.',
   allCards: 'All cards',
   searching: 'Searching',
@@ -276,7 +276,7 @@ const de: Strings = {
 
   suggestions: 'Vorschläge',
   cardsInAllSets: (count: number) => `${count == 1 ? '1 Karte' : `${count} Karten`} in allen Sets`,
-  allCardsNamed: (query: string) => `Alle Karten mit dem Namen „${query}“`,
+  allCardsNamed: (query: string) => `Alle Karten zu „${query}“`,
   acrossEverySet: 'in allen Sets',
   countAcrossEverySet: (count: number) => `${count} in allen Sets`,
 
@@ -307,7 +307,7 @@ const de: Strings = {
 
   searchEveryCard: 'Alle Karten durchsuchen',
   searchHint: 'Gib einen Kartennamen ins Suchfeld ein und wähle dann „Alle Karten“ in den Vorschlägen.',
-  noCardsNamed: (query: string) => `Keine Karten mit dem Namen „${query}“`,
+  noCardsNamed: (query: string) => `Keine Karten zu „${query}“`,
   noCardsNamedHint: 'Versuch einen kürzeren oder den englischen Namen.',
   allCards: 'Alle Karten',
   searching: 'Suche läuft',
