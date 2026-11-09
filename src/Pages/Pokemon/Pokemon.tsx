@@ -179,6 +179,13 @@ function PokemonCards(props: PokemonCardsProps) {
 
   return (
     <>
+      {generation && (
+        <div className={styles.backLinkRow}>
+          <Link className={styles.backLink} to={generationPath(generation)} onClick={() => window.scrollTo(0, 0)}>
+            <span aria-hidden='true'>←</span> {generationLabel(generation, germanNames)}
+          </Link>
+        </div>
+      )}
       <PokemonSuggestions excludedNumber={props.pokedexNumber} />
       {pokemon && (
         <div className={styles.pageTitle}>
@@ -186,11 +193,6 @@ function PokemonCards(props: PokemonCardsProps) {
           <h1 className={styles.pageHeadline}>{localizedName(pokemon, germanNames)}</h1>
           <span className={styles.pageMeta}>#{pokemon.number.toString().padStart(4, '0')}</span>
           <span className={styles.pageCount}>{t.cardCount(pokemon.cardCount)}</span>
-          {generation && (
-            <Link className={styles.backLink} to={generationPath(generation)} onClick={() => window.scrollTo(0, 0)}>
-              <span aria-hidden='true'>←</span> {generationLabel(generation, germanNames)}
-            </Link>
-          )}
         </div>
       )}
       {pokemon && props.pokemonIndex && <EvolutionChain pokemon={pokemon} pokemonIndex={props.pokemonIndex} />}
