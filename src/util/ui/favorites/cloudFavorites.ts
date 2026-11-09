@@ -1,12 +1,13 @@
 import { deleteField, doc, FieldPath, onSnapshot, setDoc, updateDoc } from 'firebase/firestore'
 import { firestore } from '../../firebase/app'
-import { Favorite, favoriteKey, sortByAddedAt } from './Favorite'
+import { Favorite, favoriteKey, isUrgency, sortByAddedAt, Urgency } from './Favorite'
 
 interface StoredFavorite {
   setId: string
   addedAt: number
   cardId?: string
   print?: string
+  urgency?: Urgency
 }
 
 interface UserDocument {
@@ -23,6 +24,9 @@ const toFavorite = (key: string, stored: StoredFavorite): Favorite => {
   if (stored.print != undefined) {
     favorite.print = stored.print
   }
+  if (isUrgency(stored.urgency) && stored.urgency != 'normal') {
+    favorite.urgency = stored.urgency
+  }
   return favorite
 }
 
@@ -31,6 +35,9 @@ const toStored = (favorite: Favorite): StoredFavorite => {
   if (favorite.print != undefined) {
     stored.cardId = favorite.cardId
     stored.print = favorite.print
+  }
+  if (favorite.urgency != undefined && favorite.urgency != 'normal') {
+    stored.urgency = favorite.urgency
   }
   return stored
 }
@@ -53,3 +60,6 @@ export const addFavorites = (uid: string, favorites: Favorite[]) =>
   )
 
 export const removeFavorite = (uid: string, key: string) => updateDoc(userDocument(uid), new FieldPath('favorites', key), deleteField())
+
+export const setFavoriteUrgency = (uid: string, key: string, urgency: Urgency) =>
+  updateDoc(userDocument(uid), new FieldPath('favorites', key, 'urgency'), urgency == 'normal' ? deleteField() : urgency)

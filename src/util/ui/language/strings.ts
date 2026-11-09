@@ -4,7 +4,9 @@ export type FavoritesError = 'loadFailed' | 'mergeFailed' | 'saveFailed'
 
 export type ReleaseAge = 'under6Months' | 'sixTo12Months' | 'oneTo2Years' | 'twoTo5Years' | 'fiveTo10Years' | 'tenYearsAndOlder'
 
-export type SortModeLabel = 'price' | 'number' | 'name' | 'rarity' | 'release'
+export type SortModeLabel = 'price' | 'number' | 'name' | 'rarity' | 'release' | 'urgency'
+
+export type UrgencyLabel = 'urgent' | 'normal' | 'later'
 
 const en = {
   locale: 'en-US',
@@ -34,14 +36,16 @@ const en = {
     number: 'Card number',
     name: 'Name',
     rarity: 'Rarity',
-    release: 'Release date'
+    release: 'Release date',
+    urgency: 'Priority'
   } as Record<SortModeLabel, string>,
   sortOrders: {
     price: ['Most expensive first', 'Cheapest first'],
     number: ['Lowest number first', 'Highest number first'],
     name: ['A to Z', 'Z to A'],
     rarity: ['Rarest first', 'Most common first'],
-    release: ['Newest first', 'Oldest first']
+    release: ['Newest first', 'Oldest first'],
+    urgency: ['Most urgent first', 'Least urgent first']
   } as Record<SortModeLabel, [string, string]>,
   sortDirectionLabel: (current: string, next: string) => `${current}, switch to “${next}”`,
 
@@ -61,6 +65,12 @@ const en = {
   favorites: 'Favorites',
   addToFavorites: (print?: string) => (print == undefined ? 'Add to favorites' : `Add ${print} to favorites`),
   removeFromFavorites: (print?: string) => (print == undefined ? 'Remove from favorites' : `Remove ${print} from favorites`),
+  purchaseUrgency: 'Purchase priority',
+  urgencies: {
+    urgent: 'High',
+    normal: 'Medium',
+    later: 'Low'
+  } as Record<UrgencyLabel, string>,
 
   closeSearch: 'Close search',
   searchCards: 'Search cards',
@@ -215,14 +225,16 @@ const de: Strings = {
     number: 'Kartennummer',
     name: 'Name',
     rarity: 'Seltenheit',
-    release: 'Erscheinungsdatum'
+    release: 'Erscheinungsdatum',
+    urgency: 'Priorität'
   },
   sortOrders: {
     price: ['Teuerste zuerst', 'Günstigste zuerst'],
     number: ['Niedrigste Nummer zuerst', 'Höchste Nummer zuerst'],
     name: ['A bis Z', 'Z bis A'],
     rarity: ['Seltenste zuerst', 'Häufigste zuerst'],
-    release: ['Neueste zuerst', 'Älteste zuerst']
+    release: ['Neueste zuerst', 'Älteste zuerst'],
+    urgency: ['Dringendste zuerst', 'Unwichtigste zuerst']
   },
   sortDirectionLabel: (current: string, next: string) => `${current}, zu „${next}“ wechseln`,
 
@@ -242,6 +254,12 @@ const de: Strings = {
   favorites: 'Favoriten',
   addToFavorites: (print?: string) => (print == undefined ? 'Zu Favoriten hinzufügen' : `${print} zu Favoriten hinzufügen`),
   removeFromFavorites: (print?: string) => (print == undefined ? 'Aus Favoriten entfernen' : `${print} aus Favoriten entfernen`),
+  purchaseUrgency: 'Kaufpriorität',
+  urgencies: {
+    urgent: 'Hoch',
+    normal: 'Mittel',
+    later: 'Niedrig'
+  },
 
   closeSearch: 'Suche schließen',
   searchCards: 'Karten suchen',

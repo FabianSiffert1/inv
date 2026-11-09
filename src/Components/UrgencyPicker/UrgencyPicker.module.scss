@@ -1,0 +1,64 @@
+@use 'globalDesignElements.module' as *;
+
+.panel {
+  @include surface($surfaceRadiusSmall);
+  @include pastel(var(--elementGreen), 45%);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  min-width: 0;
+  padding: 0.8rem 0.9rem;
+}
+
+.panelHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--card-border-color);
+}
+
+.panelTitle {
+  @include typoFieldValue;
+}
+
+.options {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.option {
+  @include surfaceInteractive($surfaceRadiusSmall);
+  @include pastel(var(--elementEggshell), 35%);
+  @include typoFieldValue;
+  padding: 0.3rem 0.7rem;
+  border: none;
+  color: var(--secondary-color);
+}
+
+.current {
+  color: var(--color);
+  font-weight: 700;
+}
+
+.urgent {
+  @include pastel(var(--elementRed), 60%);
+}
+
+.normal {
+  @include pastel(var(--elementYellow), 60%);
+}
+
+.later {
+  @include pastel(var(--elementGreen), 75%);
+}
+
+.badge {
+  @include surface($surfaceRadiusSmall);
+  @include typoFieldValue;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.55rem;
+  white-space: nowrap;
+}

@@ -82,6 +82,7 @@ export default function Inventory() {
               onOpenCard={openCard}
               onStepToCard={stepToCard}
               onCloseCard={closeCard}
+              showUrgency
             />
           )}
         </div>

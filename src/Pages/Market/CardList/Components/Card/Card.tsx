@@ -1,5 +1,7 @@
-import { MouseEvent } from 'react'
+import { MouseEvent, useContext } from 'react'
+import { UrgencyBadge } from '../../../../../Components/UrgencyPicker/UrgencyPicker'
 import { PokemonCard } from '../../../../../util/api/pokemonTGC/model/PokemonCard'
+import { FavoritesContext } from '../../../../../util/ui/favorites/FavoritesProvider'
 import { useLocalizedName, useStrings } from '../../../../../util/ui/language/LanguageProvider'
 import { printDisplayPrice } from '../../../../../util/cardPrice'
 import { formatPriceParts } from '../../../../../util/format/price'
@@ -18,6 +20,7 @@ interface CardWithDetailsProps extends CardProps {
   isDetailsOpen: boolean
   isMobile: boolean
   showNumber?: boolean
+  showUrgency?: boolean
   navigation?: CardNavigationProps
   onOpen: () => void
   onClose: () => void
@@ -41,8 +44,19 @@ export const tintClassNameOfType = (type?: string): string => typeTintClassNames
 
 const tintClassName = (card: PokemonCard): string => tintClassNameOfType(card.types?.[0])
 
-export function Card({ card, print, isDetailsOpen, isMobile, showNumber = false, navigation, onOpen, onClose }: CardWithDetailsProps) {
+export function Card({
+  card,
+  print,
+  isDetailsOpen,
+  isMobile,
+  showNumber = false,
+  showUrgency = false,
+  navigation,
+  onOpen,
+  onClose
+}: CardWithDetailsProps) {
   const cardName = useLocalizedName(card)
+  const { urgencyOf } = useContext(FavoritesContext)
 
   const openFromTile = (event: MouseEvent<HTMLDivElement>) => {
     if (isDetailsOpen || (event.target as HTMLElement).closest('a, button') != null) {
@@ -71,6 +85,7 @@ export function Card({ card, print, isDetailsOpen, isMobile, showNumber = false,
       <div className={styles.cardInformationWrapper}>
         <div className={styles.cardName}>{cardName}</div>
         {print != undefined && <div className={styles.cardPrint}>{print}</div>}
+        {showUrgency && <UrgencyBadge urgency={urgencyOf(card.id, print)} />}
         {showNumber && (
           <div className={styles.cardNumber}>
             {card.number}/{card.set.printedTotal}

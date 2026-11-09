@@ -3,12 +3,15 @@ import { useLocation } from 'react-router-dom'
 import { CardEntry, PokemonCard, toCardEntries } from '../../api/pokemonTGC/model/PokemonCard'
 import { printDisplayPrice } from '../../cardPrice'
 import { toEur } from '../../format/price'
+import { Urgency } from '../favorites/Favorite'
 import { localizedName } from '../language/LanguageProvider'
 import { noRarity, rarityOf, rarityRank } from './rarity'
 
-export type SortMode = 'price' | 'number' | 'name' | 'rarity' | 'release'
+export type SortMode = 'price' | 'number' | 'name' | 'rarity' | 'release' | 'urgency'
 
-export const sortModes: SortMode[] = ['price', 'number', 'name', 'rarity', 'release']
+export const sortModes: SortMode[] = ['price', 'number', 'name', 'rarity', 'release', 'urgency']
+
+const urgencyRanks: Record<Urgency, number> = { urgent: 0, normal: 1, later: 2 }
 
 type SortScope = 'browse' | 'favorites'
 
@@ -106,7 +109,8 @@ export const sortEntries = (
   sortMode: SortMode,
   germanNames: boolean,
   eurPerUsd: number,
-  isReversed: boolean
+  isReversed: boolean,
+  urgencyOf: (entry: CardEntry) => Urgency = () => 'normal'
 ): CardEntry[] => {
   const direction = isReversed ? -1 : 1
   const priceOf = (entry: CardEntry): number => {
@@ -127,13 +131,15 @@ export const sortEntries = (
       : direction * (rankDifference || rarityOfA.localeCompare(rarityOfB))
   }
   const collator = new Intl.Collator(germanNames ? 'de' : 'en', { numeric: true, sensitivity: 'base' })
+  const compareRelease = (a: CardEntry, b: CardEntry): number =>
+    b.card.set.releaseDate.localeCompare(a.card.set.releaseDate) || collator.compare(a.card.number, b.card.number)
   const compare: Record<SortMode, (a: CardEntry, b: CardEntry) => number> = {
     price: comparePrice,
     number: (a, b) => direction * collator.compare(a.card.number, b.card.number),
     name: (a, b) => direction * collator.compare(localizedName(a.card, germanNames), localizedName(b.card, germanNames)),
     rarity: (a, b) => compareRarity(a, b) || comparePrice(a, b),
-    release: (a, b) =>
-      direction * (b.card.set.releaseDate.localeCompare(a.card.set.releaseDate) || collator.compare(a.card.number, b.card.number))
+    release: (a, b) => direction * compareRelease(a, b),
+    urgency: (a, b) => direction * (urgencyRanks[urgencyOf(a)] - urgencyRanks[urgencyOf(b)]) || compareRelease(a, b)
   }
   return [...entries].sort(compare[sortMode])
 }

@@ -2,11 +2,11 @@ import React, { createContext, useCallback, useContext, useEffect, useMemo, useR
 import { PokemonCard } from '../../api/pokemonTGC/model/PokemonCard'
 import { AuthContext } from '../../auth/AuthProvider'
 import { FavoritesError } from '../language/strings'
-import { Favorite, favoriteKey } from './Favorite'
+import { Favorite, favoriteKey, Urgency } from './Favorite'
 import { rememberFavoriteSetIds } from './favoriteSets'
 import { readLocalFavorites, writeLocalFavorites } from './localFavorites'
 
-export type { Favorite } from './Favorite'
+export type { Favorite, Urgency } from './Favorite'
 
 export type FavoritesSource = 'local' | 'cloud'
 
@@ -24,6 +24,8 @@ interface ContextProps {
   pendingMerge?: PendingMerge
   isFavorite: (cardId: string, print?: string) => boolean
   toggleFavorite: (card: PokemonCard, print?: string) => void
+  urgencyOf: (cardId: string, print?: string) => Urgency
+  setUrgency: (cardId: string, print: string | undefined, urgency: Urgency) => void
 }
 
 export const FavoritesContext = createContext<ContextProps>({
@@ -31,7 +33,9 @@ export const FavoritesContext = createContext<ContextProps>({
   source: 'local',
   isLoading: false,
   isFavorite: () => false,
-  toggleFavorite: () => {}
+  toggleFavorite: () => {},
+  urgencyOf: () => 'normal',
+  setUrgency: () => {}
 })
 
 interface Props {
@@ -162,9 +166,33 @@ const FavoritesProvider: React.FC<Props> = ({ children }) => {
     [uid, cloudFavorites, loadCloud]
   )
 
+  const urgencyOf = useCallback(
+    (cardId: string, print?: string): Urgency => {
+      const key = favoriteKey({ cardId, print })
+      return favorites.find((favorite) => favoriteKey(favorite) == key)?.urgency ?? 'normal'
+    },
+    [favorites]
+  )
+
+  const setUrgency = useCallback(
+    (cardId: string, print: string | undefined, urgency: Urgency) => {
+      const key = favoriteKey({ cardId, print })
+      if (uid != undefined) {
+        loadCloud()
+          .then((module) => module.setFavoriteUrgency(uid, key, urgency))
+          .catch(() => setError('saveFailed'))
+        return
+      }
+      setLocalFavorites((previous) =>
+        previous.map((entry) => (favoriteKey(entry) == key ? { ...entry, urgency: urgency == 'normal' ? undefined : urgency } : entry))
+      )
+    },
+    [uid, loadCloud]
+  )
+
   const contextValue = useMemo(
-    () => ({ favorites, source, isLoading, error, pendingMerge, isFavorite, toggleFavorite }),
-    [favorites, source, isLoading, error, pendingMerge, isFavorite, toggleFavorite]
+    () => ({ favorites, source, isLoading, error, pendingMerge, isFavorite, toggleFavorite, urgencyOf, setUrgency }),
+    [favorites, source, isLoading, error, pendingMerge, isFavorite, toggleFavorite, urgencyOf, setUrgency]
   )
 
   return <FavoritesContext.Provider value={contextValue}>{children}</FavoritesContext.Provider>

@@ -2,6 +2,7 @@ import { useContext, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { CopyButton } from '../../../../../Components/CopyButton/CopyButton'
 import { FavoriteButton } from '../../../../../Components/FavoriteButton/FavoriteButton'
+import { UrgencyPicker } from '../../../../../Components/UrgencyPicker/UrgencyPicker'
 import { PokemonCard, PokemonCardProp } from '../../../../../util/api/pokemonTGC/model/PokemonCard'
 import { spriteUrl } from '../../../../../util/api/pokemonTGC/model/Pokemon'
 import { setPath } from '../../../../../util/api/pokemonTGC/model/PokemonSet'
@@ -57,6 +58,7 @@ export function CardDetails(props: CardDetailsProps) {
           <div className={styles.detailsColumn}>
             <CardBaseDetails card={props.card} print={props.print} onClose={props.onClose} />
             <SetInformation card={props.card} />
+            <UrgencyPicker card={props.card} print={props.print} />
             <CardPrices card={props.card} />
           </div>
         </div>

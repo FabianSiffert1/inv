@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { UrgencyPicker } from '../../../../../Components/UrgencyPicker/UrgencyPicker'
 import { PokemonCard } from '../../../../../util/api/pokemonTGC/model/PokemonCard'
 import { useLocalizedName, useStrings } from '../../../../../util/ui/language/LanguageProvider'
 import { useModalBehaviour } from '../../../../../util/ui/useModalBehaviour'
@@ -42,6 +43,7 @@ export function MobileCardDetails(props: MobileCardDetailsProps) {
             <CardBaseDetails card={props.card} print={props.print} onClose={props.onClose} />
           </div>
           <SetInformation card={props.card} />
+          <UrgencyPicker card={props.card} print={props.print} />
           <CardPrices card={props.card} />
         </div>
       </div>

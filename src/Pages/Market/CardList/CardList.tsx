@@ -4,6 +4,8 @@ import { formatSetReleaseDate } from '../../../util/format/date'
 import { rarityOf, rarityTier, RarityTier } from '../../../util/ui/sort/rarity'
 import { releaseAgeBucketOf } from '../../../util/ui/sort/releaseAge'
 import { SortContext } from '../../../util/ui/sort/SortProvider'
+import { Urgency } from '../../../util/ui/favorites/Favorite'
+import { FavoritesContext } from '../../../util/ui/favorites/FavoritesProvider'
 import { LanguageContext, localizedName, useStrings } from '../../../util/ui/language/LanguageProvider'
 import { Strings } from '../../../util/ui/language/strings'
 import { useIsMobile } from '../../../util/ui/useIsMobile'
@@ -17,6 +19,7 @@ export interface CardListProps {
   onOpenCard: (cardId: string) => void
   onStepToCard: (cardId: string) => void
   onCloseCard: () => void
+  showUrgency?: boolean
 }
 
 interface CardSection {
@@ -24,6 +27,7 @@ interface CardSection {
   title: string
   subtitle?: string
   tier: RarityTier
+  headerClassName?: string
   entries: CardEntry[]
 }
 
@@ -75,6 +79,21 @@ const nameSections = (entries: CardEntry[], germanNames: boolean): CardSection[]
     return { key: letter, title: letter, tier: 'regular', entries: group }
   })
 
+const urgencyHeaderClassNames: Record<Urgency, string> = {
+  urgent: styles.priorityHigh,
+  normal: styles.priorityMedium,
+  later: styles.priorityLow
+}
+
+const urgencySections = (entries: CardEntry[], urgencyOf: (entry: CardEntry) => Urgency, t: Strings): CardSection[] =>
+  [...new Set(entries.map(urgencyOf))].map((urgency) => ({
+    key: urgency,
+    title: t.urgencies[urgency],
+    tier: 'regular',
+    headerClassName: urgencyHeaderClassNames[urgency],
+    entries: entries.filter((entry) => urgencyOf(entry) == urgency)
+  }))
+
 const spansSeveralSets = (entries: CardEntry[]): boolean => new Set(entries.map((entry) => entry.card.set.id)).size > 1
 
 const tierClassNames: Record<RarityTier, string> = {
@@ -86,6 +105,7 @@ const tierClassNames: Record<RarityTier, string> = {
 export default function CardList(props: CardListProps) {
   const { sortMode } = useContext(SortContext)
   const { germanNames } = useContext(LanguageContext)
+  const { urgencyOf } = useContext(FavoritesContext)
   const t = useStrings()
   const isMobile = useIsMobile()
   const entries = props.entries ?? []
@@ -113,6 +133,7 @@ export default function CardList(props: CardListProps) {
         isDetailsOpen={isOpen}
         isMobile={isMobile}
         showNumber={sortMode == 'number'}
+        showUrgency={props.showUrgency}
         navigation={isOpen ? navigation : undefined}
         onOpen={() => props.onOpenCard(key)}
         onClose={props.onCloseCard}
@@ -127,7 +148,9 @@ export default function CardList(props: CardListProps) {
         ? releaseAgeSections(entries, t)
         : sortMode == 'name'
           ? nameSections(entries, germanNames)
-          : undefined
+          : sortMode == 'urgency'
+            ? urgencySections(entries, (entry) => urgencyOf(entry.card.id, entry.print), t)
+            : undefined
 
   if (sections == undefined) {
     return <div className={styles.cardList}>{entries.map(renderCard)}</div>
@@ -137,7 +160,7 @@ export default function CardList(props: CardListProps) {
     <div className={styles.sections}>
       {sections.map((section) => (
         <section key={section.key} className={styles.section} aria-label={section.title}>
-          <div className={`${styles.sectionHeader} ${tierClassNames[section.tier]}`}>
+          <div className={`${styles.sectionHeader} ${section.headerClassName ?? tierClassNames[section.tier]}`}>
             <h2 className={styles.sectionTitle} title={section.subtitle}>
               {section.title}
             </h2>

@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom'
 import { useStrings } from '../../util/ui/language/LanguageProvider'
 import { SortContext, SortMode, sortModes } from '../../util/ui/sort/SortProvider'
 import { useDismissable } from '../../util/ui/useDismissable'
-import { ArrowDownIcon, CalendarIcon, CoinIcon, GemIcon, HashIcon, PikaTextIcon } from './SortIcons'
+import { ArrowDownIcon, CalendarIcon, CoinIcon, GemIcon, HashIcon, PikaTextIcon, UrgencyIcon } from './SortIcons'
 import styles from './SortToggle.module.scss'
 
 const sortModeIcons: Record<SortMode, ReactElement> = {
@@ -11,15 +11,21 @@ const sortModeIcons: Record<SortMode, ReactElement> = {
   number: <HashIcon />,
   name: <PikaTextIcon />,
   rarity: <GemIcon />,
-  release: <CalendarIcon />
+  release: <CalendarIcon />,
+  urgency: <UrgencyIcon />
 }
 
 const isSingleSetPath = (pathname: string): boolean => pathname == '/' || pathname.startsWith('/market')
 
+const isInventoryPath = (pathname: string): boolean => pathname.startsWith('/inventory')
+
+const isAvailableMode = (mode: SortMode, pathname: string): boolean =>
+  mode == 'release' ? !isSingleSetPath(pathname) : mode == 'urgency' ? isInventoryPath(pathname) : true
+
 export default function SortToggle() {
   const { sortMode, isReversed, selectSortMode, toggleSortDirection } = useContext(SortContext)
   const location = useLocation()
-  const availableModes = isSingleSetPath(location.pathname) ? sortModes.filter((mode) => mode != 'release') : sortModes
+  const availableModes = sortModes.filter((mode) => isAvailableMode(mode, location.pathname))
   const t = useStrings()
   const [isOpen, setOpen] = useState(false)
   const wrapperRef = useRef<HTMLDivElement>(null)

@@ -1,8 +1,15 @@
+export type Urgency = 'urgent' | 'normal' | 'later'
+
+export const urgencies: Urgency[] = ['urgent', 'normal', 'later']
+
+export const isUrgency = (value: unknown): value is Urgency => urgencies.some((urgency) => urgency == value)
+
 export interface Favorite {
   cardId: string
   setId: string
   addedAt: number
   print?: string
+  urgency?: Urgency
 }
 
 export const favoriteKey = (favorite: Pick<Favorite, 'cardId' | 'print'>): string =>
