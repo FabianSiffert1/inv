@@ -12,10 +12,10 @@ export const pokemonShareLink = (pokedexNumber: number) => `${window.location.or
 export const artistShareLink = (slug: string) => `${window.location.origin}${import.meta.env.BASE_URL}artists/${slug}`
 
 export const cardmarketSearchLink = (card: PokemonCard) =>
-  `https://www.cardmarket.com/en/Pokemon/Products/Search?searchString=${encodeURIComponent(`${card.name} ${card.number}`)}`
+  `https://www.cardmarket.com/en/Pokemon/Products/Search?searchString=${encodeURIComponent(card.name)}`
 
 export const tcgplayerSearchLink = (card: PokemonCard) =>
-  `https://www.tcgplayer.com/search/pokemon/product?productLineName=pokemon&q=${encodeURIComponent(`${card.name} ${card.number}`)}`
+  `https://www.tcgplayer.com/search/pokemon/product?productLineName=pokemon&q=${encodeURIComponent(card.name)}`
 
 export const priceChartingSearchLink = (card: PokemonCard) =>
   `https://www.pricecharting.com/search-products?type=prices&q=${encodeURIComponent(`pokemon ${card.set.name} ${card.name} ${card.number}`)}`
