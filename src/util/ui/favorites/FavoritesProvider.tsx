@@ -1,6 +1,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { PokemonCard } from '../../api/pokemonTGC/model/PokemonCard'
 import { AuthContext } from '../../auth/AuthProvider'
+import { FavoritesError } from '../language/strings'
 import { Favorite, favoriteKey } from './Favorite'
 import { rememberFavoriteSetIds } from './favoriteSets'
 import { readLocalFavorites, writeLocalFavorites } from './localFavorites'
@@ -19,7 +20,7 @@ interface ContextProps {
   favorites: Favorite[]
   source: FavoritesSource
   isLoading: boolean
-  error?: string
+  error?: FavoritesError
   pendingMerge?: PendingMerge
   isFavorite: (cardId: string, print?: string) => boolean
   toggleFavorite: (card: PokemonCard, print?: string) => void
@@ -45,7 +46,7 @@ const FavoritesProvider: React.FC<Props> = ({ children }) => {
 
   const [localFavorites, setLocalFavorites] = useState(readLocalFavorites)
   const [cloudFavorites, setCloudFavorites] = useState<Favorite[] | undefined>(undefined)
-  const [error, setError] = useState<string | undefined>(undefined)
+  const [error, setError] = useState<FavoritesError | undefined>(undefined)
   const [unmergedFavorites, setUnmergedFavorites] = useState<Favorite[] | undefined>(undefined)
   const cloudModule = useRef<Promise<CloudFavorites> | undefined>(undefined)
 
@@ -91,10 +92,10 @@ const FavoritesProvider: React.FC<Props> = ({ children }) => {
             }
             setCloudFavorites(favorites)
           },
-          () => setError('Could not load favorites.')
+          () => setError('loadFailed')
         )
       })
-      .catch(() => setError('Could not load favorites.'))
+      .catch(() => setError('loadFailed'))
     return () => {
       cancelled = true
       unsubscribe?.()
@@ -111,7 +112,7 @@ const FavoritesProvider: React.FC<Props> = ({ children }) => {
       .then((module) => module.addFavorites(uid, missing))
       .then(
         () => setLocalFavorites([]),
-        () => setError('Could not move favorites online. They are still saved on this device.')
+        () => setError('mergeFailed')
       )
   }, [uid, unmergedFavorites, loadCloud])
 
@@ -149,7 +150,7 @@ const FavoritesProvider: React.FC<Props> = ({ children }) => {
         const exists = cloudFavorites?.some((entry) => favoriteKey(entry) == key) ?? false
         loadCloud()
           .then((module) => (exists ? module.removeFavorite(uid, key) : module.addFavorites(uid, [favorite])))
-          .catch(() => setError('Could not save favorite.'))
+          .catch(() => setError('saveFailed'))
         return
       }
       setLocalFavorites((previous) =>

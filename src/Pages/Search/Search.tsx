@@ -6,7 +6,7 @@ import { useAllSets, useCardsOfSet, useEurPerUsd, useSearchIndex } from '../../u
 import { CardEntry } from '../../util/api/pokemonTGC/model/PokemonCard'
 import { matchesSearchIndex, toLightCard } from '../../util/api/pokemonTGC/model/SearchIndex'
 import { useCardNavigation } from '../../util/ui/cards/useCardNavigation'
-import { LanguageContext } from '../../util/ui/language/LanguageProvider'
+import { LanguageContext, useStrings } from '../../util/ui/language/LanguageProvider'
 import { SearchContext } from '../../util/ui/search/SearchProvider'
 import { SortContext, sortEntries } from '../../util/ui/sort/SortProvider'
 import { useIsMobile } from '../../util/ui/useIsMobile'
@@ -18,6 +18,7 @@ export default function Search() {
   const { setHeaderItem, setBusy } = useContext(HeaderContext)
   const { sortMode } = useContext(SortContext)
   const { germanNames } = useContext(LanguageContext)
+  const t = useStrings()
   const eurPerUsd = useEurPerUsd()
   const isMobile = useIsMobile()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -86,10 +87,8 @@ export default function Search() {
       {query == '' ? (
         <div className={styles.status}>
           <div className={styles.hint}>
-            <div className={styles.headline}>Search every card</div>
-            <div className={styles.detail}>
-              Type a card name into the search box, then pick &ldquo;all cards&rdquo; from the suggestions.
-            </div>
+            <div className={styles.headline}>{t.searchEveryCard}</div>
+            <div className={styles.detail}>{t.searchHint}</div>
           </div>
         </div>
       ) : (
@@ -99,8 +98,8 @@ export default function Search() {
           )}
           {error == null && !isFetching && index != undefined && entries.length == 0 && (
             <div className={styles.status}>
-              <div className={styles.headline}>No cards named &ldquo;{query}&rdquo;</div>
-              <div className={styles.detail}>Try a shorter name, or the English name.</div>
+              <div className={styles.headline}>{t.noCardsNamed(query)}</div>
+              <div className={styles.detail}>{t.noCardsNamedHint}</div>
             </div>
           )}
           <div className={styles.listWrapper}>
@@ -126,13 +125,10 @@ interface SearchStatusProps {
 }
 
 function SearchStatus(props: SearchStatusProps) {
+  const t = useStrings()
   if (props.query == '') {
-    return <span className={styles.pageCount}>All cards</span>
+    return <span className={styles.pageCount}>{t.allCards}</span>
   }
-  const countLabel = props.isLoading ? 'Searching' : `${props.count} ${props.count == 1 ? 'card' : 'cards'}`
-  return (
-    <span className={styles.pageCount}>
-      {countLabel} for &ldquo;{props.query}&rdquo;
-    </span>
-  )
+  const countLabel = props.isLoading ? t.searching : t.cardCount(props.count)
+  return <span className={styles.pageCount}>{t.countFor(countLabel, props.query)}</span>
 }

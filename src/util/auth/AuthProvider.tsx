@@ -1,4 +1,5 @@
 import React, { createContext, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { AuthError } from '../ui/language/strings'
 
 export const accountStorageKey = 'inv-account'
 
@@ -14,7 +15,7 @@ export interface AccountUser {
 interface ContextProps {
   status: AuthStatus
   user?: AccountUser
-  error?: string
+  error?: AuthError
   signIn: () => Promise<void>
   signOut: () => Promise<void>
 }
@@ -53,24 +54,24 @@ const writeAccountFlag = (signedIn: boolean) => {
   }
 }
 
-const errorMessage = (error: unknown): string | undefined => {
+const errorMessage = (error: unknown): AuthError | undefined => {
   const code = (error as { code?: string })?.code
   if (code != undefined && cancelledPopupCodes.includes(code)) {
     return undefined
   }
   if (code == 'auth/network-request-failed') {
-    return 'No connection. Try again later.'
+    return 'offline'
   }
   if (code == 'auth/popup-blocked') {
-    return 'The sign-in popup was blocked. Allow popups for this site.'
+    return 'popupBlocked'
   }
-  return 'Sign-in failed. Try again.'
+  return 'signInFailed'
 }
 
 const AuthProvider: React.FC<Props> = ({ children }) => {
   const [status, setStatus] = useState<AuthStatus>(() => (hasAccountFlag() ? 'loading' : 'signedOut'))
   const [user, setUser] = useState<AccountUser | undefined>(undefined)
-  const [error, setError] = useState<string | undefined>(undefined)
+  const [error, setError] = useState<AuthError | undefined>(undefined)
   const firebaseAuth = useRef<Promise<FirebaseAuth> | undefined>(undefined)
   const [loadedAuth, setLoadedAuth] = useState<FirebaseAuth | undefined>(undefined)
 
@@ -90,7 +91,7 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
     }
     loadAuth().catch(() => {
       setStatus('signedOut')
-      setError('Could not load sign-in. Try again later.')
+      setError('loadFailed')
     })
   }, [loadAuth])
 
@@ -131,7 +132,7 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
       const module = await loadAuth()
       await module.signOut()
     } catch {
-      setError('Sign-out failed. Try again.')
+      setError('signOutFailed')
     }
   }, [loadAuth])
 

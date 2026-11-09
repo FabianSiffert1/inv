@@ -1,6 +1,6 @@
 import { ReactNode, useContext, useEffect, useRef, useState } from 'react'
 import { AuthContext } from '../../util/auth/AuthProvider'
-import { LanguageContext } from '../../util/ui/language/LanguageProvider'
+import { LanguageContext, useStrings } from '../../util/ui/language/LanguageProvider'
 import { ThemeContext } from '../../util/ui/theme/ThemeProvider'
 import { PretzelIcon, TeacupIcon } from '../LanguageToggle/LanguageIcons'
 import { EspeonIcon, UmbreonIcon } from '../ThemeToggle/ThemeIcons'
@@ -11,6 +11,7 @@ export default function HeaderMenu() {
   const { status, user, error, signIn, signOut } = useContext(AuthContext)
   const { darkTheme, toggleTheme } = useContext(ThemeContext)
   const { germanNames, toggleLanguage } = useContext(LanguageContext)
+  const t = useStrings()
   const [isOpen, setOpen] = useState(false)
   const wrapperRef = useRef<HTMLDivElement>(null)
   const triggerRef = useRef<HTMLButtonElement>(null)
@@ -48,7 +49,7 @@ export default function HeaderMenu() {
   }
 
   const isSignedIn = status == 'signedIn'
-  const label = isSignedIn ? `Menu, signed in as ${user?.email ?? user?.displayName ?? 'account'}` : 'Menu'
+  const label = isSignedIn ? t.menuSignedInAs(user?.email ?? user?.displayName ?? t.account) : t.menu
 
   return (
     <div className={styles.menu} ref={wrapperRef}>
@@ -65,12 +66,12 @@ export default function HeaderMenu() {
         {isSignedIn ? <MasterBallIcon /> : <PokeBallIcon />}
       </button>
       {isOpen && (
-        <div className={styles.panel} role='dialog' aria-label='Menu'>
+        <div className={styles.panel} role='dialog' aria-label={t.menu}>
           <MenuRow icon={darkTheme ? <EspeonIcon /> : <UmbreonIcon />} onClick={() => choose(toggleTheme)}>
-            Toggle Theme
+            {t.toggleTheme}
           </MenuRow>
           <MenuRow icon={germanNames ? <TeacupIcon /> : <PretzelIcon />} onClick={() => choose(toggleLanguage)}>
-            Toggle Language
+            {t.toggleLanguage}
           </MenuRow>
           <div className={styles.divider} aria-hidden='true' />
           {isSignedIn ? (
@@ -85,17 +86,17 @@ export default function HeaderMenu() {
                 </div>
               </div>
               <MenuRow icon={<SignOutIcon />} onClick={() => void signOut()} className={styles.signOut}>
-                Sign out
+                {t.signOut}
               </MenuRow>
             </>
           ) : (
             <MenuRow icon={<PokeBallIcon />} onClick={() => void signIn()} disabled={status == 'loading'}>
-              {status == 'loading' ? 'Signing in' : 'Sign in with Google'}
+              {status == 'loading' ? t.signingIn : t.signInWithGoogle}
             </MenuRow>
           )}
           {error && (
             <div className={styles.error} role='alert'>
-              {error}
+              {t.authErrors[error]}
             </div>
           )}
         </div>

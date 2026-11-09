@@ -3,11 +3,13 @@ import { StarIcon } from '../../../Components/FavoriteButton/FavoriteButton'
 import HeaderMenu from '../../HeaderMenu/HeaderMenu'
 import SearchToggle from '../../SearchToggle/SearchToggle'
 import SortToggle from '../../SortToggle/SortToggle'
+import { useStrings } from '../../../util/ui/language/LanguageProvider'
 import { useIsMobile } from '../../../util/ui/useIsMobile'
 import styles from './WebNavigation.module.scss'
 
 export default function WebNavigation() {
   const isMobile = useIsMobile()
+  const t = useStrings()
 
   return (
     <div className={styles.webNavigation}>
@@ -24,8 +26,8 @@ export default function WebNavigation() {
             <NavLink
               to='/inventory'
               className={({ isActive }) => `${styles.favoritesLink} ${isActive ? styles.favoritesLinkActive : ''}`}
-              aria-label='Favorites'
-              title='Favorites'
+              aria-label={t.favorites}
+              title={t.favorites}
             >
               <StarIcon />
             </NavLink>

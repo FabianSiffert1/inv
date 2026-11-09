@@ -8,7 +8,7 @@ import { Pokemon as PokemonEntry, pokemonPath } from '../../util/api/pokemonTGC/
 import { toCardEntries } from '../../util/api/pokemonTGC/model/PokemonCard'
 import { noBaseParams, useCardNavigation } from '../../util/ui/cards/useCardNavigation'
 import { useVisibleCards } from '../../util/ui/cards/useVisibleCards'
-import { LanguageContext, localizedName } from '../../util/ui/language/LanguageProvider'
+import { LanguageContext, localizedName, useStrings } from '../../util/ui/language/LanguageProvider'
 import { SearchContext } from '../../util/ui/search/SearchProvider'
 import { useIsMobile } from '../../util/ui/useIsMobile'
 import CardList from '../Market/CardList/CardList'
@@ -102,6 +102,7 @@ interface GenerationOverviewProps {
 
 function GenerationOverview(props: GenerationOverviewProps) {
   const { germanNames } = useContext(LanguageContext)
+  const t = useStrings()
   const { query } = useContext(SearchContext)
   const { generation, pokemonIndex } = props
 
@@ -117,8 +118,8 @@ function GenerationOverview(props: GenerationOverviewProps) {
         <PokemonSuggestions />
         <div className={styles.status}>
           <div className={styles.hint}>
-            <div className={styles.headline}>Welcome to the Pokédex</div>
-            <div className={styles.detail}>Choose a generation from the menu above, then pick a Pokémon to see all of its cards.</div>
+            <div className={styles.headline}>{t.welcomePokedex}</div>
+            <div className={styles.detail}>{t.pokedexHint}</div>
           </div>
         </div>
       </>
@@ -142,12 +143,12 @@ function GenerationOverview(props: GenerationOverviewProps) {
     <>
       <div className={styles.pageTitle}>
         <h1 className={styles.pageHeadline}>{generationLabel(generation, germanNames)}</h1>
-        {pokemonOfGeneration.length > 0 && <span className={styles.pageCount}>{pokemonOfGeneration.length} Pokémon</span>}
+        {pokemonOfGeneration.length > 0 && <span className={styles.pageCount}>{t.pokemonCount(pokemonOfGeneration.length)}</span>}
       </div>
       {pokemonOfGeneration.length > 0 && visiblePokemon.length == 0 && (
         <div className={styles.status}>
-          <div className={styles.headline}>No matching Pokémon</div>
-          <div className={styles.detail}>Try a different name or Pokédex number.</div>
+          <div className={styles.headline}>{t.noMatchingPokemon}</div>
+          <div className={styles.detail}>{t.noMatchingPokemonHint}</div>
         </div>
       )}
       <div className={styles.listWrapper}>
@@ -168,6 +169,7 @@ interface PokemonCardsProps {
 
 function PokemonCards(props: PokemonCardsProps) {
   const { germanNames } = useContext(LanguageContext)
+  const t = useStrings()
   const { pokemon, generation, cards } = props
   const visibleCards = useVisibleCards(cards)
   const { openCardId, openCard, stepToCard, closeCard } = useCardNavigation(noBaseParams)
@@ -180,7 +182,7 @@ function PokemonCards(props: PokemonCardsProps) {
           <AnimatedSprite className={styles.sprite} pokedexNumber={pokemon.number} />
           <h1 className={styles.pageHeadline}>{localizedName(pokemon, germanNames)}</h1>
           <span className={styles.pageMeta}>#{pokemon.number.toString().padStart(4, '0')}</span>
-          <span className={styles.pageCount}>{pokemon.cardCount} cards</span>
+          <span className={styles.pageCount}>{t.cardCount(pokemon.cardCount)}</span>
           {generation && (
             <Link className={styles.backLink} to={generationPath(generation)} onClick={() => window.scrollTo(0, 0)}>
               <span aria-hidden='true'>←</span> {generationLabel(generation, germanNames)}

@@ -8,6 +8,7 @@ import { PokemonSet, PokemonTCGSeries } from '../../util/api/pokemonTGC/model/Po
 import { useAllSets, useCardsOfSet } from '../../util/api/pokemonTGC/hooks'
 import { useCardNavigation } from '../../util/ui/cards/useCardNavigation'
 import { useVisibleCards } from '../../util/ui/cards/useVisibleCards'
+import { useStrings } from '../../util/ui/language/LanguageProvider'
 import { useIsMobile } from '../../util/ui/useIsMobile'
 import CardList from './CardList/CardList'
 import { formatSetReleaseDate } from '../../util/format/date'
@@ -18,6 +19,7 @@ import SetSelector from './Selector/SetSelector'
 
 export default function Market() {
   const { setHeaderItem, setBusy } = useContext(HeaderContext)
+  const t = useStrings()
 
   const [searchParams, setSearchParams] = useSearchParams()
   const selectedSetId = searchParams.get('set') ?? undefined
@@ -84,8 +86,8 @@ export default function Market() {
       {!isFetching && cards != undefined && (cards.length == 0 || visibleCards?.length != 0) && (
         <CardsValue
           entries={toCardEntries(cards)}
-          label='Set value'
-          meta={selectedSet && { label: 'Released', value: formatSetReleaseDate(selectedSet.releaseDate) }}
+          label={t.setValue}
+          meta={selectedSet && { label: t.released, value: formatSetReleaseDate(selectedSet.releaseDate, t) }}
         />
       )}
 

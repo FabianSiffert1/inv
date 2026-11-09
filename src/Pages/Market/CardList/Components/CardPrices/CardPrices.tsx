@@ -3,30 +3,33 @@ import { PokemonCardProp } from '../../../../../util/api/pokemonTGC/model/Pokemo
 import { cardPriceRows, PriceCell } from '../../../../../util/cardPrice'
 import { Currency, formatPrice } from '../../../../../util/format/price'
 import { formatPriceDate } from '../../../../../util/format/date'
+import { useStrings } from '../../../../../util/ui/language/LanguageProvider'
 import { priceChartingSearchLink } from '../../../../../util/shareLinks'
 import { ExternalLink } from '../ExternalLink/ExternalLink'
 import { GermanListingsLink } from '../GermanListingsLink/GermanListingsLink'
 import styles from './CardPrices.module.scss'
 
 function PriceUpdatedAt({ updatedAt }: { updatedAt?: string }) {
-  const formatted = formatPriceDate(updatedAt)
+  const t = useStrings()
+  const formatted = formatPriceDate(updatedAt, t.locale)
   if (formatted == undefined) {
     return null
   }
   return (
     <div className={styles.priceUpdated}>
-      Prices from <span className={styles.priceDate}>{formatted}</span>
+      {t.pricesFrom} <span className={styles.priceDate}>{formatted}</span>
     </div>
   )
 }
 
 function PriceCellContent({ cell, currency, emphasized }: { cell?: PriceCell; currency: Currency; emphasized: boolean }) {
+  const t = useStrings()
   if (cell == undefined) {
     return <span className={styles.priceMissing}>–</span>
   }
   const amount = formatPrice(cell.amount, currency)
   const highest = formatPrice(cell.highestAmount, currency)
-  const text = highest != undefined && highest != amount ? `${amount} to ${highest}` : amount
+  const text = amount != undefined && highest != undefined && highest != amount ? t.range(amount, highest) : amount
   const className = emphasized ? `${styles.priceAmount} ${styles.priceAmountMain}` : styles.priceAmount
   return cell.url ? (
     <ExternalLink href={cell.url} className={`${className} ${styles.priceLink}`} plain>
@@ -40,11 +43,12 @@ function PriceCellContent({ cell, currency, emphasized }: { cell?: PriceCell; cu
 export function CardPrices(props: PokemonCardProp) {
   const rows = cardPriceRows(props.card)
   const cardmarketUrl = props.card.cardmarket?.url
+  const t = useStrings()
 
   return (
     <section className={styles.panel}>
       {rows.length == 0 ? (
-        <div className={styles.emptyPanel}>No prices available.</div>
+        <div className={styles.emptyPanel}>{t.noPrices}</div>
       ) : (
         <>
           <table className={styles.priceTable}>
@@ -80,11 +84,7 @@ export function CardPrices(props: PokemonCardProp) {
             </tbody>
           </table>
           <div className={styles.priceFooter}>
-            <ExternalLink
-              href={priceChartingSearchLink(props.card)}
-              className={styles.priceChartingLink}
-              title='Graded and raw prices on PriceCharting'
-            >
+            <ExternalLink href={priceChartingSearchLink(props.card)} className={styles.priceChartingLink} title={t.priceChartingTitle}>
               <span className={styles.priceChartingLabel}>PriceCharting</span>
             </ExternalLink>
             <PriceUpdatedAt updatedAt={props.card.cardmarket?.updatedAt ?? props.card.tcgplayer?.updatedAt} />

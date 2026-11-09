@@ -1,4 +1,5 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { Strings, stringsOf } from './strings'
 
 export const languageStorageKey = 'inv-language'
 
@@ -49,6 +50,8 @@ interface LocalizableName {
 
 export const localizedName = (named: LocalizableName, germanNames: boolean): string =>
   germanNames ? (named.germanName ?? named.name) : named.name
+
+export const useStrings = (): Strings => stringsOf(useContext(LanguageContext).germanNames)
 
 export const useLocalizedName = (named: LocalizableName): string => localizedName(named, useContext(LanguageContext).germanNames)
 

@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import { PokemonCard } from '../../../../../util/api/pokemonTGC/model/PokemonCard'
-import { useLocalizedName } from '../../../../../util/ui/language/LanguageProvider'
+import { useLocalizedName, useStrings } from '../../../../../util/ui/language/LanguageProvider'
 import { useModalBehaviour } from '../../../../../util/ui/useModalBehaviour'
 import { CardBaseDetails, CardNavigation, CardNavigationProps, SetInformation } from '../CardDetails/CardDetails'
 import { CardPrices } from '../CardPrices/CardPrices'
@@ -19,6 +19,7 @@ export function MobileCardDetails(props: MobileCardDetailsProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   useModalBehaviour(containerRef, props.onClose, props.navigation)
   const cardName = useLocalizedName(props.card)
+  const t = useStrings()
   const [isZoomOpen, setZoomOpen] = useState(false)
   const imageSources = [props.card.images.large, props.card.images.small]
   const pokedexNumber = props.card.nationalPokedexNumbers?.[0]
@@ -29,13 +30,13 @@ export function MobileCardDetails(props: MobileCardDetailsProps) {
       <div className={styles.cardDetailsContainer} ref={containerRef} role='dialog' aria-modal='true' aria-label={cardName}>
         <div className={styles.mobileCardDetailsHeader}>
           {props.navigation && <CardNavigation {...props.navigation} />}
-          <button type='button' className={styles.closeButton} aria-label='Close' onClick={props.onClose}>
+          <button type='button' className={styles.closeButton} aria-label={t.close} onClick={props.onClose}>
             ×
           </button>
         </div>
         <div className={styles.scrollArea}>
           <div className={styles.cardImageAndBaseInfo}>
-            <button type='button' className={styles.cardImageFrame} onClick={() => setZoomOpen(true)} aria-label={`Zoom into ${cardName}`}>
+            <button type='button' className={styles.cardImageFrame} onClick={() => setZoomOpen(true)} aria-label={t.zoomInto(cardName)}>
               <CardImage className={styles.cardImage} sources={imageSources} alt={cardName} pokedexNumber={pokedexNumber} />
             </button>
             <CardBaseDetails card={props.card} print={props.print} onClose={props.onClose} />

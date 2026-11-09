@@ -6,7 +6,7 @@ import { PokemonCard, PokemonCardProp } from '../../../../../util/api/pokemonTGC
 import { spriteUrl } from '../../../../../util/api/pokemonTGC/model/Pokemon'
 import { setPath } from '../../../../../util/api/pokemonTGC/model/PokemonSet'
 import { formatSetReleaseDate } from '../../../../../util/format/date'
-import { useLocalizedName } from '../../../../../util/ui/language/LanguageProvider'
+import { useLocalizedName, useStrings } from '../../../../../util/ui/language/LanguageProvider'
 import { SearchContext } from '../../../../../util/ui/search/SearchProvider'
 import { cardShareLink } from '../../../../../util/shareLinks'
 import { useModalBehaviour } from '../../../../../util/ui/useModalBehaviour'
@@ -35,6 +35,7 @@ export function CardDetails(props: CardDetailsProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   useModalBehaviour(containerRef, props.onClose, props.navigation)
   const cardName = useLocalizedName(props.card)
+  const t = useStrings()
   const [isZoomOpen, setZoomOpen] = useState(false)
   const imageSources = [props.card.images.large, props.card.images.small]
   const pokedexNumber = props.card.nationalPokedexNumbers?.[0]
@@ -44,11 +45,11 @@ export function CardDetails(props: CardDetailsProps) {
       <div className={styles.overlay} onClick={props.onClose} />
       <div className={styles.cardDetailsPositioner}>
         <div className={styles.cardDetailsContainer} ref={containerRef} role='dialog' aria-modal='true' aria-label={cardName}>
-          <button type='button' className={styles.closeButton} aria-label='Close' onClick={props.onClose}>
+          <button type='button' className={styles.closeButton} aria-label={t.close} onClick={props.onClose}>
             ×
           </button>
           <div className={styles.imageColumn}>
-            <button type='button' className={styles.cardLargeImage} onClick={() => setZoomOpen(true)} aria-label={`Zoom into ${cardName}`}>
+            <button type='button' className={styles.cardLargeImage} onClick={() => setZoomOpen(true)} aria-label={t.zoomInto(cardName)}>
               <CardImage sources={imageSources} alt={cardName} pokedexNumber={pokedexNumber} />
             </button>
             {props.navigation && <CardNavigation {...props.navigation} />}
@@ -66,12 +67,14 @@ export function CardDetails(props: CardDetailsProps) {
 }
 
 export function CardNavigation(props: CardNavigationProps) {
+  const t = useStrings()
+
   return (
     <div className={styles.cardNavigation}>
       <button
         type='button'
         className={styles.navigationButton}
-        aria-label='Previous card'
+        aria-label={t.previousCard}
         disabled={!props.onPrevious}
         onClick={props.onPrevious}
       >
@@ -80,7 +83,7 @@ export function CardNavigation(props: CardNavigationProps) {
       <span className={styles.navigationPosition}>
         {props.position} / {props.count}
       </span>
-      <button type='button' className={styles.navigationButton} aria-label='Next card' disabled={!props.onNext} onClick={props.onNext}>
+      <button type='button' className={styles.navigationButton} aria-label={t.nextCard} disabled={!props.onNext} onClick={props.onNext}>
         ›
       </button>
     </div>
@@ -94,6 +97,7 @@ interface CardBaseDetailsProps extends PokemonCardProp {
 
 export function CardBaseDetails(props: CardBaseDetailsProps) {
   const cardName = useLocalizedName(props.card)
+  const t = useStrings()
   const pokedexNumber = props.card.nationalPokedexNumbers?.[0]
 
   return (
@@ -109,7 +113,7 @@ export function CardBaseDetails(props: CardBaseDetailsProps) {
           />
         )}
         <h2 className={styles.cardTitle}>{cardName}</h2>
-        <CopyButton variant='share' value={cardShareLink(props.card)} label='Copy link to this card' />
+        <CopyButton variant='share' value={cardShareLink(props.card)} label={t.copyLinkToCard} />
         <FavoriteButton card={props.card} print={props.print} showPrint={props.print != undefined} />
       </div>
       <div className={styles.metaRow}>
@@ -117,7 +121,7 @@ export function CardBaseDetails(props: CardBaseDetailsProps) {
         <span className={styles.metaChip}>
           {props.card.number}/{props.card.set.printedTotal}
         </span>
-        {props.card.evolvesFrom && <span className={styles.metaMuted}>Evolves from {props.card.evolvesFrom}</span>}
+        {props.card.evolvesFrom && <span className={styles.metaMuted}>{t.evolvesFrom(props.card.evolvesFrom)}</span>}
         {props.card.artist && <ArtistLink name={props.card.artist} className={styles.artistChip} fallbackClassName={styles.metaMuted} />}
       </div>
       {pokedexNumber != undefined && <AllCardsOfPokemonLink pokedexNumber={pokedexNumber} />}
@@ -131,6 +135,7 @@ export function SetInformation(props: PokemonCardProp) {
   const [searchParams] = useSearchParams()
   const isCurrentSet = searchParams.get('set') == props.card.set.id
   const { closeSearch } = useContext(SearchContext)
+  const t = useStrings()
 
   return (
     <section className={styles.panel}>
@@ -152,20 +157,20 @@ export function SetInformation(props: PokemonCardProp) {
       </div>
       <dl className={styles.definitionList}>
         <div className={styles.definitionRow}>
-          <dt>Released</dt>
-          <dd>{formatSetReleaseDate(props.card.set.releaseDate)}</dd>
+          <dt>{t.released}</dt>
+          <dd>{formatSetReleaseDate(props.card.set.releaseDate, t)}</dd>
         </div>
         <div className={styles.definitionRow}>
-          <dt>Cards</dt>
+          <dt>{t.cards}</dt>
           <dd>{props.card.set.total}</dd>
         </div>
         <div className={styles.definitionRow}>
-          <dt>Series</dt>
+          <dt>{t.series}</dt>
           <dd>{seriesName}</dd>
         </div>
         {props.card.set.legalities?.unlimited && (
           <div className={styles.definitionRow}>
-            <dt>Legality</dt>
+            <dt>{t.legality}</dt>
             <dd>{props.card.set.legalities.unlimited}</dd>
           </div>
         )}

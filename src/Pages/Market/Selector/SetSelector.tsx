@@ -4,6 +4,7 @@ import { useAllSets } from '../../../util/api/pokemonTGC/hooks'
 import { PokemonSet, PokemonSetName, PokemonTCGSeries } from '../../../util/api/pokemonTGC/model/PokemonSet'
 import { useCachedSetNames } from '../../../util/api/pokemonTGC/useCachedSetNames'
 import { setShareLink } from '../../../util/shareLinks'
+import { useStrings } from '../../../util/ui/language/LanguageProvider'
 import { useIsMobile } from '../../../util/ui/useIsMobile'
 import EraStrip from './EraStrip'
 import styles from './Selector.module.scss'
@@ -20,6 +21,7 @@ export default function SetSelector(props: SetSelectorProps) {
   const { data: sets } = useAllSets()
   const isMobile = useIsMobile()
   const cachedSetNames = useCachedSetNames()
+  const t = useStrings()
   const [isEraDropdownOpen, setEraDropdownOpen] = useState(false)
   const [isSetDropdownOpen, setSetDropdownOpen] = useState(false)
   const { onSelectEra, onSelectSet } = props
@@ -77,7 +79,7 @@ export default function SetSelector(props: SetSelectorProps) {
         cachedSetNames={cachedSetNames}
         isMobile={isMobile}
       />
-      {props.selectedSet && <CopyButton variant='share' value={setShareLink(props.selectedSet.id)} label='Copy link to this set' />}
+      {props.selectedSet && <CopyButton variant='share' value={setShareLink(props.selectedSet.id)} label={t.copyLinkToSet} />}
     </div>
   )
 }

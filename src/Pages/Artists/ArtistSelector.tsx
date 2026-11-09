@@ -3,6 +3,7 @@ import { CopyButton } from '../../Components/CopyButton/CopyButton'
 import { Artist } from '../../util/api/pokemonTGC/model/Artist'
 import { spriteUrl } from '../../util/api/pokemonTGC/model/Pokemon'
 import { artistShareLink } from '../../util/shareLinks'
+import { useStrings } from '../../util/ui/language/LanguageProvider'
 import { useIsMobile } from '../../util/ui/useIsMobile'
 import Dropdown from '../Market/Selector/Dropdown'
 import MobileSheet from '../Market/Selector/MobileSheet'
@@ -25,6 +26,7 @@ const toOption = (artist: Artist): OptionGridItem => ({
 
 export default function ArtistSelector(props: ArtistSelectorProps) {
   const isMobile = useIsMobile()
+  const t = useStrings()
   const [isOpen, setOpen] = useState(false)
   const [filter, setFilter] = useState('')
   const artists = useMemo(() => props.artists ?? [], [props.artists])
@@ -59,8 +61,8 @@ export default function ArtistSelector(props: ArtistSelectorProps) {
     <input
       className={isMobile ? `${pickerStyles.filter} ${pickerStyles.sheetFilter}` : pickerStyles.filter}
       type='search'
-      placeholder='Name'
-      aria-label='Filter artists'
+      placeholder={t.name}
+      aria-label={t.filterArtists}
       value={filter}
       onChange={(event) => setFilter(event.target.value)}
       onKeyDown={handleFilterKeyDown}
@@ -72,8 +74,8 @@ export default function ArtistSelector(props: ArtistSelectorProps) {
     <div className={`${selectorStyles.selector} ${pickerStyles.picker}`}>
       <Dropdown
         variant='set'
-        ariaLabel='Artist'
-        placeholder='Select artist'
+        ariaLabel={t.artist}
+        placeholder={t.selectArtist}
         options={triggerOptions}
         disabled={artists.length == 0}
         isOpen={isOpen && !isMobile}
@@ -84,7 +86,7 @@ export default function ArtistSelector(props: ArtistSelectorProps) {
       />
       {isMobile && isOpen && (
         <MobileSheet
-          title='Artist'
+          title={t.artist}
           options={options}
           selectedId={props.selectedSlug}
           onClose={() => open(false)}
@@ -93,7 +95,7 @@ export default function ArtistSelector(props: ArtistSelectorProps) {
         />
       )}
       {props.selectedSlug != undefined && (
-        <CopyButton variant='share' value={artistShareLink(props.selectedSlug)} label='Copy link to this artist' />
+        <CopyButton variant='share' value={artistShareLink(props.selectedSlug)} label={t.copyLinkToArtist} />
       )}
     </div>
   )

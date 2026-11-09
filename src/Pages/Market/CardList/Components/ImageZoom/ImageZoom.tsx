@@ -1,5 +1,6 @@
 import { PointerEvent, useRef, useState, WheelEvent } from 'react'
 import { createPortal } from 'react-dom'
+import { useStrings } from '../../../../../util/ui/language/LanguageProvider'
 import { useModalBehaviour } from '../../../../../util/ui/useModalBehaviour'
 import { CardImage } from '../CardImage/CardImage'
 import styles from './ImageZoom.module.scss'
@@ -39,6 +40,7 @@ const clampValue = (value: number, limit: number): number => Math.min(Math.max(v
 
 export function ImageZoom({ sources, alt, pokedexNumber, onClose }: ImageZoomProps) {
   const containerRef = useRef<HTMLDivElement>(null)
+  const t = useStrings()
   const stageRef = useRef<HTMLDivElement>(null)
   const frameRef = useRef<HTMLDivElement>(null)
   useModalBehaviour(containerRef, onClose)
@@ -202,7 +204,7 @@ export function ImageZoom({ sources, alt, pokedexNumber, onClose }: ImageZoomPro
           <CardImage className={styles.image} sources={sources} alt={alt} pokedexNumber={pokedexNumber} />
         </div>
       </div>
-      <button type='button' className={styles.closeButton} aria-label='Close zoom' onClick={onClose}>
+      <button type='button' className={styles.closeButton} aria-label={t.closeZoom} onClick={onClose}>
         ×
       </button>
     </div>,

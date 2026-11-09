@@ -1,15 +1,17 @@
-export const formatSetReleaseDate = (releaseDate?: string): string => {
+import { Strings } from '../ui/language/strings'
+
+export const formatSetReleaseDate = (releaseDate: string | undefined, t: Strings): string => {
   if (releaseDate == undefined) {
-    return 'Unknown'
+    return t.unknown
   }
   const parsed = new Date(releaseDate)
   if (Number.isNaN(parsed.getTime())) {
-    return 'Unknown'
+    return t.unknown
   }
-  return parsed.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })
+  return parsed.toLocaleDateString(t.locale, { month: 'long', year: 'numeric' })
 }
 
-export const formatPriceDate = (updatedAt?: string): string | undefined => {
+export const formatPriceDate = (updatedAt: string | undefined, locale: string): string | undefined => {
   if (updatedAt == undefined) {
     return undefined
   }
@@ -17,5 +19,5 @@ export const formatPriceDate = (updatedAt?: string): string | undefined => {
   if (Number.isNaN(parsed.getTime())) {
     return undefined
   }
-  return parsed.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })
+  return parsed.toLocaleDateString(locale, { month: 'long', year: 'numeric' })
 }

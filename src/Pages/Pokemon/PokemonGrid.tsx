@@ -1,7 +1,7 @@
 import { useContext } from 'react'
 import { Link } from 'react-router-dom'
 import { Pokemon, pokemonPath, spriteUrl } from '../../util/api/pokemonTGC/model/Pokemon'
-import { LanguageContext, localizedName } from '../../util/ui/language/LanguageProvider'
+import { LanguageContext, localizedName, useStrings } from '../../util/ui/language/LanguageProvider'
 import { tintClassNameOfType } from '../Market/CardList/Components/Card/Card'
 import cardListStyles from '../Market/CardList/CardList.module.scss'
 import cardStyles from '../Market/CardList/Components/Card/Card.module.scss'
@@ -13,6 +13,7 @@ interface PokemonGridProps {
 
 export default function PokemonGrid(props: PokemonGridProps) {
   const { germanNames } = useContext(LanguageContext)
+  const t = useStrings()
 
   return (
     <div className={cardListStyles.cardList}>
@@ -35,7 +36,7 @@ export default function PokemonGrid(props: PokemonGridProps) {
           </span>
           <span className={cardStyles.cardInformationWrapper}>
             <span className={cardStyles.cardName}>{localizedName(entry, germanNames)}</span>
-            <span className={cardStyles.cardPrice}>{entry.cardCount} cards</span>
+            <span className={cardStyles.cardPrice}>{t.cardCount(entry.cardCount)}</span>
           </span>
         </Link>
       ))}

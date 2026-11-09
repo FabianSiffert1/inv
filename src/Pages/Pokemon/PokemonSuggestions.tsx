@@ -4,7 +4,7 @@ import { MagnifyingGlassIcon } from '../../Header/SearchToggle/SearchIcon'
 import { usePokemonIndex, useSearchIndex } from '../../util/api/pokemonTGC/hooks'
 import { pokemonPath, spriteUrl } from '../../util/api/pokemonTGC/model/Pokemon'
 import { matchesSearchIndex, searchPath } from '../../util/api/pokemonTGC/model/SearchIndex'
-import { LanguageContext, localizedName } from '../../util/ui/language/LanguageProvider'
+import { LanguageContext, localizedName, useStrings } from '../../util/ui/language/LanguageProvider'
 import { SearchContext } from '../../util/ui/search/SearchProvider'
 import { matchingPokemon } from './pokemonSearch'
 import styles from './PokemonSuggestions.module.scss'
@@ -19,6 +19,7 @@ interface PokemonSuggestionsProps {
 export default function PokemonSuggestions(props: PokemonSuggestionsProps) {
   const { query, closeSearch } = useContext(SearchContext)
   const { germanNames } = useContext(LanguageContext)
+  const t = useStrings()
   const { data: pokemonIndex } = usePokemonIndex()
   const trimmedQuery = query.trim()
   const isActive = trimmedQuery.length >= minimumQueryLength && !/^#?\d+$/.test(trimmedQuery)
@@ -50,7 +51,7 @@ export default function PokemonSuggestions(props: PokemonSuggestionsProps) {
   return (
     <>
       <div className={styles.backdrop} onClick={closeSearch} aria-hidden='true' />
-      <ul className={styles.suggestions} aria-label='Suggestions'>
+      <ul className={styles.suggestions} aria-label={t.suggestions}>
         {suggestions.map((entry) => (
           <li key={entry.number}>
             <Link className={styles.suggestion} to={pokemonPath(entry.number)} onClick={leave}>
@@ -61,7 +62,7 @@ export default function PokemonSuggestions(props: PokemonSuggestionsProps) {
                 onError={(event) => (event.currentTarget.hidden = true)}
               />
               <span className={styles.name}>{localizedName(entry, germanNames)}</span>
-              <span className={styles.count}>{entry.cardCount} cards in all sets</span>
+              <span className={styles.count}>{t.cardsInAllSets(entry.cardCount)}</span>
             </Link>
           </li>
         ))}
@@ -71,8 +72,8 @@ export default function PokemonSuggestions(props: PokemonSuggestionsProps) {
               <span className={styles.icon}>
                 <MagnifyingGlassIcon />
               </span>
-              <span className={styles.name}>All cards named &ldquo;{trimmedQuery}&rdquo;</span>
-              <span className={styles.count}>{cardCount == undefined ? 'across every set' : `${cardCount} across every set`}</span>
+              <span className={styles.name}>{t.allCardsNamed(trimmedQuery)}</span>
+              <span className={styles.count}>{cardCount == undefined ? t.acrossEverySet : t.countAcrossEverySet(cardCount)}</span>
             </Link>
           </li>
         )}

@@ -1,18 +1,19 @@
+import { ReleaseAge } from '../language/strings'
 import { RarityTier } from './rarity'
 
 export interface ReleaseAgeBucket {
-  label: string
+  age: ReleaseAge
   maxMonths: number
   tier: RarityTier
 }
 
 export const releaseAgeBuckets: ReleaseAgeBucket[] = [
-  { label: 'Under 6 months', maxMonths: 6, tier: 'top' },
-  { label: '6 to 12 months', maxMonths: 12, tier: 'top' },
-  { label: '1 to 2 years', maxMonths: 24, tier: 'high' },
-  { label: '2 to 5 years', maxMonths: 60, tier: 'high' },
-  { label: '5 to 10 years', maxMonths: 120, tier: 'regular' },
-  { label: '10 years and older', maxMonths: Infinity, tier: 'regular' }
+  { age: 'under6Months', maxMonths: 6, tier: 'top' },
+  { age: 'sixTo12Months', maxMonths: 12, tier: 'top' },
+  { age: 'oneTo2Years', maxMonths: 24, tier: 'high' },
+  { age: 'twoTo5Years', maxMonths: 60, tier: 'high' },
+  { age: 'fiveTo10Years', maxMonths: 120, tier: 'regular' },
+  { age: 'tenYearsAndOlder', maxMonths: Infinity, tier: 'regular' }
 ]
 
 const millisecondsPerMonth = (1000 * 60 * 60 * 24 * 365.25) / 12

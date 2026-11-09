@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Artist, artistPath } from '../../util/api/pokemonTGC/model/Artist'
+import { useStrings } from '../../util/ui/language/LanguageProvider'
 import { tintClassNameOfType } from '../Market/CardList/Components/Card/Card'
 import { CardImage } from '../Market/CardList/Components/CardImage/CardImage'
 import cardListStyles from '../Market/CardList/CardList.module.scss'
@@ -11,6 +12,8 @@ interface ArtistGridProps {
 }
 
 export default function ArtistGrid(props: ArtistGridProps) {
+  const t = useStrings()
+
   return (
     <div className={cardListStyles.cardList}>
       {props.artists.map((artist) => (
@@ -25,7 +28,7 @@ export default function ArtistGrid(props: ArtistGridProps) {
           </span>
           <span className={cardStyles.cardInformationWrapper}>
             <span className={cardStyles.cardName}>{artist.name}</span>
-            <span className={cardStyles.cardPrice}>{artist.cardCount} cards</span>
+            <span className={cardStyles.cardPrice}>{t.cardCount(artist.cardCount)}</span>
           </span>
         </Link>
       ))}

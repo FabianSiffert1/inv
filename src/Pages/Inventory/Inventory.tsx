@@ -8,6 +8,7 @@ import { useCardsOfSets } from '../../util/api/pokemonTGC/hooks'
 import { noBaseParams, useCardNavigation } from '../../util/ui/cards/useCardNavigation'
 import { useVisibleEntries } from '../../util/ui/cards/useVisibleCards'
 import { FavoritesContext, FavoritesSource } from '../../util/ui/favorites/FavoritesProvider'
+import { useStrings } from '../../util/ui/language/LanguageProvider'
 import { useIsMobile } from '../../util/ui/useIsMobile'
 import CardList from '../Market/CardList/CardList'
 import cardListStyles from '../Market/CardList/CardList.module.scss'
@@ -20,6 +21,7 @@ export default function Inventory() {
   const { favorites, source, isLoading, error } = useContext(FavoritesContext)
   const { status, signIn } = useContext(AuthContext)
   const isMobile = useIsMobile()
+  const t = useStrings()
 
   const { openCardId, openCard, stepToCard, closeCard } = useCardNavigation(noBaseParams)
 
@@ -50,21 +52,21 @@ export default function Inventory() {
     <div className={styles.inventoryPage}>
       <div className={styles.backdrop} aria-hidden='true' />
       <PokemonSuggestions />
-      {!isLoading && !isFetching && allFavoriteEntries.length > 0 && <CardsValue entries={allFavoriteEntries} label='Favorites value' />}
+      {!isLoading && !isFetching && allFavoriteEntries.length > 0 && <CardsValue entries={allFavoriteEntries} label={t.favoritesValue} />}
       {error && (
         <div className={styles.error} role='alert'>
-          {error}
+          {t.favoritesErrors[error]}
         </div>
       )}
       {isLoading ? null : favorites.length == 0 ? (
         <div className={styles.inventory}>
-          <div className={styles.headline}>No favorites yet</div>
-          <div className={styles.detail}>Open a card and tap the star next to its name to keep it here.</div>
+          <div className={styles.headline}>{t.noFavorites}</div>
+          <div className={styles.detail}>{t.noFavoritesHint}</div>
           {status == 'signedOut' && (
             <>
-              <div className={styles.detail}>Sign in to keep favorites on every device.</div>
+              <div className={styles.detail}>{t.signInHint}</div>
               <button type='button' className={styles.signIn} onClick={() => void signIn()}>
-                Sign in with Google
+                {t.signInWithGoogle}
               </button>
             </>
           )}
@@ -96,19 +98,22 @@ interface FavoritesStatusProps {
 }
 
 function FavoritesStatus(props: FavoritesStatusProps) {
-  const countLabel = props.isLoading ? 'Loading favorites' : `${props.count} ${props.count == 1 ? 'favorite' : 'favorites'}`
+  const t = useStrings()
+  const countLabel = props.isLoading ? t.loadingFavorites : `${props.count} ${t.favoriteNoun(props.count)}`
 
   return (
     <div className={styles.headerStatus}>
       <span className={styles.pageCount}>{countLabel}</span>
-      <span className={styles.syncTag}>{props.source == 'cloud' ? 'synced' : 'on this device'}</span>
+      <span className={styles.syncTag}>{props.source == 'cloud' ? t.synced : t.onThisDevice}</span>
     </div>
   )
 }
 
 function FavoritesSkeleton({ count }: { count: number }) {
+  const t = useStrings()
+
   return (
-    <div className={cardListStyles.cardList} aria-busy='true' aria-label='Loading favorites'>
+    <div className={cardListStyles.cardList} aria-busy='true' aria-label={t.loadingFavorites}>
       {Array.from({ length: count }, (_, index) => (
         <div key={index} className={`${cardStyles.cardWrapper} ${styles.skeletonTile}`}>
           <div className={styles.skeletonImage} />

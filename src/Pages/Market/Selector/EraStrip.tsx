@@ -1,6 +1,6 @@
 import { useContext } from 'react'
 import { PokemonSet, PokemonTCGSeries } from '../../../util/api/pokemonTGC/model/PokemonSet'
-import { LanguageContext } from '../../../util/ui/language/LanguageProvider'
+import { LanguageContext, useStrings } from '../../../util/ui/language/LanguageProvider'
 import Dropdown from './Dropdown'
 import MobileSheet from './MobileSheet'
 import { OptionGridItem } from './OptionGrid'
@@ -34,14 +34,15 @@ export const eraOptions = (pokemonSets?: PokemonSet[], germanNames = false): Opt
 
 export default function EraStrip(props: EraStripProps) {
   const { germanNames } = useContext(LanguageContext)
+  const t = useStrings()
   const options = eraOptions(props.pokemonSets, germanNames)
 
   return (
     <>
       <Dropdown
         variant='era'
-        ariaLabel='Era'
-        placeholder='Select era'
+        ariaLabel={t.era}
+        placeholder={t.selectEra}
         options={options}
         disabled={options.length == 0}
         isOpen={props.isOpen && !props.isMobile}
@@ -51,7 +52,7 @@ export default function EraStrip(props: EraStripProps) {
       />
       {props.isMobile && props.isOpen && options.length > 0 && (
         <MobileSheet
-          title='Era'
+          title={t.era}
           options={options}
           selectedId={props.currentlySelectedPokemonSeries}
           onClose={() => props.setOpen(false)}

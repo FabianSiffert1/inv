@@ -8,6 +8,7 @@ import { PokemonCard, toCardEntries } from '../../util/api/pokemonTGC/model/Poke
 import { spriteUrl } from '../../util/api/pokemonTGC/model/Pokemon'
 import { noBaseParams, useCardNavigation } from '../../util/ui/cards/useCardNavigation'
 import { useVisibleCards } from '../../util/ui/cards/useVisibleCards'
+import { useStrings } from '../../util/ui/language/LanguageProvider'
 import { SearchContext } from '../../util/ui/search/SearchProvider'
 import { useIsMobile } from '../../util/ui/useIsMobile'
 import CardList from '../Market/CardList/CardList'
@@ -74,6 +75,7 @@ interface ArtistOverviewProps {
 
 function ArtistOverview(props: ArtistOverviewProps) {
   const { query } = useContext(SearchContext)
+  const t = useStrings()
   const artists = useMemo(() => props.artists ?? [], [props.artists])
   const visibleArtists = useMemo(() => matchingArtists(artists, query), [artists, query])
 
@@ -93,13 +95,13 @@ function ArtistOverview(props: ArtistOverviewProps) {
   return (
     <>
       <div className={styles.pageTitle}>
-        <h1 className={styles.pageHeadline}>Artists</h1>
-        {artists.length > 0 && <span className={styles.pageCount}>{artists.length} artists</span>}
+        <h1 className={styles.pageHeadline}>{t.artists}</h1>
+        {artists.length > 0 && <span className={styles.pageCount}>{t.artistCount(artists.length)}</span>}
       </div>
       {artists.length > 0 && visibleArtists.length == 0 && (
         <div className={styles.status}>
-          <div className={styles.headline}>No matching artists</div>
-          <div className={styles.detail}>Try a different name.</div>
+          <div className={styles.headline}>{t.noMatchingArtists}</div>
+          <div className={styles.detail}>{t.tryDifferentName}</div>
         </div>
       )}
       <div className={styles.listWrapper}>
@@ -118,6 +120,7 @@ interface ArtistCardsProps {
 
 function ArtistCards(props: ArtistCardsProps) {
   const { artist, cards } = props
+  const t = useStrings()
   const visibleCards = useVisibleCards(cards)
   const { openCardId, openCard, stepToCard, closeCard } = useCardNavigation(noBaseParams)
 
@@ -134,10 +137,10 @@ function ArtistCards(props: ArtistCardsProps) {
             />
           )}
           <h1 className={styles.pageHeadline}>{artist.name}</h1>
-          <span className={styles.pageCount}>{artist.cardCount} cards</span>
-          <span className={styles.pageMeta}>{artist.setCount} sets</span>
+          <span className={styles.pageCount}>{t.cardCount(artist.cardCount)}</span>
+          <span className={styles.pageMeta}>{t.setCount(artist.setCount)}</span>
           <Link className={styles.backLink} to={artistsPath} onClick={() => window.scrollTo(0, 0)}>
-            <span aria-hidden='true'>←</span> All artists
+            <span aria-hidden='true'>←</span> {t.allArtists}
           </Link>
         </div>
       )}

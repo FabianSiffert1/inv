@@ -1,6 +1,7 @@
 import { useContext, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { FavoritesContext } from '../../util/ui/favorites/FavoritesProvider'
+import { useStrings } from '../../util/ui/language/LanguageProvider'
 import { useModalBehaviour } from '../../util/ui/useModalBehaviour'
 import { StarIcon } from '../FavoriteButton/FavoriteButton'
 import styles from './MergeFavoritesDialog.module.scss'
@@ -24,7 +25,8 @@ interface MergeFavoritesPromptProps {
 function MergeFavoritesPrompt(props: MergeFavoritesPromptProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   useModalBehaviour(containerRef, props.onDismiss)
-  const noun = props.count == 1 ? 'favorite' : 'favorites'
+  const t = useStrings()
+  const noun = t.favoriteNoun(props.count)
 
   return createPortal(
     <div className={styles.wrapper}>
@@ -33,22 +35,18 @@ function MergeFavoritesPrompt(props: MergeFavoritesPromptProps) {
         <div className={styles.titleRow}>
           <StarIcon />
           <h2 className={styles.headline} id='merge-favorites-title'>
-            Move your favorites online?
+            {t.mergeTitle}
           </h2>
         </div>
-        <p className={styles.detail}>
-          You have {props.count} {noun} saved on this device. Moving them to your account keeps them on every device you sign in on.
-        </p>
-        <p className={styles.detail}>
-          Favorites already on your account stay as they are. This only adds. The copy on this device stays until the move has gone through.
-        </p>
-        <p className={styles.detail}>Heads up: this is new and comes without guarantees.</p>
+        <p className={styles.detail}>{t.mergeBody(props.count, noun)}</p>
+        <p className={styles.detail}>{t.mergeAddsOnly}</p>
+        <p className={styles.detail}>{t.mergeWarning}</p>
         <div className={styles.actions}>
           <button type='button' className={styles.secondaryButton} onClick={props.onDismiss}>
-            Not now
+            {t.notNow}
           </button>
           <button type='button' className={styles.primaryButton} onClick={props.onConfirm}>
-            Move {props.count} {noun}
+            {t.mergeConfirm(props.count, noun)}
           </button>
         </div>
       </div>

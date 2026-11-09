@@ -1,6 +1,7 @@
 import { useContext } from 'react'
 import { PokemonCard } from '../../util/api/pokemonTGC/model/PokemonCard'
 import { FavoritesContext } from '../../util/ui/favorites/FavoritesProvider'
+import { useStrings } from '../../util/ui/language/LanguageProvider'
 import styles from './FavoriteButton.module.scss'
 
 interface FavoriteButtonProps {
@@ -13,8 +14,8 @@ interface FavoriteButtonProps {
 export function FavoriteButton({ card, print, small = false, showPrint = false }: FavoriteButtonProps) {
   const { isFavorite, toggleFavorite } = useContext(FavoritesContext)
   const isFavorited = isFavorite(card.id, print)
-  const subject = print == undefined ? '' : ` ${print}`
-  const label = isFavorited ? `Remove${subject} from favorites` : `Add${subject} to favorites`
+  const t = useStrings()
+  const label = isFavorited ? t.removeFromFavorites(print) : t.addToFavorites(print)
   const classNames = [
     styles.favoriteButton,
     isFavorited ? styles.favorited : '',

@@ -1,6 +1,6 @@
 import { useContext } from 'react'
 import { PokemonSet, PokemonSetName, PokemonTCGSeries } from '../../../util/api/pokemonTGC/model/PokemonSet'
-import { LanguageContext, localizedName } from '../../../util/ui/language/LanguageProvider'
+import { LanguageContext, localizedName, useStrings } from '../../../util/ui/language/LanguageProvider'
 import Dropdown from './Dropdown'
 import MobileSheet from './MobileSheet'
 import { OptionGridItem } from './OptionGrid'
@@ -27,14 +27,15 @@ export const setOptionsOfSeries = (pokemonSets?: PokemonSet[], series?: PokemonT
 
 export default function SetStrip(props: SetStripProps) {
   const { germanNames } = useContext(LanguageContext)
+  const t = useStrings()
   const options = setOptionsOfSeries(props.pokemonSets, props.currentlySelectedPokemonSeries, germanNames)
 
   return (
     <>
       <Dropdown
         variant='set'
-        ariaLabel='Set'
-        placeholder='Select set'
+        ariaLabel={t.set}
+        placeholder={t.selectSet}
         options={options}
         cachedIds={props.cachedSetNames}
         disabled={options.length == 0}
@@ -45,7 +46,7 @@ export default function SetStrip(props: SetStripProps) {
       />
       {props.isMobile && props.isOpen && options.length > 0 && (
         <MobileSheet
-          title='Set'
+          title={t.set}
           options={options}
           cachedIds={props.cachedSetNames}
           selectedId={props.currentlySelectedPokemonSet}

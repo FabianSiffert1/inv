@@ -4,7 +4,8 @@ import { formatSetReleaseDate } from '../../../util/format/date'
 import { rarityOf, rarityTier, RarityTier } from '../../../util/ui/sort/rarity'
 import { releaseAgeBucketOf } from '../../../util/ui/sort/releaseAge'
 import { SortContext } from '../../../util/ui/sort/SortProvider'
-import { LanguageContext, localizedName } from '../../../util/ui/language/LanguageProvider'
+import { LanguageContext, localizedName, useStrings } from '../../../util/ui/language/LanguageProvider'
+import { Strings } from '../../../util/ui/language/strings'
 import { useIsMobile } from '../../../util/ui/useIsMobile'
 import styles from './CardList.module.scss'
 import { Card } from './Components/Card/Card'
@@ -43,18 +44,18 @@ const raritySections = (entries: CardEntry[]): CardSection[] =>
     return { key: rarity, title: rarity, tier: rarityTier(rarity), entries: group }
   })
 
-const releaseSpan = (entries: CardEntry[]): string => {
-  const newest = formatSetReleaseDate(entries[0].card.set.releaseDate)
-  const oldest = formatSetReleaseDate(entries[entries.length - 1].card.set.releaseDate)
-  return newest == oldest ? newest : `${oldest} to ${newest}`
+const releaseSpan = (entries: CardEntry[], t: Strings): string => {
+  const newest = formatSetReleaseDate(entries[0].card.set.releaseDate, t)
+  const oldest = formatSetReleaseDate(entries[entries.length - 1].card.set.releaseDate, t)
+  return newest == oldest ? newest : t.range(oldest, newest)
 }
 
-const releaseAgeSections = (entries: CardEntry[]): CardSection[] => {
+const releaseAgeSections = (entries: CardEntry[], t: Strings): CardSection[] => {
   const now = new Date()
   const bucketOf = (card: PokemonCard) => releaseAgeBucketOf(card.set.releaseDate, now)
-  return groupConsecutive(entries, (card) => bucketOf(card).label).map((group) => {
+  return groupConsecutive(entries, (card) => bucketOf(card).age).map((group) => {
     const bucket = bucketOf(group[0].card)
-    return { key: bucket.label, title: bucket.label, subtitle: releaseSpan(group), tier: bucket.tier, entries: group }
+    return { key: bucket.age, title: t.releaseAges[bucket.age], subtitle: releaseSpan(group, t), tier: bucket.tier, entries: group }
   })
 }
 
@@ -85,6 +86,7 @@ const tierClassNames: Record<RarityTier, string> = {
 export default function CardList(props: CardListProps) {
   const { sortMode } = useContext(SortContext)
   const { germanNames } = useContext(LanguageContext)
+  const t = useStrings()
   const isMobile = useIsMobile()
   const entries = props.entries ?? []
   const openIndex = entries.findIndex((entry) => cardEntryKey(entry) == props.openCardId)
@@ -122,7 +124,7 @@ export default function CardList(props: CardListProps) {
     sortMode == 'rarity'
       ? raritySections(entries)
       : sortMode == 'release' && spansSeveralSets(entries)
-        ? releaseAgeSections(entries)
+        ? releaseAgeSections(entries, t)
         : sortMode == 'name'
           ? nameSections(entries, germanNames)
           : undefined
@@ -139,9 +141,7 @@ export default function CardList(props: CardListProps) {
             <h2 className={styles.sectionTitle} title={section.subtitle}>
               {section.title}
             </h2>
-            <span className={styles.sectionCount}>
-              {section.entries.length} {section.entries.length == 1 ? 'card' : 'cards'}
-            </span>
+            <span className={styles.sectionCount}>{t.cardCount(section.entries.length)}</span>
             <span className={styles.sectionRule} aria-hidden='true' />
           </div>
           <div className={styles.cardList}>{section.entries.map(renderCard)}</div>

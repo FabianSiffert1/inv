@@ -2,7 +2,7 @@ import { KeyboardEvent, useContext, useMemo, useState } from 'react'
 import { CopyButton } from '../../Components/CopyButton/CopyButton'
 import { Pokemon, spriteUrl } from '../../util/api/pokemonTGC/model/Pokemon'
 import { pokemonShareLink } from '../../util/shareLinks'
-import { LanguageContext, localizedName } from '../../util/ui/language/LanguageProvider'
+import { LanguageContext, localizedName, useStrings } from '../../util/ui/language/LanguageProvider'
 import { useIsMobile } from '../../util/ui/useIsMobile'
 import Dropdown from '../Market/Selector/Dropdown'
 import MobileSheet from '../Market/Selector/MobileSheet'
@@ -22,6 +22,7 @@ interface PokedexSelectorProps {
 
 export default function PokedexSelector(props: PokedexSelectorProps) {
   const { germanNames } = useContext(LanguageContext)
+  const t = useStrings()
   const isMobile = useIsMobile()
   const [isGenerationOpen, setGenerationOpen] = useState(props.selectedGeneration == undefined)
   const [isPokemonOpen, setPokemonOpen] = useState(false)
@@ -89,8 +90,8 @@ export default function PokedexSelector(props: PokedexSelectorProps) {
     <input
       className={isMobile ? `${styles.filter} ${styles.sheetFilter}` : styles.filter}
       type='search'
-      placeholder='Name or #'
-      aria-label='Filter Pokémon'
+      placeholder={t.nameOrNumber}
+      aria-label={t.filterPokemon}
       value={filter}
       onChange={(event) => setFilter(event.target.value)}
       onKeyDown={handleFilterKeyDown}
@@ -116,8 +117,8 @@ export default function PokedexSelector(props: PokedexSelectorProps) {
     <div className={`${selectorStyles.selector} ${styles.picker}`}>
       <Dropdown
         variant='era'
-        ariaLabel='Generation'
-        placeholder='Select generation'
+        ariaLabel={t.generation}
+        placeholder={t.selectGeneration}
         options={generationOptions}
         isOpen={isGenerationOpen && !isMobile}
         setOpen={openGeneration}
@@ -126,7 +127,7 @@ export default function PokedexSelector(props: PokedexSelectorProps) {
       />
       {isMobile && isGenerationOpen && (
         <MobileSheet
-          title='Generation'
+          title={t.generation}
           options={generationOptions}
           selectedId={props.selectedGeneration?.number.toString()}
           onClose={() => openGeneration(false)}
@@ -136,8 +137,8 @@ export default function PokedexSelector(props: PokedexSelectorProps) {
       {props.selectedGeneration != undefined && (
         <Dropdown
           variant='set'
-          ariaLabel='Pokémon'
-          placeholder='Select Pokémon'
+          ariaLabel={t.pokemon}
+          placeholder={t.selectPokemon}
           options={pokemonTriggerOptions}
           disabled={pokemonOfGeneration.length == 0}
           isOpen={isPokemonOpen && !isMobile}
@@ -149,7 +150,7 @@ export default function PokedexSelector(props: PokedexSelectorProps) {
       )}
       {isMobile && isPokemonOpen && (
         <MobileSheet
-          title='Pokémon'
+          title={t.pokemon}
           options={pokemonOptions}
           selectedId={selectedPokemonId}
           onClose={() => openPokemon(false)}
@@ -158,7 +159,7 @@ export default function PokedexSelector(props: PokedexSelectorProps) {
         />
       )}
       {props.selectedNumber != undefined && (
-        <CopyButton variant='share' value={pokemonShareLink(props.selectedNumber)} label='Copy link to this Pokémon' />
+        <CopyButton variant='share' value={pokemonShareLink(props.selectedNumber)} label={t.copyLinkToPokemon} />
       )}
     </div>
   )

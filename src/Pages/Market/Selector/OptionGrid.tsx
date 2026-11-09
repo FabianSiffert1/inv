@@ -1,4 +1,5 @@
 import React, { useRef } from 'react'
+import { useStrings } from '../../../util/ui/language/LanguageProvider'
 import styles from './OptionGrid.module.scss'
 
 export interface OptionGridItem {
@@ -20,6 +21,7 @@ const navigationKeys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home
 
 export default function OptionGrid(props: OptionGridProps) {
   const containerRef = useRef<HTMLDivElement>(null)
+  const t = useStrings()
 
   const focusOptionAt = (index: number) => {
     containerRef.current?.querySelectorAll('button')[index]?.focus()
@@ -77,7 +79,7 @@ export default function OptionGrid(props: OptionGridProps) {
               />
             )}
             <span className={styles.itemLabel}>{option.label}</span>
-            {props.cachedIds?.includes(option.id) && <span className={styles.cachedDot} role='img' aria-label='Stored offline' />}
+            {props.cachedIds?.includes(option.id) && <span className={styles.cachedDot} role='img' aria-label={t.storedOffline} />}
           </button>
         )
       })}

@@ -1,5 +1,6 @@
 import { ReactNode, useRef } from 'react'
 import { createPortal } from 'react-dom'
+import { useStrings } from '../../../util/ui/language/LanguageProvider'
 import { useModalBehaviour } from '../../../util/ui/useModalBehaviour'
 import styles from './MobileSheet.module.scss'
 import { OptionGridItem } from './OptionGrid'
@@ -17,6 +18,7 @@ interface MobileSheetProps {
 export default function MobileSheet(props: MobileSheetProps) {
   const sheetRef = useRef<HTMLDivElement>(null)
   useModalBehaviour(sheetRef, props.onClose)
+  const t = useStrings()
 
   return createPortal(
     <div className={styles.sheetWrapper}>
@@ -24,7 +26,7 @@ export default function MobileSheet(props: MobileSheetProps) {
       <div className={styles.sheet} ref={sheetRef} role='dialog' aria-modal='true' aria-label={props.title}>
         <div className={styles.sheetHeader}>
           <span className={styles.sheetTitle}>{props.title}</span>
-          <button type='button' className={styles.closeButton} aria-label='Close' onClick={props.onClose}>
+          <button type='button' className={styles.closeButton} aria-label={t.close} onClick={props.onClose}>
             ×
           </button>
         </div>
@@ -49,7 +51,7 @@ export default function MobileSheet(props: MobileSheetProps) {
                     />
                   )}
                   <span className={styles.optionLabel}>{option.label}</span>
-                  {props.cachedIds?.includes(option.id) && <span className={styles.cachedDot} role='img' aria-label='Stored offline' />}
+                  {props.cachedIds?.includes(option.id) && <span className={styles.cachedDot} role='img' aria-label={t.storedOffline} />}
                 </button>
               </li>
             )

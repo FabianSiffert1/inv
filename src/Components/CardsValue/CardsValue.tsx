@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { CardEntry } from '../../util/api/pokemonTGC/model/PokemonCard'
 import { printDisplayPrice } from '../../util/cardPrice'
 import { formatPrice } from '../../util/format/price'
+import { useStrings } from '../../util/ui/language/LanguageProvider'
 import styles from './CardsValue.module.scss'
 
 interface CardsValueProps {
@@ -11,6 +12,7 @@ interface CardsValueProps {
 }
 
 export default function CardsValue({ entries, label, meta }: CardsValueProps) {
+  const t = useStrings()
   const { total, pricedCount } = useMemo(() => {
     const euroPrices = entries
       .map((entry) => printDisplayPrice(entry.card, entry.print))
@@ -33,11 +35,7 @@ export default function CardsValue({ entries, label, meta }: CardsValueProps) {
       )}
       <span className={styles.label}>{label}</span>
       <span className={styles.amount}>{formatPrice(total)}</span>
-      {pricedCount < entries.length && (
-        <span className={styles.coverage}>
-          {pricedCount} of {entries.length} cards priced
-        </span>
-      )}
+      {pricedCount < entries.length && <span className={styles.coverage}>{t.pricedOf(pricedCount, entries.length)}</span>}
     </div>
   )
 }

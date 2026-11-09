@@ -1,4 +1,5 @@
 import { KeyboardEvent, useContext, useEffect, useRef } from 'react'
+import { useStrings } from '../../util/ui/language/LanguageProvider'
 import { SearchContext } from '../../util/ui/search/SearchProvider'
 import { MagnifyingGlassIcon } from './SearchIcon'
 import styles from './SearchToggle.module.scss'
@@ -10,7 +11,8 @@ interface SearchToggleProps {
 export default function SearchToggle({ floating = false }: SearchToggleProps) {
   const { query, setQuery, isSearchOpen, openSearch, closeSearch } = useContext(SearchContext)
   const inputRef = useRef<HTMLInputElement>(null)
-  const label = isSearchOpen ? 'Close search' : 'Search cards'
+  const t = useStrings()
+  const label = isSearchOpen ? t.closeSearch : t.searchCards
 
   useEffect(() => {
     if (isSearchOpen) {
@@ -33,8 +35,8 @@ export default function SearchToggle({ floating = false }: SearchToggleProps) {
         ref={inputRef}
         className={styles.searchField}
         type='search'
-        placeholder='Name, type, rarity, holo, #'
-        aria-label='Search cards'
+        placeholder={t.searchPlaceholder}
+        aria-label={t.searchCards}
         value={query}
         onChange={(event) => setQuery(event.target.value)}
         onKeyDown={handleKeyDown}

@@ -1,6 +1,8 @@
 import { ReactElement, useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { StarIcon } from '../../Components/FavoriteButton/FavoriteButton'
+import { useStrings } from '../../util/ui/language/LanguageProvider'
+import { Strings } from '../../util/ui/language/strings'
 import { MagnifyingGlassIcon } from '../SearchToggle/SearchIcon'
 import { CardBackIcon, PikachuIcon, SmeargleIcon } from './ModeIcons'
 import styles from './Title.module.scss'
@@ -12,44 +14,46 @@ type Mode = BrowseMode | PlaceMode
 const browseModes: BrowseMode[] = ['cards', 'dex', 'artists']
 const lastBrowseModeStorageKey = 'inv-last-mode'
 
+type ModeLabel = 'sets' | 'pokemon' | 'artists' | 'favorites' | 'search'
+
 interface ModeSettings {
-  label: string
+  label: ModeLabel
   icon: ReactElement
 }
 
 interface BrowseModeSettings extends ModeSettings {
   storageKey: string
   fallbackPath: string
-  switchLabel: string
+  switchLabel: keyof Pick<Strings, 'switchToSets' | 'switchToPokemon' | 'switchToArtists'>
 }
 
 const browseModeSettings: Record<BrowseMode, BrowseModeSettings> = {
   cards: {
     storageKey: 'inv-last-cards-location',
     fallbackPath: '/',
-    label: 'Sets',
-    switchLabel: 'Switch to sets',
+    label: 'sets',
+    switchLabel: 'switchToSets',
     icon: <CardBackIcon />
   },
   dex: {
     storageKey: 'inv-last-dex-location',
     fallbackPath: '/pokemon',
-    label: 'Pokémon',
-    switchLabel: 'Switch to Pokémon',
+    label: 'pokemon',
+    switchLabel: 'switchToPokemon',
     icon: <PikachuIcon />
   },
   artists: {
     storageKey: 'inv-last-artists-location',
     fallbackPath: '/artists',
-    label: 'Artists',
-    switchLabel: 'Switch to artists',
+    label: 'artists',
+    switchLabel: 'switchToArtists',
     icon: <SmeargleIcon />
   }
 }
 
 const placeModeSettings: Record<PlaceMode, ModeSettings> = {
   favorites: {
-    label: 'Favorites',
+    label: 'favorites',
     icon: (
       <span className={styles.modeStar}>
         <StarIcon />
@@ -57,7 +61,7 @@ const placeModeSettings: Record<PlaceMode, ModeSettings> = {
     )
   },
   search: {
-    label: 'Search',
+    label: 'search',
     icon: (
       <span className={styles.modeStar}>
         <MagnifyingGlassIcon />
@@ -122,6 +126,7 @@ export default function Title() {
   const currentMode = modeOfPath(location.pathname)
   const [pendingMode, setPendingMode] = useState<Mode | undefined>(undefined)
   const shownMode = pendingMode ?? currentMode
+  const t = useStrings()
 
   useEffect(() => {
     if (!isBrowseMode(currentMode)) {
@@ -138,14 +143,14 @@ export default function Title() {
   const targetMode = isBrowseMode(shownMode) ? nextBrowseMode(shownMode) : readLastBrowseMode()
   const targetSettings = browseModeSettings[targetMode]
   const target = readBrowseLocation(targetMode)
-  const label = isBrowseMode(shownMode) ? targetSettings.switchLabel : `Back to ${targetSettings.label}`
+  const label = isBrowseMode(shownMode) ? t[targetSettings.switchLabel] : t.backTo(t[targetSettings.label])
   const shownSettings = isBrowseMode(shownMode) ? browseModeSettings[shownMode] : placeModeSettings[shownMode]
 
   return (
     <div className={styles.title}>
       <Link className={styles.modeToggle} to={target} aria-label={label} title={label} onClick={() => setPendingMode(targetMode)}>
         <span className={styles.modeIcon}>{shownSettings.icon}</span>
-        <span className={styles.modeLabel}>{shownSettings.label}</span>
+        <span className={styles.modeLabel}>{t[shownSettings.label]}</span>
       </Link>
     </div>
   )

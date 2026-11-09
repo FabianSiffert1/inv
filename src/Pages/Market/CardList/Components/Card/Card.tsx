@@ -1,6 +1,6 @@
 import { MouseEvent } from 'react'
 import { PokemonCard } from '../../../../../util/api/pokemonTGC/model/PokemonCard'
-import { useLocalizedName } from '../../../../../util/ui/language/LanguageProvider'
+import { useLocalizedName, useStrings } from '../../../../../util/ui/language/LanguageProvider'
 import { printDisplayPrice } from '../../../../../util/cardPrice'
 import { formatPriceParts } from '../../../../../util/format/price'
 import { CardDetails, CardNavigationProps } from '../CardDetails/CardDetails'
@@ -83,6 +83,7 @@ export function Card({ card, print, isDetailsOpen, isMobile, showNumber = false,
 }
 
 function CardPrice({ card, print }: CardProps & { print?: string }) {
+  const t = useStrings()
   const displayPrice = printDisplayPrice(card, print)
   const formatted = displayPrice && formatPriceParts(displayPrice.amount, displayPrice.currency)
   const priceLabel = formatted && (
@@ -94,7 +95,7 @@ function CardPrice({ card, print }: CardProps & { print?: string }) {
   return (
     <div className={displayPrice?.source == 'tcgplayer' ? `${styles.cardPrice} ${styles.fallbackPrice}` : styles.cardPrice}>
       {displayPrice == undefined || priceLabel == undefined ? (
-        <span className={styles.noPrice}>No price</span>
+        <span className={styles.noPrice}>{t.noPrice}</span>
       ) : displayPrice.url ? (
         <ExternalLink href={displayPrice.url} plain>
           {priceLabel}

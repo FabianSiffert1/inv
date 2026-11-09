@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useStrings } from '../../util/ui/language/LanguageProvider'
 import styles from './CopyButton.module.scss'
 
 interface CopyButtonProps {
@@ -14,6 +15,7 @@ const canShareNatively = () => typeof navigator.share == 'function' && window.ma
 export function CopyButton(props: CopyButtonProps) {
   const [isCopied, setCopied] = useState(false)
   const feedbackTimeout = useRef<number | undefined>(undefined)
+  const t = useStrings()
 
   useEffect(() => () => window.clearTimeout(feedbackTimeout.current), [])
 
@@ -38,7 +40,7 @@ export function CopyButton(props: CopyButtonProps) {
   }
 
   return (
-    <button type='button' className={styles.copyButton} aria-label={isCopied ? 'Copied' : props.label} title={props.label} onClick={copy}>
+    <button type='button' className={styles.copyButton} aria-label={isCopied ? t.copied : props.label} title={props.label} onClick={copy}>
       {isCopied ? <CheckIcon /> : props.variant == 'share' ? <LinkIcon /> : <CopyIcon />}
     </button>
   )

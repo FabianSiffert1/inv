@@ -1,4 +1,6 @@
 import { HttpError, isNetworkError } from '../../util/api/pokemonTGC/querys'
+import { useStrings } from '../../util/ui/language/LanguageProvider'
+import { Strings } from '../../util/ui/language/strings'
 import styles from './CardListStatus.module.scss'
 
 interface CardListStatusProps {
@@ -10,20 +12,22 @@ interface CardListStatusProps {
   hasNoSearchMatches: boolean
 }
 
-const messageForError = (error: unknown): string => {
+const messageForError = (error: unknown, t: Strings): string => {
   if (error instanceof HttpError && error.status == 404) {
-    return 'No card data is available for this yet. Try again later.'
+    return t.loadErrorNotFound
   }
   if (error instanceof HttpError && error.status >= 500) {
-    return 'The server is currently unavailable. Try again later.'
+    return t.loadErrorServer
   }
   if (isNetworkError(error)) {
-    return 'Could not reach the server. Check your connection.'
+    return t.loadErrorNetwork
   }
-  return 'Could not load cards. Reload the page to try again.'
+  return t.loadErrorGeneric
 }
 
 export default function CardListStatus(props: CardListStatusProps) {
+  const t = useStrings()
+
   if (props.isFetching) {
     return undefined
   }
@@ -31,8 +35,8 @@ export default function CardListStatus(props: CardListStatusProps) {
   if (props.error != null) {
     return (
       <div className={styles.status} role='alert'>
-        <div className={styles.headline}>Cards could not be loaded</div>
-        <div className={styles.detail}>{messageForError(props.error)}</div>
+        <div className={styles.headline}>{t.cardsNotLoaded}</div>
+        <div className={styles.detail}>{messageForError(props.error, t)}</div>
       </div>
     )
   }
@@ -41,12 +45,8 @@ export default function CardListStatus(props: CardListStatusProps) {
     return (
       <div className={styles.status}>
         <div className={styles.hint}>
-          <div className={styles.headline}>{props.hasSelectedEra ? 'Now pick a set' : 'Welcome, trainer'}</div>
-          <div className={styles.detail}>
-            {props.hasSelectedEra
-              ? 'Choose a set from the menu above to browse its cards and current market prices.'
-              : 'Start by choosing an era from the menu above, then pick a set to browse its cards and current market prices.'}
-          </div>
+          <div className={styles.headline}>{props.hasSelectedEra ? t.nowPickSet : t.welcomeTrainer}</div>
+          <div className={styles.detail}>{props.hasSelectedEra ? t.pickSetHint : t.pickEraHint}</div>
         </div>
       </div>
     )
@@ -55,8 +55,8 @@ export default function CardListStatus(props: CardListStatusProps) {
   if (props.cardCount == 0) {
     return (
       <div className={styles.status}>
-        <div className={styles.headline}>No cards found</div>
-        <div className={styles.detail}>There are no cards for this set yet.</div>
+        <div className={styles.headline}>{t.noCardsFound}</div>
+        <div className={styles.detail}>{t.noCardsInSet}</div>
       </div>
     )
   }
@@ -64,8 +64,8 @@ export default function CardListStatus(props: CardListStatusProps) {
   if (props.hasNoSearchMatches) {
     return (
       <div className={styles.status}>
-        <div className={styles.headline}>No matching cards</div>
-        <div className={styles.detail}>Try a different name, type, rarity or card number.</div>
+        <div className={styles.headline}>{t.noMatchingCards}</div>
+        <div className={styles.detail}>{t.noMatchingCardsHint}</div>
       </div>
     )
   }
