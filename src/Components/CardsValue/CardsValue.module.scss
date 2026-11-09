@@ -3,13 +3,14 @@
 .value {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
+  align-items: center;
   gap: 0.25rem 0.75rem;
   padding-top: 1.5rem;
 }
 
 .meta {
   flex-basis: 100%;
+  margin-bottom: 0.5rem;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
@@ -29,7 +30,11 @@
 }
 
 .amount {
+  @include surface($surfaceRadiusSmall);
+  @include pastel(var(--elementYellow), 45%);
   @include typoFieldValue;
+  padding: 0.25rem 0.6rem;
+  color: var(--color);
   font-variant-numeric: tabular-nums;
 }
 
