@@ -21,7 +21,7 @@ export interface SearchableEntry extends SearchIndexEntry {
 export const searchPath = (query: string) => `/search?${new URLSearchParams({ q: query })}`
 
 export const prepareSearchIndex = (entries: SearchIndexEntry[]): SearchableEntry[] =>
-  entries.map((entry) => ({ ...entry, haystack: `${entry.name}\n${entry.germanName ?? ''}`.toLowerCase() }))
+  entries.map((entry) => ({ ...entry, haystack: `${entry.name}\n${entry.germanName ?? ''}\n${entry.rarity ?? ''}`.toLowerCase() }))
 
 export const matchesSearchIndex = (entry: SearchableEntry, normalizedQuery: string): boolean => entry.haystack.includes(normalizedQuery)
 
