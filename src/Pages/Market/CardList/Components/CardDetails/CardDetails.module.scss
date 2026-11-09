@@ -243,12 +243,6 @@
   @include pastel(var(--elementYellow), 45%);
 }
 
-.setSymbol {
-  width: 1.2rem;
-  height: 1.2rem;
-  object-fit: contain;
-}
-
 .definitionList {
   margin: 0;
   display: grid;

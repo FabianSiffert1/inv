@@ -22,8 +22,7 @@ export const setOptionsOfSeries = (pokemonSets?: PokemonSet[], series?: PokemonT
     .sort((a, b) => b.releaseDate.localeCompare(a.releaseDate))
     .map((pokemonSet) => ({
       id: pokemonSet.name,
-      label: localizedName(pokemonSet, germanNames),
-      imageUrl: pokemonSet.images.symbol
+      label: localizedName(pokemonSet, germanNames)
     }))
 
 export default function SetStrip(props: SetStripProps) {
