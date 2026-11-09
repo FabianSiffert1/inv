@@ -29,6 +29,28 @@
     color: color-mix(in srgb, var(--color) 50%, transparent);
   }
 
+  &::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+    appearance: none;
+    box-sizing: border-box;
+    width: 1.2rem;
+    height: 1.2rem;
+    margin-left: 0.4rem;
+    border: 1.5px solid transparent;
+    border-radius: 50%;
+    background:
+      linear-gradient(45deg, transparent 43%, var(--color) 43% 57%, transparent 57%) center / 55% 55% no-repeat,
+      linear-gradient(-45deg, transparent 43%, var(--color) 43% 57%, transparent 57%) center / 55% 55% no-repeat var(--background-color);
+    cursor: pointer;
+    transition:
+      background-color 150ms ease,
+      border-color 150ms ease;
+  }
+
+  &::-webkit-search-cancel-button:hover {
+    border-color: var(--elementBrown);
+  }
+
   &:not(:placeholder-shown)::-webkit-search-cancel-button {
     opacity: 1;
     pointer-events: auto;
