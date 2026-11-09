@@ -1,6 +1,7 @@
 import React, { createContext, useCallback, useEffect, useMemo, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { CardEntry, PokemonCard, toCardEntries } from '../../api/pokemonTGC/model/PokemonCard'
+import { compareWithinSetGroup } from '../../api/pokemonTGC/setGroups'
 import { printDisplayPrice } from '../../cardPrice'
 import { toEur } from '../../format/price'
 import { Urgency } from '../favorites/Favorite'
@@ -135,7 +136,7 @@ export const sortEntries = (
     b.card.set.releaseDate.localeCompare(a.card.set.releaseDate) || collator.compare(a.card.number, b.card.number)
   const compare: Record<SortMode, (a: CardEntry, b: CardEntry) => number> = {
     price: comparePrice,
-    number: (a, b) => direction * collator.compare(a.card.number, b.card.number),
+    number: (a, b) => direction * (compareWithinSetGroup(a.card.set.id, b.card.set.id) || collator.compare(a.card.number, b.card.number)),
     name: (a, b) => direction * collator.compare(localizedName(a.card, germanNames), localizedName(b.card, germanNames)),
     rarity: (a, b) => compareRarity(a, b) || comparePrice(a, b),
     release: (a, b) => direction * compareRelease(a, b),

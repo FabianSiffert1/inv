@@ -1,4 +1,4 @@
-import { useQueries, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQueries, useQuery, useQueryClient, UseQueryResult } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { defaultEurPerUsd } from '../../format/price'
 import { Artist } from './model/Artist'
@@ -16,6 +16,7 @@ import {
   fetchSetsSnapshot,
   SetsSnapshot
 } from './querys'
+import { setIdsOfGroup } from './setGroups'
 
 const setsSnapshotStaleTime = 1000 * 60 * 60
 
@@ -64,20 +65,42 @@ export const useCardsOfSet = (setName?: PokemonSetName) => {
   })
 }
 
+const cardsOfSetQuery = (setId: string, snapshot?: SetsSnapshot) => {
+  const setName = snapshot?.sets.find((candidate) => candidate.id == setId)?.name
+  return {
+    queryKey: ['cards', 'set', setName, snapshot?.generatedAt],
+    queryFn: ({ signal }: { signal?: AbortSignal }) => fetchAllCardsOfASet(setId, signal),
+    enabled: setName != undefined,
+    staleTime: Infinity
+  }
+}
+
 export const useCardsOfSets = (setIds: string[]) => {
   const { data: snapshot } = useSetsSnapshot()
-  const generatedAt = snapshot?.generatedAt
 
   return useQueries({
-    queries: setIds.map((setId) => {
-      const setName = snapshot?.sets.find((candidate) => candidate.id == setId)?.name
-      return {
-        queryKey: ['cards', 'set', setName, generatedAt],
-        queryFn: ({ signal }: { signal?: AbortSignal }) => fetchAllCardsOfASet(setId, signal),
-        enabled: setName != undefined,
-        staleTime: Infinity
-      }
-    })
+    queries: setIds.map((setId) => cardsOfSetQuery(setId, snapshot))
+  })
+}
+
+const combineSetGroupQueries = (results: UseQueryResult<PokemonCard[]>[]) => {
+  const [mainSetResult] = results
+  return {
+    data:
+      mainSetResult?.data == undefined || results.some((result) => result.isPending && result.fetchStatus != 'idle')
+        ? undefined
+        : results.flatMap((result) => result.data ?? []),
+    isFetching: results.some((result) => result.isFetching),
+    error: mainSetResult?.error ?? null
+  }
+}
+
+export const useCardsOfSetGroup = (setId?: string) => {
+  const { data: snapshot } = useSetsSnapshot()
+
+  return useQueries({
+    queries: (setId == undefined ? [] : setIdsOfGroup(setId)).map((groupSetId) => cardsOfSetQuery(groupSetId, snapshot)),
+    combine: combineSetGroupQueries
   })
 }
 

@@ -6,6 +6,7 @@ import { UrgencyPicker } from '../../../../../Components/UrgencyPicker/UrgencyPi
 import { PokemonCard, PokemonCardProp } from '../../../../../util/api/pokemonTGC/model/PokemonCard'
 import { spriteUrl } from '../../../../../util/api/pokemonTGC/model/Pokemon'
 import { setPath } from '../../../../../util/api/pokemonTGC/model/PokemonSet'
+import { mainSetIdOf } from '../../../../../util/api/pokemonTGC/setGroups'
 import { formatSetReleaseDate } from '../../../../../util/format/date'
 import { useLocalizedName, useStrings } from '../../../../../util/ui/language/LanguageProvider'
 import { SearchContext } from '../../../../../util/ui/search/SearchProvider'
@@ -135,7 +136,8 @@ export function SetInformation(props: PokemonCardProp) {
   const setName = useLocalizedName(props.card.set)
   const seriesName = useLocalizedName({ name: props.card.set.series, germanName: props.card.set.germanSeries })
   const [searchParams] = useSearchParams()
-  const isCurrentSet = searchParams.get('set') == props.card.set.id
+  const mainSetId = mainSetIdOf(props.card.set.id)
+  const isCurrentSet = searchParams.get('set') == mainSetId
   const { closeSearch } = useContext(SearchContext)
   const t = useStrings()
 
@@ -147,7 +149,7 @@ export function SetInformation(props: PokemonCardProp) {
         ) : (
           <Link
             className={`${styles.panelLink} ${styles.setLink}`}
-            to={setPath(props.card.set.id)}
+            to={setPath(mainSetId)}
             onClick={() => {
               closeSearch()
               window.scrollTo(0, 0)

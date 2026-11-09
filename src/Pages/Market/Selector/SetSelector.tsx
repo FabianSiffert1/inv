@@ -1,6 +1,7 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { CopyButton } from '../../../Components/CopyButton/CopyButton'
 import { useAllSets } from '../../../util/api/pokemonTGC/hooks'
+import { isSideSet } from '../../../util/api/pokemonTGC/setGroups'
 import { PokemonSet, PokemonSetName, PokemonTCGSeries } from '../../../util/api/pokemonTGC/model/PokemonSet'
 import { useCachedSetNames } from '../../../util/api/pokemonTGC/useCachedSetNames'
 import { setShareLink } from '../../../util/shareLinks'
@@ -19,6 +20,7 @@ interface SetSelectorProps {
 
 export default function SetSelector(props: SetSelectorProps) {
   const { data: sets } = useAllSets()
+  const mainSets = useMemo(() => sets?.filter((set) => !isSideSet(set.id)), [sets])
   const isMobile = useIsMobile()
   const cachedSetNames = useCachedSetNames()
   const t = useStrings()
@@ -70,7 +72,7 @@ export default function SetSelector(props: SetSelectorProps) {
         isMobile={isMobile}
       />
       <SetStrip
-        pokemonSets={sets}
+        pokemonSets={mainSets}
         currentlySelectedPokemonSeries={props.selectedSeries}
         currentlySelectedPokemonSet={props.selectedSet?.name}
         setCurrentlySelectedPokemonSet={selectSet}

@@ -5,7 +5,8 @@ import SearchToggle from '../../Header/SearchToggle/SearchToggle'
 import { HeaderContext } from '../../Header/HeaderProvider'
 import { toCardEntries } from '../../util/api/pokemonTGC/model/PokemonCard'
 import { PokemonSet, PokemonTCGSeries } from '../../util/api/pokemonTGC/model/PokemonSet'
-import { useAllSets, useCardsOfSet } from '../../util/api/pokemonTGC/hooks'
+import { useAllSets, useCardsOfSetGroup } from '../../util/api/pokemonTGC/hooks'
+import { isSideSet, mainSetIdOf } from '../../util/api/pokemonTGC/setGroups'
 import { useCardNavigation } from '../../util/ui/cards/useCardNavigation'
 import { useVisibleCards } from '../../util/ui/cards/useVisibleCards'
 import { useStrings } from '../../util/ui/language/LanguageProvider'
@@ -32,7 +33,16 @@ export default function Market() {
   const selectedSet = sets?.find((set) => set.id == selectedSetId)
   const currentlySelectedPokemonSet = selectedSet?.name
   const currentlySelectedPokemonSeries = selectedSet?.series ?? chosenPokemonSeries
-  const { data: cards, isFetching: areCardsFetching, error: cardsError } = useCardsOfSet(currentlySelectedPokemonSet)
+  const { data: cards, isFetching: areCardsFetching, error: cardsError } = useCardsOfSetGroup(selectedSet?.id)
+
+  useEffect(() => {
+    if (selectedSetId == undefined || !isSideSet(selectedSetId)) {
+      return
+    }
+    const params = new URLSearchParams(searchParams)
+    params.set('set', mainSetIdOf(selectedSetId))
+    setSearchParams(params, { replace: true })
+  }, [selectedSetId, searchParams, setSearchParams])
   const visibleCards = useVisibleCards(cards)
 
   const isFetching = areSetsFetching || areCardsFetching
