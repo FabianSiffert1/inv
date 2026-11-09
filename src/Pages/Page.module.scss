@@ -14,9 +14,13 @@
 .sprite {
   width: 4rem;
   height: 4rem;
-  margin: -0.75rem -0.5rem -0.75rem -0.75rem;
+  margin: -0.75rem -0.5rem -0.75rem 0;
   object-fit: contain;
   image-rendering: pixelated;
+
+  @media (max-width: $smallScreen - 1px) {
+    margin-bottom: 0;
+  }
 }
 
 .pageHeadline {
