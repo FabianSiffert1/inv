@@ -68,7 +68,7 @@ export default function HeaderMenu() {
       {isOpen && (
         <div className={styles.panel} role='dialog' aria-label={t.menu}>
           <MenuRow icon={darkTheme ? <EspeonIcon /> : <UmbreonIcon />} onClick={() => choose(toggleTheme)}>
-            {t.toggleTheme}
+            {darkTheme ? t.lightTheme : t.darkTheme}
           </MenuRow>
           <MenuRow icon={germanNames ? <TeacupIcon /> : <PretzelIcon />} onClick={() => choose(toggleLanguage)}>
             {t.toggleLanguage}

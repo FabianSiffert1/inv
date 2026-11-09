@@ -126,8 +126,9 @@ const en = {
   menu: 'Menu',
   menuSignedInAs: (account: string) => `Menu, signed in as ${account}`,
   account: 'account',
-  toggleTheme: 'Toggle Theme',
-  toggleLanguage: 'Toggle Language',
+  darkTheme: 'Dark mode',
+  lightTheme: 'Light mode',
+  toggleLanguage: 'German',
   signOut: 'Sign out',
   signingIn: 'Signing in',
 
@@ -297,8 +298,9 @@ const de: Strings = {
   menu: 'Menü',
   menuSignedInAs: (account: string) => `Menü, angemeldet als ${account}`,
   account: 'Konto',
-  toggleTheme: 'Design wechseln',
-  toggleLanguage: 'Sprache wechseln',
+  darkTheme: 'Dunkler Modus',
+  lightTheme: 'Heller Modus',
+  toggleLanguage: 'Englisch',
   signOut: 'Abmelden',
   signingIn: 'Anmeldung läuft',
 
