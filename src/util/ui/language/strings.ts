@@ -154,12 +154,9 @@ const en = {
   } as Record<FavoritesError, string>,
 
   sets: 'Sets',
-  switchToSets: 'Switch to sets',
-  switchToPokemon: 'Switch to Pokémon',
   artists: 'Artists',
-  switchToArtists: 'Switch to artists',
   search: 'Search',
-  backTo: (mode: string) => `Back to ${mode}`,
+  switchMode: 'Switch view',
 
   noMatchingArtists: 'No matching artists',
   tryDifferentName: 'Try a different name.',
@@ -328,12 +325,9 @@ const de: Strings = {
   },
 
   sets: 'Sets',
-  switchToSets: 'Zu Sets wechseln',
-  switchToPokemon: 'Zu Pokémon wechseln',
   artists: 'Künstler',
-  switchToArtists: 'Zu Künstlern wechseln',
   search: 'Suche',
-  backTo: (mode: string) => `Zurück zu ${mode}`,
+  switchMode: 'Ansicht wechseln',
 
   noMatchingArtists: 'Keine passenden Künstler',
   tryDifferentName: 'Versuch einen anderen Namen.',

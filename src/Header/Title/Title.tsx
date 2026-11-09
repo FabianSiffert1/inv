@@ -1,8 +1,7 @@
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { StarIcon } from '../../Components/FavoriteButton/FavoriteButton'
 import { useStrings } from '../../util/ui/language/LanguageProvider'
-import { Strings } from '../../util/ui/language/strings'
 import { MagnifyingGlassIcon } from '../SearchToggle/SearchIcon'
 import { CardBackIcon, PikachuIcon, SmeargleIcon } from './ModeIcons'
 import styles from './Title.module.scss'
@@ -12,7 +11,6 @@ type PlaceMode = 'favorites' | 'search'
 type Mode = BrowseMode | PlaceMode
 
 const browseModes: BrowseMode[] = ['cards', 'dex', 'artists']
-const lastBrowseModeStorageKey = 'inv-last-mode'
 
 type ModeLabel = 'sets' | 'pokemon' | 'artists' | 'favorites' | 'search'
 
@@ -24,7 +22,6 @@ interface ModeSettings {
 interface BrowseModeSettings extends ModeSettings {
   storageKey: string
   fallbackPath: string
-  switchLabel: keyof Pick<Strings, 'switchToSets' | 'switchToPokemon' | 'switchToArtists'>
 }
 
 const browseModeSettings: Record<BrowseMode, BrowseModeSettings> = {
@@ -32,21 +29,18 @@ const browseModeSettings: Record<BrowseMode, BrowseModeSettings> = {
     storageKey: 'inv-last-cards-location',
     fallbackPath: '/',
     label: 'sets',
-    switchLabel: 'switchToSets',
     icon: <CardBackIcon />
   },
   dex: {
     storageKey: 'inv-last-dex-location',
     fallbackPath: '/pokemon',
     label: 'pokemon',
-    switchLabel: 'switchToPokemon',
     icon: <PikachuIcon />
   },
   artists: {
     storageKey: 'inv-last-artists-location',
     fallbackPath: '/artists',
     label: 'artists',
-    switchLabel: 'switchToArtists',
     icon: <SmeargleIcon />
   }
 }
@@ -85,8 +79,6 @@ const modeOfPath = (pathname: string): Mode => {
   return pathname.startsWith('/artists') ? 'artists' : 'cards'
 }
 
-const nextBrowseMode = (mode: BrowseMode): BrowseMode => browseModes[(browseModes.indexOf(mode) + 1) % browseModes.length]
-
 const readStored = (key: string, fallback: string): string => {
   try {
     return window.localStorage.getItem(key) ?? fallback
@@ -101,11 +93,6 @@ const store = (key: string, value: string) => {
   } catch {
     return
   }
-}
-
-const readLastBrowseMode = (): BrowseMode => {
-  const stored = readStored(lastBrowseModeStorageKey, 'cards')
-  return browseModes.find((mode) => mode == stored) ?? 'cards'
 }
 
 const readBrowseLocation = (mode: BrowseMode): string => {
@@ -126,13 +113,15 @@ export default function Title() {
   const currentMode = modeOfPath(location.pathname)
   const [pendingMode, setPendingMode] = useState<Mode | undefined>(undefined)
   const shownMode = pendingMode ?? currentMode
+  const [isOpen, setOpen] = useState(false)
+  const wrapperRef = useRef<HTMLDivElement>(null)
+  const triggerRef = useRef<HTMLButtonElement>(null)
   const t = useStrings()
 
   useEffect(() => {
     if (!isBrowseMode(currentMode)) {
       return
     }
-    store(lastBrowseModeStorageKey, currentMode)
     store(browseModeSettings[currentMode].storageKey, `${location.pathname}${withoutOpenCard(location.search)}`)
   }, [currentMode, location.pathname, location.search])
 
@@ -140,18 +129,69 @@ export default function Title() {
     setPendingMode(undefined)
   }, [currentMode])
 
-  const targetMode = isBrowseMode(shownMode) ? nextBrowseMode(shownMode) : readLastBrowseMode()
-  const targetSettings = browseModeSettings[targetMode]
-  const target = readBrowseLocation(targetMode)
-  const label = isBrowseMode(shownMode) ? t[targetSettings.switchLabel] : t.backTo(t[targetSettings.label])
+  useEffect(() => {
+    if (!isOpen) {
+      return
+    }
+    const onPointerDown = (event: MouseEvent) => {
+      if (wrapperRef.current != null && !wrapperRef.current.contains(event.target as Node)) {
+        setOpen(false)
+      }
+    }
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key == 'Escape') {
+        setOpen(false)
+        triggerRef.current?.focus()
+      }
+    }
+    document.addEventListener('mousedown', onPointerDown)
+    document.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.removeEventListener('mousedown', onPointerDown)
+      document.removeEventListener('keydown', onKeyDown)
+    }
+  }, [isOpen])
+
   const shownSettings = isBrowseMode(shownMode) ? browseModeSettings[shownMode] : placeModeSettings[shownMode]
 
   return (
-    <div className={styles.title}>
-      <Link className={styles.modeToggle} to={target} aria-label={label} title={label} onClick={() => setPendingMode(targetMode)}>
+    <div className={styles.title} ref={wrapperRef}>
+      <button
+        ref={triggerRef}
+        type='button'
+        className={styles.modeToggle}
+        title={t.switchMode}
+        aria-expanded={isOpen}
+        aria-haspopup='menu'
+        onClick={() => setOpen((previous) => !previous)}
+      >
         <span className={styles.modeIcon}>{shownSettings.icon}</span>
         <span className={styles.modeLabel}>{t[shownSettings.label]}</span>
-      </Link>
+      </button>
+      {isOpen && (
+        <div className={styles.panel} role='menu' aria-label={t.switchMode}>
+          {browseModes.map((mode) => {
+            const settings = browseModeSettings[mode]
+            const isCurrent = mode == shownMode
+            return (
+              <Link
+                key={mode}
+                role='menuitem'
+                className={isCurrent ? `${styles.row} ${styles.rowCurrent}` : styles.row}
+                to={readBrowseLocation(mode)}
+                aria-current={isCurrent ? 'page' : undefined}
+                onClick={() => {
+                  setPendingMode(mode)
+                  setOpen(false)
+                }}
+              >
+                <span className={styles.modeIcon}>{settings.icon}</span>
+                <span>{t[settings.label]}</span>
+              </Link>
+            )
+          })}
+        </div>
+      )}
     </div>
   )
 }
