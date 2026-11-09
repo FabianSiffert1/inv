@@ -2,6 +2,7 @@ import React, { createContext, useCallback, useEffect, useMemo, useState } from 
 import { useLocation } from 'react-router-dom'
 import { CardEntry, PokemonCard, toCardEntries } from '../../api/pokemonTGC/model/PokemonCard'
 import { printDisplayPrice } from '../../cardPrice'
+import { toEur } from '../../format/price'
 import { localizedName } from '../language/LanguageProvider'
 import { rarityOf, rarityRank } from './rarity'
 
@@ -72,7 +73,10 @@ const SortProvider: React.FC<Props> = ({ children }) => {
   return <SortContext.Provider value={contextValue}>{children}</SortContext.Provider>
 }
 
-const priceOf = (entry: CardEntry): number => printDisplayPrice(entry.card, entry.print)?.amount ?? -1
+const priceOf = (entry: CardEntry): number => {
+  const price = printDisplayPrice(entry.card, entry.print)
+  return price == undefined ? -1 : toEur(price.amount, price.currency)
+}
 
 export const sortEntries = (entries: CardEntry[], sortMode: SortMode, germanNames: boolean): CardEntry[] => {
   const collator = new Intl.Collator(germanNames ? 'de' : 'en', { numeric: true, sensitivity: 'base' })
