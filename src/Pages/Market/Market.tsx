@@ -81,7 +81,7 @@ export default function Market() {
         hasNoSearchMatches={(cards?.length ?? 0) > 0 && visibleCards?.length == 0}
       />
 
-      {!isFetching && cards != undefined && (
+      {!isFetching && cards != undefined && (cards.length == 0 || visibleCards?.length != 0) && (
         <CardsValue
           entries={toCardEntries(cards)}
           label='Set value'
