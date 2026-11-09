@@ -48,27 +48,35 @@ export default function PokemonSuggestions(props: PokemonSuggestionsProps) {
   }
 
   return (
-    <ul className={styles.suggestions} aria-label='Suggestions'>
-      {suggestions.map((entry) => (
-        <li key={entry.number}>
-          <Link className={styles.suggestion} to={pokemonPath(entry.number)} onClick={leave}>
-            <img className={styles.sprite} src={spriteUrl(entry.number)} alt='' onError={(event) => (event.currentTarget.hidden = true)} />
-            <span className={styles.name}>{localizedName(entry, germanNames)}</span>
-            <span className={styles.count}>{entry.cardCount} cards in all sets</span>
-          </Link>
-        </li>
-      ))}
-      {cardCount != 0 && (
-        <li key='all-cards'>
-          <Link className={styles.suggestion} to={searchPath(trimmedQuery)} onClick={leave}>
-            <span className={styles.icon}>
-              <MagnifyingGlassIcon />
-            </span>
-            <span className={styles.name}>All cards named &ldquo;{trimmedQuery}&rdquo;</span>
-            <span className={styles.count}>{cardCount == undefined ? 'across every set' : `${cardCount} across every set`}</span>
-          </Link>
-        </li>
-      )}
-    </ul>
+    <>
+      <div className={styles.backdrop} onClick={closeSearch} aria-hidden='true' />
+      <ul className={styles.suggestions} aria-label='Suggestions'>
+        {suggestions.map((entry) => (
+          <li key={entry.number}>
+            <Link className={styles.suggestion} to={pokemonPath(entry.number)} onClick={leave}>
+              <img
+                className={styles.sprite}
+                src={spriteUrl(entry.number)}
+                alt=''
+                onError={(event) => (event.currentTarget.hidden = true)}
+              />
+              <span className={styles.name}>{localizedName(entry, germanNames)}</span>
+              <span className={styles.count}>{entry.cardCount} cards in all sets</span>
+            </Link>
+          </li>
+        ))}
+        {cardCount != 0 && (
+          <li key='all-cards'>
+            <Link className={styles.suggestion} to={searchPath(trimmedQuery)} onClick={leave}>
+              <span className={styles.icon}>
+                <MagnifyingGlassIcon />
+              </span>
+              <span className={styles.name}>All cards named &ldquo;{trimmedQuery}&rdquo;</span>
+              <span className={styles.count}>{cardCount == undefined ? 'across every set' : `${cardCount} across every set`}</span>
+            </Link>
+          </li>
+        )}
+      </ul>
+    </>
   )
 }

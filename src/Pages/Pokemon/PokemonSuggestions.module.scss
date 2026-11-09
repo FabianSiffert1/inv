@@ -7,6 +7,40 @@
   margin: 0;
   padding: 1.5rem 0;
   list-style: none;
+
+  @media (max-width: $smallScreen - 1px) {
+    position: fixed;
+    z-index: $zOverlay + 1;
+    right: 1.25rem;
+    bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px) + 3.5rem + 0.6rem);
+    left: 1.25rem;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0;
+
+    .suggestion {
+      background-color: var(--background-color);
+      background-image: linear-gradient(
+        color-mix(in srgb, var(--elementYellow) 45%, transparent),
+        color-mix(in srgb, var(--elementYellow) 45%, transparent)
+      );
+      box-shadow: 0 0.4rem 1.2rem var(--shadow-color);
+    }
+  }
+}
+
+.backdrop {
+  display: none;
+
+  @media (max-width: $smallScreen - 1px) {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: $zOverlay;
+    background-color: var(--scrim-color);
+    backdrop-filter: blur(0.25rem);
+    -webkit-backdrop-filter: blur(0.25rem);
+  }
 }
 
 .suggestion {

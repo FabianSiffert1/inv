@@ -10,7 +10,7 @@ interface SearchToggleProps {
 export default function SearchToggle({ floating = false }: SearchToggleProps) {
   const { query, setQuery, isSearchOpen, openSearch, closeSearch } = useContext(SearchContext)
   const inputRef = useRef<HTMLInputElement>(null)
-  const label = isSearchOpen ? 'Close search' : 'Search this set'
+  const label = isSearchOpen ? 'Close search' : 'Search cards'
 
   useEffect(() => {
     if (isSearchOpen) {
@@ -34,7 +34,7 @@ export default function SearchToggle({ floating = false }: SearchToggleProps) {
         className={styles.searchField}
         type='search'
         placeholder='Name, type, rarity, holo, #'
-        aria-label='Search this set'
+        aria-label='Search cards'
         value={query}
         onChange={(event) => setQuery(event.target.value)}
         onKeyDown={handleKeyDown}

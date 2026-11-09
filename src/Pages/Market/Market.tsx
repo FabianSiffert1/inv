@@ -98,7 +98,7 @@ export default function Market() {
           onCloseCard={closeCard}
         />
       </div>
-      {isMobile && selectedSet && <SearchToggle floating />}
+      {isMobile && <SearchToggle floating />}
     </div>
   )
 }

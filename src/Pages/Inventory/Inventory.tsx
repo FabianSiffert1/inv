@@ -1,12 +1,14 @@
 import { useContext, useEffect, useMemo } from 'react'
 import CardsValue from '../../Components/CardsValue/CardsValue'
 import { HeaderContext } from '../../Header/HeaderProvider'
+import SearchToggle from '../../Header/SearchToggle/SearchToggle'
 import { AuthContext } from '../../util/auth/AuthProvider'
 import { CardEntry } from '../../util/api/pokemonTGC/model/PokemonCard'
 import { useCardsOfSets } from '../../util/api/pokemonTGC/hooks'
 import { noBaseParams, useCardNavigation } from '../../util/ui/cards/useCardNavigation'
 import { useVisibleEntries } from '../../util/ui/cards/useVisibleCards'
 import { FavoritesContext, FavoritesSource } from '../../util/ui/favorites/FavoritesProvider'
+import { useIsMobile } from '../../util/ui/useIsMobile'
 import CardList from '../Market/CardList/CardList'
 import cardListStyles from '../Market/CardList/CardList.module.scss'
 import cardStyles from '../Market/CardList/Components/Card/Card.module.scss'
@@ -17,6 +19,7 @@ export default function Inventory() {
   const { setHeaderItem, setBusy } = useContext(HeaderContext)
   const { favorites, source, isLoading, error } = useContext(FavoritesContext)
   const { status, signIn } = useContext(AuthContext)
+  const isMobile = useIsMobile()
 
   const { openCardId, openCard, stepToCard, closeCard } = useCardNavigation(noBaseParams)
 
@@ -81,6 +84,7 @@ export default function Inventory() {
           )}
         </div>
       )}
+      {isMobile && <SearchToggle floating />}
     </div>
   )
 }

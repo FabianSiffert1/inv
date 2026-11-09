@@ -88,7 +88,7 @@ export default function Pokemon() {
           error={cardsError ?? indexError}
         />
       )}
-      {isMobile && (pokedexNumber != undefined || selectedGeneration != undefined) && <SearchToggle floating />}
+      {isMobile && <SearchToggle floating />}
     </div>
   )
 }
