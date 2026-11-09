@@ -13,6 +13,7 @@ import { SearchContext } from '../../util/ui/search/SearchProvider'
 import { useIsMobile } from '../../util/ui/useIsMobile'
 import CardList from '../Market/CardList/CardList'
 import CardListStatus from '../Market/CardListStatus'
+import EvolutionChain from './EvolutionChain'
 import { Generation, generationByNumber, generationLabel, generationOfPokemon, generationPath, isInGeneration } from './generations'
 import PokedexSelector from './PokedexSelector'
 import styles from '../Page.module.scss'
@@ -81,6 +82,7 @@ export default function Pokemon() {
       ) : (
         <PokemonCards
           pokemon={pokemonIndex?.find((entry) => entry.number == pokedexNumber)}
+          pokemonIndex={pokemonIndex}
           generation={selectedGeneration}
           cards={cards}
           pokedexNumber={pokedexNumber}
@@ -160,6 +162,7 @@ function GenerationOverview(props: GenerationOverviewProps) {
 
 interface PokemonCardsProps {
   pokemon?: PokemonEntry
+  pokemonIndex?: PokemonEntry[]
   generation?: Generation
   cards?: ReturnType<typeof useCardsOfPokemon>['data']
   pokedexNumber: number
@@ -190,6 +193,7 @@ function PokemonCards(props: PokemonCardsProps) {
           )}
         </div>
       )}
+      {pokemon && props.pokemonIndex && <EvolutionChain pokemon={pokemon} pokemonIndex={props.pokemonIndex} />}
       <CardListStatus
         hasSelectedEra
         hasSelectedSet

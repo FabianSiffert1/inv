@@ -101,7 +101,7 @@ const persistOptions = {
   }),
   maxAge: cacheMaxAge,
   // Bump when the shape of persisted data changes.
-  buster: 'server-snapshot-3',
+  buster: 'server-snapshot-4',
   dehydrateOptions: {
     shouldDehydrateQuery: (query: Query) => {
       if (query.state.data == undefined || query.state.status != 'success' || isSearchIndexQuery(query.queryKey)) {

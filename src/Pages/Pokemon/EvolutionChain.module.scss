@@ -1,0 +1,47 @@
+@use 'globalDesignElements.module' as *;
+
+.chain {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.stage {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.arrow {
+  color: var(--secondary-color);
+}
+
+.member {
+  @include surfaceInteractive($surfaceRadiusSmall);
+  @include pastel(var(--elementBlue));
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.7rem 0.25rem 0.3rem;
+  color: var(--color);
+  text-decoration: none;
+}
+
+.current {
+  @include pastel(var(--elementYellow), 60%);
+  cursor: default;
+}
+
+.sprite {
+  width: 2rem;
+  height: 2rem;
+  margin: -0.3rem -0.1rem;
+  image-rendering: pixelated;
+}
+
+.name {
+  @include typoFieldValue;
+  font-size: 0.85rem;
+}

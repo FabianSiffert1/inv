@@ -179,6 +179,7 @@ const en = {
   previousCard: 'Previous card',
   nextCard: 'Next card',
   evolvesFrom: (name: string) => `Evolves from ${name}`,
+  evolutionChain: 'Evolution chain',
   cards: 'Cards',
   series: 'Series',
   legality: 'Legality'
@@ -359,6 +360,7 @@ const de: Strings = {
   previousCard: 'Vorherige Karte',
   nextCard: 'Nächste Karte',
   evolvesFrom: (name: string) => `Entwickelt sich aus ${name}`,
+  evolutionChain: 'Entwicklungsreihe',
   cards: 'Karten',
   series: 'Serie',
   legality: 'Legalität'

@@ -6,8 +6,27 @@ import { fetchSpeciesNames } from './tcgdex.mjs'
 
 const byReleaseDateDescending = (a, b) => b.set.releaseDate.localeCompare(a.set.releaseDate)
 
+const singlePokedexNumberOf = (card) => (card.nationalPokedexNumbers?.length == 1 ? card.nationalPokedexNumbers[0] : undefined)
+
+const evolutionParents = (allCards) => {
+  const singlePokemonCards = allCards.filter((card) => singlePokedexNumberOf(card) != undefined)
+  const numbersByName = groupBy(singlePokemonCards, (card) => [card.name.toLowerCase()])
+  const numberOfName = new Map([...numbersByName.entries()].map(([name, cards]) => [name, mostCommon(cards.map(singlePokedexNumberOf))]))
+  const parentNumbers = groupBy(singlePokemonCards, (card) => {
+    const parent = card.evolvesFrom == undefined ? undefined : numberOfName.get(card.evolvesFrom.toLowerCase())
+    return parent == undefined || parent == singlePokedexNumberOf(card) ? [] : [singlePokedexNumberOf(card)]
+  })
+  return new Map(
+    [...parentNumbers.entries()].map(([number, cards]) => [
+      number,
+      mostCommon(cards.map((card) => numberOfName.get(card.evolvesFrom.toLowerCase())))
+    ])
+  )
+}
+
 export const writePokemonData = async (allCards) => {
   const cardsOfPokemon = groupBy(allCards, (card) => card.nationalPokedexNumbers ?? [])
+  const parents = evolutionParents(allCards)
 
   const speciesNames = await fetchSpeciesNames()
   if (speciesNames.size == 0) {
@@ -23,7 +42,8 @@ export const writePokemonData = async (allCards) => {
       name: species?.name ?? mostCommon(cards.map((card) => card.name)),
       germanName: species?.germanName ?? mostCommon(cards.map((card) => card.germanName)),
       type: mostCommon(cards.map((card) => card.types?.[0])),
-      cardCount: cards.length
+      cardCount: cards.length,
+      evolvesFrom: cardsOfPokemon.has(parents.get(number)) ? parents.get(number) : undefined
     })
   }
   await writeJsonAtomically(path.join(dataDirectory, 'pokemon.json'), pokemon)

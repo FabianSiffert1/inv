@@ -4,6 +4,7 @@ export interface Pokemon {
   germanName?: string
   type?: string
   cardCount: number
+  evolvesFrom?: number
 }
 
 export const spriteUrl = (pokedexNumber: number) => `/data/sprites/${pokedexNumber}.png`

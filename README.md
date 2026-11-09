@@ -93,7 +93,8 @@ and its hot-reload WebSocket makes phones prompt for local network access.
   ones, falling back to a fixed rate when it is missing.
   `cards/<setId>.json` holds each set's cards sorted by trend price. `pokemon.json` and
   `artists.json` index the same cards by Pokémon and by illustrator, with per-entry card files
-  under `pokemon/` and `artists/`. A small Vite plugin serves the directory under `/data` in both
+  under `pokemon/` and `artists/`. Each `pokemon.json` entry carries `evolvesFrom`, the Pokédex
+  number of its pre-evolution, derived from the cards' "evolves from" names by majority vote. A small Vite plugin serves the directory under `/data` in both
   `dev` and `preview`, JSON with `Cache-Control: no-cache` and an ETag, images with a 30-day cache.
   `scripts/fetch-data.mjs` drives the download; the TCGdex client, the card mapping, the index
   writers and the file helpers live in `scripts/lib/`. `npm run build-indexes` reuses the index
