@@ -28,14 +28,14 @@ const en = {
   unknownError: 'Unknown error',
   returnToBase: 'Return to base',
 
+  sort: 'Sort',
   sortModes: {
-    price: 'price',
-    number: 'card number',
-    name: 'name',
-    rarity: 'rarity',
-    release: 'release date'
+    price: 'Price',
+    number: 'Card number',
+    name: 'Name',
+    rarity: 'Rarity',
+    release: 'Release date'
   } as Record<SortModeLabel, string>,
-  sortLabel: (current: string, next: string) => `Sorted by ${current}, sort by ${next}`,
   sortOrders: {
     price: ['Most expensive first', 'Cheapest first'],
     number: ['Lowest number first', 'Highest number first'],
@@ -208,6 +208,7 @@ const de: Strings = {
   unknownError: 'Unbekannter Fehler',
   returnToBase: 'Zurück zur Basis',
 
+  sort: 'Sortieren',
   sortModes: {
     price: 'Preis',
     number: 'Kartennummer',
@@ -215,7 +216,6 @@ const de: Strings = {
     rarity: 'Seltenheit',
     release: 'Erscheinungsdatum'
   },
-  sortLabel: (current: string, next: string) => `Sortiert nach ${current}, nach ${next} sortieren`,
   sortOrders: {
     price: ['Teuerste zuerst', 'Günstigste zuerst'],
     number: ['Niedrigste Nummer zuerst', 'Höchste Nummer zuerst'],

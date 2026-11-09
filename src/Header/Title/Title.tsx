@@ -1,7 +1,8 @@
-import { ReactElement, useEffect, useRef, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { StarIcon } from '../../Components/FavoriteButton/FavoriteButton'
 import { useStrings } from '../../util/ui/language/LanguageProvider'
+import { useDismissable } from '../../util/ui/useDismissable'
 import { MagnifyingGlassIcon } from '../SearchToggle/SearchIcon'
 import { CardBackIcon, PikachuIcon, SmeargleIcon } from './ModeIcons'
 import styles from './Title.module.scss'
@@ -129,28 +130,8 @@ export default function Title() {
     setPendingMode(undefined)
   }, [currentMode])
 
-  useEffect(() => {
-    if (!isOpen) {
-      return
-    }
-    const onPointerDown = (event: MouseEvent) => {
-      if (wrapperRef.current != null && !wrapperRef.current.contains(event.target as Node)) {
-        setOpen(false)
-      }
-    }
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key == 'Escape') {
-        setOpen(false)
-        triggerRef.current?.focus()
-      }
-    }
-    document.addEventListener('mousedown', onPointerDown)
-    document.addEventListener('keydown', onKeyDown)
-    return () => {
-      document.removeEventListener('mousedown', onPointerDown)
-      document.removeEventListener('keydown', onKeyDown)
-    }
-  }, [isOpen])
+  const close = useCallback(() => setOpen(false), [])
+  useDismissable(isOpen, close, wrapperRef, triggerRef)
 
   const shownSettings = isBrowseMode(shownMode) ? browseModeSettings[shownMode] : placeModeSettings[shownMode]
 

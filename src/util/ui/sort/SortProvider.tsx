@@ -10,9 +10,6 @@ export type SortMode = 'price' | 'number' | 'name' | 'rarity' | 'release'
 
 export const sortModes: SortMode[] = ['price', 'number', 'name', 'rarity', 'release']
 
-export const nextSortMode = (sortMode: SortMode, modes: SortMode[] = sortModes): SortMode =>
-  modes[(modes.indexOf(sortMode) + 1) % modes.length]
-
 type SortScope = 'browse' | 'favorites'
 
 const sortScopeSettings: Record<SortScope, { storageKey: string; defaultMode: SortMode }> = {
@@ -25,14 +22,14 @@ const sortScopeOfPath = (pathname: string): SortScope => (pathname.startsWith('/
 interface ContextProps {
   sortMode: SortMode
   isReversed: boolean
-  cycleSortMode: (modes?: SortMode[]) => void
+  selectSortMode: (mode: SortMode) => void
   toggleSortDirection: () => void
 }
 
 export const SortContext = createContext<ContextProps>({
   sortMode: 'price',
   isReversed: false,
-  cycleSortMode: () => {},
+  selectSortMode: () => {},
   toggleSortDirection: () => {}
 })
 
@@ -83,19 +80,22 @@ const SortProvider: React.FC<Props> = ({ children }) => {
     }
   }, [scope, sortMode, isReversed])
 
-  const cycleSortMode = useCallback(
-    (modes?: SortMode[]) => {
-      setSortModeOfScope((previous) => ({ ...previous, [scope]: nextSortMode(previous[scope], modes) }))
+  const selectSortMode = useCallback(
+    (mode: SortMode) => {
+      if (mode == sortMode) {
+        return
+      }
       setReversedOfScope((previous) => ({ ...previous, [scope]: false }))
+      setSortModeOfScope((previous) => ({ ...previous, [scope]: mode }))
     },
-    [scope]
+    [scope, sortMode]
   )
 
   const toggleSortDirection = useCallback(() => setReversedOfScope((previous) => ({ ...previous, [scope]: !previous[scope] })), [scope])
 
   const contextValue = useMemo(
-    () => ({ sortMode, isReversed, cycleSortMode, toggleSortDirection }),
-    [sortMode, isReversed, cycleSortMode, toggleSortDirection]
+    () => ({ sortMode, isReversed, selectSortMode, toggleSortDirection }),
+    [sortMode, isReversed, selectSortMode, toggleSortDirection]
   )
 
   return <SortContext.Provider value={contextValue}>{children}</SortContext.Provider>
