@@ -1,4 +1,5 @@
 import { MouseEvent, useContext } from 'react'
+import { StarIcon } from '../../../../../Components/FavoriteButton/FavoriteButton'
 import { UrgencyBadge } from '../../../../../Components/UrgencyPicker/UrgencyPicker'
 import { PokemonCard } from '../../../../../util/api/pokemonTGC/model/PokemonCard'
 import { FavoritesContext } from '../../../../../util/ui/favorites/FavoritesProvider'
@@ -56,7 +57,9 @@ export function Card({
   onClose
 }: CardWithDetailsProps) {
   const cardName = useLocalizedName(card)
-  const { urgencyOf } = useContext(FavoritesContext)
+  const { favorites, urgencyOf } = useContext(FavoritesContext)
+  const showFavoriteMark =
+    !showUrgency && favorites.some((favorite) => favorite.cardId == card.id && (print == undefined || favorite.print == print))
 
   const openFromTile = (event: MouseEvent<HTMLDivElement>) => {
     if (isDetailsOpen || (event.target as HTMLElement).closest('a, button') != null) {
@@ -81,6 +84,11 @@ export function Card({
           pokedexNumber={card.nationalPokedexNumbers?.[0]}
           lazy
         />
+        {showFavoriteMark && (
+          <span className={styles.favoriteMark} aria-hidden='true'>
+            <StarIcon />
+          </span>
+        )}
       </button>
       <div className={styles.cardInformationWrapper}>
         <div className={styles.cardName}>{cardName}</div>

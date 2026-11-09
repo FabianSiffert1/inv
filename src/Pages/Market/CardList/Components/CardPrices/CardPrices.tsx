@@ -1,5 +1,6 @@
 import { FavoriteButton } from '../../../../../Components/FavoriteButton/FavoriteButton'
 import { PokemonCardProp } from '../../../../../util/api/pokemonTGC/model/PokemonCard'
+import { englishNearMintUrl } from '../../../../../util/cardmarket'
 import { cardPriceRows, PriceCell } from '../../../../../util/cardPrice'
 import { Currency, formatPrice } from '../../../../../util/format/price'
 import { formatPriceDate } from '../../../../../util/format/date'
@@ -85,7 +86,10 @@ export function CardPrices(props: PokemonCardProp) {
       )}
       <div className={styles.priceFooter}>
         <div className={styles.marketLinks}>
-          <ExternalLink href={cardmarketUrl ?? cardmarketSearchLink(props.card)} className={styles.marketLink}>
+          <ExternalLink
+            href={cardmarketUrl == undefined ? cardmarketSearchLink(props.card) : englishNearMintUrl(cardmarketUrl)}
+            className={styles.marketLink}
+          >
             <span className={styles.marketLinkLabel}>Cardmarket</span>
           </ExternalLink>
           <ExternalLink href={props.card.tcgplayer?.url ?? tcgplayerSearchLink(props.card)} className={styles.marketLink}>

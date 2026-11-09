@@ -1,5 +1,8 @@
 import { PokemonCard, TcgPlayer, TcgPlayerPriceSet } from './api/pokemonTGC/model/PokemonCard'
+import { englishNearMintUrl } from './cardmarket'
 import { Currency } from './format/price'
+
+const cardmarketLink = (url?: string): string | undefined => (url == undefined ? undefined : englishNearMintUrl(url))
 
 export type PriceSource = 'cardmarket' | 'tcgplayer'
 
@@ -49,7 +52,7 @@ const tcgPlayerMarketPrice = (tcgplayer?: TcgPlayer): number | undefined => {
 export const cardDisplayPrice = (card: PokemonCard): DisplayPrice | undefined => {
   const trendPrice = card.cardmarket?.prices?.trendPrice
   if (trendPrice != undefined) {
-    return { amount: trendPrice, currency: 'EUR', source: 'cardmarket', url: card.cardmarket?.url }
+    return { amount: trendPrice, currency: 'EUR', source: 'cardmarket', url: cardmarketLink(card.cardmarket?.url) }
   }
   const marketPrice = tcgPlayerMarketPrice(card.tcgplayer)
   if (marketPrice != undefined) {
@@ -86,7 +89,8 @@ export const cardPriceRows = (card: PokemonCard): PriceTableRow[] => {
   const mainVariant = mainTcgPlayerVariant(tcgplayer)
   const rows: PriceTableRow[] = []
 
-  const mainCell: PriceCell | undefined = prices?.trendPrice == undefined ? undefined : { amount: prices.trendPrice, url: mainUrl }
+  const mainLink = cardmarketLink(mainUrl)
+  const mainCell: PriceCell | undefined = prices?.trendPrice == undefined ? undefined : { amount: prices.trendPrice, url: mainLink }
   const mainTcgPlayer = tcgPlayerCell(tcgplayer, mainVariant == undefined ? undefined : tcgplayer?.prices?.[mainVariant])
   if (mainCell != undefined || mainTcgPlayer != undefined) {
     const label =
@@ -95,7 +99,7 @@ export const cardPriceRows = (card: PokemonCard): PriceTableRow[] => {
   }
 
   const reverseCell: PriceCell | undefined =
-    prices?.reverseHoloTrend == undefined ? undefined : { amount: prices.reverseHoloTrend, url: mainUrl }
+    prices?.reverseHoloTrend == undefined ? undefined : { amount: prices.reverseHoloTrend, url: mainLink }
   const reverseTcgPlayer = tcgPlayerCell(tcgplayer, tcgplayer?.prices?.reverseHolofoil)
   const hasReversePrint = card.variants?.reverse ?? true
   if (hasReversePrint && (reverseCell != undefined || reverseTcgPlayer != undefined)) {
@@ -124,7 +128,7 @@ export const cardPriceRows = (card: PokemonCard): PriceTableRow[] => {
       cardmarket: {
         amount: print.cardmarket.lowestTrendPrice ?? print.cardmarket.trendPrice,
         highestAmount: print.cardmarket.highestTrendPrice,
-        url: print.cardmarket.url
+        url: cardmarketLink(print.cardmarket.url)
       },
       tcgplayer: print.tcgplayer?.marketPrice == undefined ? undefined : { amount: print.tcgplayer.marketPrice, url: print.tcgplayer.url }
     })

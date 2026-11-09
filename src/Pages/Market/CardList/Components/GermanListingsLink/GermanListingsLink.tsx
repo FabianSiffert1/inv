@@ -1,7 +1,6 @@
-import { useContext } from 'react'
 import { PretzelIcon } from '../../../../../Header/LanguageToggle/LanguageIcons'
 import { germanListingsUrl } from '../../../../../util/cardmarket'
-import { LanguageContext, useStrings } from '../../../../../util/ui/language/LanguageProvider'
+import { useStrings } from '../../../../../util/ui/language/LanguageProvider'
 import styles from './GermanListingsLink.module.scss'
 
 interface GermanListingsLinkProps {
@@ -9,9 +8,8 @@ interface GermanListingsLinkProps {
 }
 
 export function GermanListingsLink({ cardmarketUrl }: GermanListingsLinkProps) {
-  const { germanNames } = useContext(LanguageContext)
   const t = useStrings()
-  if (!germanNames || cardmarketUrl == undefined) {
+  if (cardmarketUrl == undefined) {
     return null
   }
 
