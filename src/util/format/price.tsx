@@ -1,11 +1,8 @@
 export type Currency = 'EUR' | 'USD'
 
-const eurPerUnit: Record<Currency, number> = {
-  EUR: 1,
-  USD: 0.86
-}
+export const defaultEurPerUsd = 0.86
 
-export const toEur = (amount: number, currency: Currency): number => amount * eurPerUnit[currency]
+export const toEur = (amount: number, currency: Currency, eurPerUsd: number): number => (currency == 'USD' ? amount * eurPerUsd : amount)
 
 const priceFormats: Record<Currency, Intl.NumberFormat> = {
   EUR: new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }),

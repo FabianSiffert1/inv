@@ -87,7 +87,10 @@ and its hot-reload WebSocket makes phones prompt for local network access.
 ## How it works
 
 - **React + Vite + TypeScript**, SCSS modules for styling.
-- **Snapshot** in `data/`: `sets.json` holds every set plus a `generatedAt` timestamp, and
+- **Snapshot** in `data/`: `sets.json` holds every set plus a `generatedAt` timestamp and
+  `eurPerUsd`, the ECB reference rate fetched from Frankfurter during the run (the previous value is
+  kept if that request fails). Price sorting uses it to compare TCGplayer prices with Cardmarket
+  ones, falling back to a fixed rate when it is missing.
   `cards/<setId>.json` holds each set's cards sorted by trend price. `pokemon.json` and
   `artists.json` index the same cards by Pokémon and by illustrator, with per-entry card files
   under `pokemon/` and `artists/`. A small Vite plugin serves the directory under `/data` in both

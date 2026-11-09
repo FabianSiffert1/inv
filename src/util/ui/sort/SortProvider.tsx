@@ -73,12 +73,11 @@ const SortProvider: React.FC<Props> = ({ children }) => {
   return <SortContext.Provider value={contextValue}>{children}</SortContext.Provider>
 }
 
-const priceOf = (entry: CardEntry): number => {
-  const price = printDisplayPrice(entry.card, entry.print)
-  return price == undefined ? -1 : toEur(price.amount, price.currency)
-}
-
-export const sortEntries = (entries: CardEntry[], sortMode: SortMode, germanNames: boolean): CardEntry[] => {
+export const sortEntries = (entries: CardEntry[], sortMode: SortMode, germanNames: boolean, eurPerUsd: number): CardEntry[] => {
+  const priceOf = (entry: CardEntry): number => {
+    const price = printDisplayPrice(entry.card, entry.print)
+    return price == undefined ? -1 : toEur(price.amount, price.currency, eurPerUsd)
+  }
   const collator = new Intl.Collator(germanNames ? 'de' : 'en', { numeric: true, sensitivity: 'base' })
   const compare: Record<SortMode, (a: CardEntry, b: CardEntry) => number> = {
     price: (a, b) => priceOf(b) - priceOf(a),
@@ -93,7 +92,7 @@ export const sortEntries = (entries: CardEntry[], sortMode: SortMode, germanName
   return [...entries].sort(compare[sortMode])
 }
 
-export const sortCards = (cards: PokemonCard[], sortMode: SortMode, germanNames: boolean): PokemonCard[] =>
-  sortEntries(toCardEntries(cards), sortMode, germanNames).map((entry) => entry.card)
+export const sortCards = (cards: PokemonCard[], sortMode: SortMode, germanNames: boolean, eurPerUsd: number): PokemonCard[] =>
+  sortEntries(toCardEntries(cards), sortMode, germanNames, eurPerUsd).map((entry) => entry.card)
 
 export default SortProvider

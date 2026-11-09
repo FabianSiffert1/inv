@@ -16,7 +16,7 @@ const main = async () => {
     set.cardImageBase = cardImageBaseOf(cardsBySet.get(set.id) ?? [])
   })
   await writeIndexes(allCards)
-  await writeSetsSnapshot(snapshot.sets, snapshot.generatedAt)
+  await writeSetsSnapshot(snapshot.sets, { generatedAt: snapshot.generatedAt, eurPerUsd: snapshot.eurPerUsd })
   console.log(`Indexes rebuilt from ${snapshot.sets.length} sets, snapshot from ${snapshot.generatedAt}`)
 }
 

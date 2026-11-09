@@ -2,7 +2,7 @@ import { useContext, useEffect, useMemo, useRef } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { HeaderContext } from '../../Header/HeaderProvider'
 import SearchToggle from '../../Header/SearchToggle/SearchToggle'
-import { useAllSets, useCardsOfSet, useSearchIndex } from '../../util/api/pokemonTGC/hooks'
+import { useAllSets, useCardsOfSet, useEurPerUsd, useSearchIndex } from '../../util/api/pokemonTGC/hooks'
 import { CardEntry } from '../../util/api/pokemonTGC/model/PokemonCard'
 import { matchesSearchIndex, toLightCard } from '../../util/api/pokemonTGC/model/SearchIndex'
 import { useCardNavigation } from '../../util/ui/cards/useCardNavigation'
@@ -18,6 +18,7 @@ export default function Search() {
   const { setHeaderItem, setBusy } = useContext(HeaderContext)
   const { sortMode } = useContext(SortContext)
   const { germanNames } = useContext(LanguageContext)
+  const eurPerUsd = useEurPerUsd()
   const isMobile = useIsMobile()
   const [searchParams, setSearchParams] = useSearchParams()
   const { query: liveQuery, isSearchOpen, setQuery, openSearch } = useContext(SearchContext)
@@ -55,7 +56,7 @@ export default function Search() {
       return set != undefined && matchesSearchIndex(entry, normalizedQuery) ? [{ card: toLightCard(entry, set) }] : []
     })
   }, [index, sets, normalizedQuery])
-  const sortedEntries = useMemo(() => sortEntries(entries, sortMode, germanNames), [entries, sortMode, germanNames])
+  const sortedEntries = useMemo(() => sortEntries(entries, sortMode, germanNames, eurPerUsd), [entries, sortMode, germanNames, eurPerUsd])
 
   const baseParams = useMemo(() => (urlQuery == '' ? undefined : { q: urlQuery }), [urlQuery])
   const { openCardId, openCard, stepToCard, closeCard } = useCardNavigation(baseParams)

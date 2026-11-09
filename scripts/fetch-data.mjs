@@ -6,11 +6,12 @@ import {
   ensureDirectories,
   readCardsOfSets,
   readPreviousSets,
+  readSetsSnapshot,
   writeJsonAtomically,
   writeSetsSnapshot
 } from './lib/files.mjs'
 import { writeIndexes } from './lib/indexes.mjs'
-import { downloadAnimatedSprite, downloadSprite, fetchGermanNames, get, isNotFound } from './lib/tcgdex.mjs'
+import { downloadAnimatedSprite, downloadSprite, fetchEurPerUsd, fetchGermanNames, get, isNotFound } from './lib/tcgdex.mjs'
 
 const excludedSeries = new Set(['tcgp'])
 const cardConcurrency = 8
@@ -87,7 +88,9 @@ const main = async () => {
 
   sets.sort((a, b) => a.releaseDate.localeCompare(b.releaseDate))
   await writeIndexes(await readCardsOfSets(sets))
-  await writeSetsSnapshot(sets)
+  const eurPerUsd = (await fetchEurPerUsd()) ?? (await readSetsSnapshot().catch(() => undefined))?.eurPerUsd
+  console.log(eurPerUsd == undefined ? 'Exchange rate: unavailable' : `Exchange rate: 1 USD = ${eurPerUsd} EUR`)
+  await writeSetsSnapshot(sets, { eurPerUsd })
   await downloadSprites(pokedexNumbers)
 
   if (failedSets.length > 0) {

@@ -8,6 +8,7 @@ const requestTimeoutMilliseconds = 30_000
 const spriteHost = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon'
 const animatedSpriteHost = `${spriteHost}/other/showdown`
 const speciesNamesUrl = 'https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/pokemon_species_names.csv'
+const exchangeRateUrl = 'https://api.frankfurter.dev/v1/latest?base=USD&symbols=EUR'
 const englishLanguageId = '9'
 const germanLanguageId = '6'
 
@@ -109,6 +110,19 @@ const parseCsvLine = (line) => {
   }
   fields.push(field)
   return fields
+}
+
+export const fetchEurPerUsd = async () => {
+  try {
+    const response = await fetch(exchangeRateUrl, { signal: AbortSignal.timeout(requestTimeoutMilliseconds) })
+    if (!response.ok) {
+      return undefined
+    }
+    const rate = (await response.json()).rates?.EUR
+    return typeof rate == 'number' && rate > 0 ? rate : undefined
+  } catch {
+    return undefined
+  }
 }
 
 export const fetchSpeciesNames = async () => {

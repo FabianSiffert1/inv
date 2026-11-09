@@ -1,4 +1,5 @@
 import { useContext, useMemo } from 'react'
+import { useEurPerUsd } from '../../api/pokemonTGC/hooks'
 import { CardEntry, PokemonCard, toCardEntries } from '../../api/pokemonTGC/model/PokemonCard'
 import { LanguageContext } from '../language/LanguageProvider'
 import { matchesSearch, SearchContext } from '../search/SearchProvider'
@@ -8,10 +9,11 @@ export const useVisibleEntries = (entries?: CardEntry[]): CardEntry[] | undefine
   const { sortMode } = useContext(SortContext)
   const { germanNames } = useContext(LanguageContext)
   const { query } = useContext(SearchContext)
+  const eurPerUsd = useEurPerUsd()
 
   const sortedEntries = useMemo(
-    () => (entries == undefined ? undefined : sortEntries(entries, sortMode, germanNames)),
-    [entries, sortMode, germanNames]
+    () => (entries == undefined ? undefined : sortEntries(entries, sortMode, germanNames, eurPerUsd)),
+    [entries, sortMode, germanNames, eurPerUsd]
   )
 
   return useMemo(() => sortedEntries?.filter((entry) => matchesSearch(entry.card, query)), [sortedEntries, query])

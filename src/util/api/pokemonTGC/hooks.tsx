@@ -1,5 +1,6 @@
 import { useQueries, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
+import { defaultEurPerUsd } from '../../format/price'
 import { Artist } from './model/Artist'
 import { Pokemon } from './model/Pokemon'
 import { PokemonCard } from './model/PokemonCard'
@@ -47,6 +48,8 @@ export const useSnapshotCacheEviction = () => {
 }
 
 export const useAllSets = () => useSetsSnapshot<PokemonSet[]>((snapshot) => snapshot.sets)
+
+export const useEurPerUsd = (): number => useSetsSnapshot((snapshot) => snapshot.eurPerUsd).data ?? defaultEurPerUsd
 
 export const useCardsOfSet = (setName?: PokemonSetName) => {
   const { data: snapshot } = useSetsSnapshot()

@@ -47,4 +47,5 @@ export const readCardsOfSets = async (sets) => {
   return cardsOfSets.flatMap((json) => JSON.parse(json))
 }
 
-export const writeSetsSnapshot = (sets, generatedAt = new Date().toISOString()) => writeJsonAtomically(setsFile, { generatedAt, sets })
+export const writeSetsSnapshot = (sets, { generatedAt = new Date().toISOString(), eurPerUsd } = {}) =>
+  writeJsonAtomically(setsFile, { generatedAt, eurPerUsd, sets })
