@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { StarIcon } from '../../../Components/FavoriteButton/FavoriteButton'
 import HeaderMenu from '../../HeaderMenu/HeaderMenu'
 import SearchToggle from '../../SearchToggle/SearchToggle'
@@ -7,9 +7,30 @@ import { useStrings } from '../../../util/ui/language/LanguageProvider'
 import { useIsMobile } from '../../../util/ui/useIsMobile'
 import styles from './WebNavigation.module.scss'
 
+const returnLocationStorageKey = 'inv-favorites-return-location'
+
+const readReturnLocation = (): string => {
+  try {
+    return window.sessionStorage.getItem(returnLocationStorageKey) ?? '/'
+  } catch {
+    return '/'
+  }
+}
+
+const storeReturnLocation = (location: string) => {
+  try {
+    window.sessionStorage.setItem(returnLocationStorageKey, location)
+  } catch {
+    return
+  }
+}
+
 export default function WebNavigation() {
   const isMobile = useIsMobile()
   const t = useStrings()
+  const location = useLocation()
+  const isOnFavorites = location.pathname.startsWith('/inventory')
+  const currentLocation = `${location.pathname}${location.search}`
 
   return (
     <div className={styles.webNavigation}>
@@ -23,14 +44,20 @@ export default function WebNavigation() {
             </li>
           )}
           <li key={'favoritesLink'}>
-            <NavLink
-              to='/inventory'
-              className={({ isActive }) => `${styles.favoritesLink} ${isActive ? styles.favoritesLinkActive : ''}`}
+            <Link
+              to={isOnFavorites ? readReturnLocation() : '/inventory'}
+              onClick={() => {
+                if (!isOnFavorites) {
+                  storeReturnLocation(currentLocation)
+                }
+              }}
+              className={`${styles.favoritesLink} ${isOnFavorites ? styles.favoritesLinkActive : ''}`}
               aria-label={t.favorites}
+              aria-current={isOnFavorites ? 'page' : undefined}
               title={t.favorites}
             >
               <StarIcon />
-            </NavLink>
+            </Link>
           </li>
           <li key={'sortToggle'}>
             <div className={styles.themeToggle}>
