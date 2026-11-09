@@ -36,6 +36,14 @@ const en = {
     release: 'release date'
   } as Record<SortModeLabel, string>,
   sortLabel: (current: string, next: string) => `Sorted by ${current}, sort by ${next}`,
+  sortOrders: {
+    price: ['Most expensive first', 'Cheapest first'],
+    number: ['Lowest number first', 'Highest number first'],
+    name: ['A to Z', 'Z to A'],
+    rarity: ['Rarest first', 'Most common first'],
+    release: ['Newest first', 'Oldest first']
+  } as Record<SortModeLabel, [string, string]>,
+  sortDirectionLabel: (current: string, next: string) => `${current}, switch to “${next}”`,
 
   releaseAges: {
     under6Months: 'Under 6 months',
@@ -208,6 +216,14 @@ const de: Strings = {
     release: 'Erscheinungsdatum'
   },
   sortLabel: (current: string, next: string) => `Sortiert nach ${current}, nach ${next} sortieren`,
+  sortOrders: {
+    price: ['Teuerste zuerst', 'Günstigste zuerst'],
+    number: ['Niedrigste Nummer zuerst', 'Höchste Nummer zuerst'],
+    name: ['A bis Z', 'Z bis A'],
+    rarity: ['Seltenste zuerst', 'Häufigste zuerst'],
+    release: ['Neueste zuerst', 'Älteste zuerst']
+  },
+  sortDirectionLabel: (current: string, next: string) => `${current}, zu „${next}“ wechseln`,
 
   releaseAges: {
     under6Months: 'Unter 6 Monaten',

@@ -6,14 +6,14 @@ import { matchesSearch, SearchContext } from '../search/SearchProvider'
 import { SortContext, sortEntries } from '../sort/SortProvider'
 
 export const useVisibleEntries = (entries?: CardEntry[]): CardEntry[] | undefined => {
-  const { sortMode } = useContext(SortContext)
+  const { sortMode, isReversed } = useContext(SortContext)
   const { germanNames } = useContext(LanguageContext)
   const { query } = useContext(SearchContext)
   const eurPerUsd = useEurPerUsd()
 
   const sortedEntries = useMemo(
-    () => (entries == undefined ? undefined : sortEntries(entries, sortMode, germanNames, eurPerUsd)),
-    [entries, sortMode, germanNames, eurPerUsd]
+    () => (entries == undefined ? undefined : sortEntries(entries, sortMode, germanNames, eurPerUsd, isReversed)),
+    [entries, sortMode, germanNames, eurPerUsd, isReversed]
   )
 
   return useMemo(() => sortedEntries?.filter((entry) => matchesSearch(entry.card, query)), [sortedEntries, query])

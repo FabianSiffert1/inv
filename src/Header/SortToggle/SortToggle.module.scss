@@ -16,3 +16,16 @@
     height: 1.5rem;
   }
 }
+
+.sortControls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.sortToggle svg {
+  transition: transform $surfaceTransition;
+}
+
+.reversed svg {
+  transform: rotate(180deg);
+}

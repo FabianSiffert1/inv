@@ -16,7 +16,7 @@ import styles from '../Page.module.scss'
 
 export default function Search() {
   const { setHeaderItem, setBusy } = useContext(HeaderContext)
-  const { sortMode } = useContext(SortContext)
+  const { sortMode, isReversed } = useContext(SortContext)
   const { germanNames } = useContext(LanguageContext)
   const t = useStrings()
   const eurPerUsd = useEurPerUsd()
@@ -57,7 +57,10 @@ export default function Search() {
       return set != undefined && matchesSearchIndex(entry, normalizedQuery) ? [{ card: toLightCard(entry, set) }] : []
     })
   }, [index, sets, normalizedQuery])
-  const sortedEntries = useMemo(() => sortEntries(entries, sortMode, germanNames, eurPerUsd), [entries, sortMode, germanNames, eurPerUsd])
+  const sortedEntries = useMemo(
+    () => sortEntries(entries, sortMode, germanNames, eurPerUsd, isReversed),
+    [entries, sortMode, germanNames, eurPerUsd, isReversed]
+  )
 
   const baseParams = useMemo(() => (urlQuery == '' ? undefined : { q: urlQuery }), [urlQuery])
   const { openCardId, openCard, stepToCard, closeCard } = useCardNavigation(baseParams)
