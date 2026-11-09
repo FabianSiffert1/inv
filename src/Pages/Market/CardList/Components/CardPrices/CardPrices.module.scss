@@ -111,7 +111,13 @@
   border-top: 1px solid var(--card-border-color);
 }
 
-.priceChartingLink {
+.marketLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.marketLink {
   @include surfaceInteractive($surfaceRadiusSmall);
   @include pastel(var(--elementBlue), 55%);
   display: inline-flex;
@@ -121,7 +127,7 @@
   text-decoration: none;
 }
 
-.priceChartingLabel {
+.marketLinkLabel {
   @include typoFieldValue;
 }
 
