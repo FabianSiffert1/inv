@@ -107,7 +107,6 @@
 
 .optionSelected {
   @include pastel(var(--tint, var(--elementYellow)), 65%);
-  font-weight: bold;
   outline: 1.5px solid var(--marker);
   outline-offset: 2px;
 }

@@ -12,6 +12,7 @@ import { SortContext, sortEntries } from '../../util/ui/sort/SortProvider'
 import { useIsMobile } from '../../util/ui/useIsMobile'
 import CardList from '../Market/CardList/CardList'
 import CardListStatus from '../Market/CardListStatus'
+import PokemonSuggestions from '../Pokemon/PokemonSuggestions'
 import styles from '../Page.module.scss'
 
 export default function Search() {
@@ -27,11 +28,15 @@ export default function Search() {
   const query = urlQuery.trim()
   const normalizedQuery = query.toLowerCase()
 
-  const seededQuery = useRef<string | undefined>(undefined)
+  const ownUrlQueries = useRef(new Set<string>())
 
   useEffect(() => {
-    if (urlQuery != '' && seededQuery.current != urlQuery && liveQuery != urlQuery) {
-      seededQuery.current = urlQuery
+    if (liveQuery == urlQuery) {
+      ownUrlQueries.current = new Set([urlQuery])
+      return
+    }
+    if (urlQuery != '' && !ownUrlQueries.current.has(urlQuery)) {
+      ownUrlQueries.current.add(urlQuery)
       setQuery(urlQuery)
       openSearch()
     }
@@ -39,7 +44,7 @@ export default function Search() {
 
   useEffect(() => {
     if (isSearchOpen && liveQuery != urlQuery) {
-      seededQuery.current = liveQuery
+      ownUrlQueries.current.add(liveQuery)
       setSearchParams(liveQuery == '' ? {} : { q: liveQuery }, { replace: true })
     }
   }, [isSearchOpen, liveQuery, urlQuery, setSearchParams])
@@ -96,6 +101,7 @@ export default function Search() {
         </div>
       ) : (
         <>
+          <PokemonSuggestions inline />
           {error != null && (
             <CardListStatus hasSelectedEra hasSelectedSet isFetching={isFetching} error={error} cardCount={0} hasNoSearchMatches={false} />
           )}
