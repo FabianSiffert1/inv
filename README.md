@@ -44,7 +44,8 @@ npm run start       # serve dist/ on 0.0.0.0:3030 (what the server runs)
 npm run preview     # serve dist/ on localhost only
 npm run fetch-data  # refresh the set and card snapshot in data/
 npm run build-indexes  # rebuild pokemon, artist and search indexes from the card files, no network
-npm run fetch-exclusives  # rebuild the Japanese exclusives set from scripts/exclusives/exclusives.json
+npm run scrape-exclusives  # scrape Japanese promo exclusives from Limitless TCG, server only, see below
+npm run fetch-exclusives  # rebuild the Japanese exclusives sets from the scrape plus corrections
 npm run typecheck   # tsc for the app and for vite.config.ts
 npm run lint        # eslint
 npm run format      # prettier
@@ -102,15 +103,23 @@ and its hot-reload WebSocket makes phones prompt for local network access.
   writers and the file helpers live in `scripts/lib/`. `npm run build-indexes` reuses the index
   writers to regenerate `pokemon.json`, `artists.json`, `search.json` and the per-entry files from
   the card files already on disk, which is enough after a change to the index shape.
-- **Japanese exclusives**: Japanese SV promos that never came out in English, either because their
-  game text was never printed internationally or because every English print has a different
-  illustrator. `scripts/scrape-exclusives.mjs` builds the candidate list from Limitless TCG once
-  (cached in `data/limitless/`, `--refresh` scrapes again) and writes
-  `scripts/exclusives/exclusives.json`, which is committed and corrected by hand. `fetch-data` and
-  `npm run fetch-exclusives` turn that list into the set `svp-ja`: details from TCGdex `ja`, English
-  names from Limitless, card images downloaded once from Limitless as PNG into
-  `data/images/svp-ja/<number>/low.png` and `high.png`. Sets with PNG images carry
-  `cardImageFormat: 'png'`, and those cards carry `language: 'ja'`.
+- **Japanese exclusives**: Japanese promos (`MP`, `SVP`, `SP`, `SMP`, `XYP`, `BWP`) that never
+  came out in English, either because their game text was never printed internationally or because
+  every English print has a different illustrator. Limitless TCG matches prints by game text, so a
+  promo with new artwork by the same illustrator is still missed.
+  `npm run scrape-exclusives` runs on the server by hand, never in the nightly job. It scrapes
+  Limitless into `data/limitless/jp-<series>.json` (reused on later runs; `--refresh` scrapes
+  again, `--series=SP,XYP` limits the run) and writes the candidates to
+  `data/exclusives/<series>.json`. The first full run takes around 25 minutes.
+  `scripts/exclusives/corrections.json` is committed and holds hand corrections by Limitless id
+  (`SP-208`): `exclude` drops a false candidate, `include` adds a scraped card the check missed.
+  `fetch-data` and `npm run fetch-exclusives` turn candidates plus corrections into one set per
+  series (`svp-ja`, `swshp-ja`, …), skipping series that have not been scraped. Types come from
+  Limitless, Pokédex numbers from TCGdex `ja` where it has the series (`SV-P`, `M-P`) and otherwise
+  from the PokéAPI species names. Each set takes the release date and German series name of the
+  earliest English set of its era. Card images are downloaded once from Limitless as PNG into
+  `data/images/<setId>/<number>/low.png` and `high.png`. These sets carry `cardImageFormat: 'png'`,
+  and their cards carry `language: 'ja'`.
 - **TanStack Query** fetches the snapshot and persists it to IndexedDB so a revisit is instant.
   The set list is revalidated hourly; card and index queries are keyed by `indexedAt`
   (falling back to `generatedAt`), so any rebuild drops the old cards and indexes. Only the eight most recently viewed card lists plus the sets behind your

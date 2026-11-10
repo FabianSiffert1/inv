@@ -1,16 +1,27 @@
 import path from 'node:path'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
-import { fileURLToPath } from 'node:url'
 import { mapConcurrently } from './lib/collections.mjs'
-import { cardsDirectory, dataDirectory, fileExists } from './lib/files.mjs'
+import { candidatesPathOf, limitlessCachePathOf, promoSeries } from './lib/exclusives.mjs'
+import { cardsDirectory, fileExists } from './lib/files.mjs'
 import { get } from './lib/tcgdex.mjs'
 
 const host = 'https://limitlesstcg.com'
-const setCode = 'SVP'
 const requestDelayMilliseconds = 750
 const maximumAttempts = 4
-const outputPath = path.join(path.dirname(fileURLToPath(import.meta.url)), 'exclusives', 'exclusives.json')
-const cachePath = path.join(dataDirectory, 'limitless', `jp-${setCode}.json`)
+const energyTypes = new Set([
+  'Grass',
+  'Fire',
+  'Water',
+  'Lightning',
+  'Psychic',
+  'Fighting',
+  'Darkness',
+  'Metal',
+  'Fairy',
+  'Dragon',
+  'Colorless'
+])
+const cardNumberCollator = new Intl.Collator('en', { numeric: true })
 
 const sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds))
 
@@ -41,15 +52,16 @@ const textOf = (html) =>
     .replace(/\s+/g, ' ')
     .trim()
 
-const cardNumbersOfSet = (html) => {
-  const numbers = [...html.matchAll(new RegExp(`href="/cards/jp/${setCode}/(\\d+)"`, 'g'))].map((match) => Number(match[1]))
-  return [...new Set(numbers)].sort((a, b) => a - b)
+const cardNumbersOfSet = (html, code) => {
+  const numbers = [...html.matchAll(new RegExp(`href="/cards/jp/${code}/([0-9A-Za-z]+)"`, 'g'))].map((match) => match[1])
+  return [...new Set(numbers)].sort(cardNumberCollator.compare)
 }
 
-const parseCard = (html, number) => {
+const parseCard = (html, code, number) => {
   const name = textOf(html.match(/<span class="card-text-name">([\s\S]*?)<\/span>/)?.[1] ?? '')
-  const title = textOf(html.match(/<p class="card-text-title">([\s\S]*?)<\/p>/)?.[1] ?? '')
-  const hp = title.match(/(\d+) HP/)?.[1]
+  const titleParts = textOf(html.match(/<p class="card-text-title">([\s\S]*?)<\/p>/)?.[1] ?? '').split(' - ')
+  const hp = titleParts.map((part) => part.match(/^(\d+) HP$/)?.[1]).find((value) => value != undefined)
+  const types = titleParts.filter((part) => energyTypes.has(part))
   const category = textOf(html.match(/<p class="card-text-type">([\s\S]*?)<\/p>/)?.[1] ?? '').split(' - ')[0]
   const illustrator = textOf(html.match(/<div class="card-text-section card-text-artist">([\s\S]*?)<\/div>/)?.[1] ?? '').replace(
     /^Illustrated by\s*/,
@@ -59,34 +71,36 @@ const parseCard = (html, number) => {
   const versions = html.match(/<table class="card-prints-versions">([\s\S]*?)<\/table>/)?.[1] ?? ''
   const internationalPrints = [...versions.matchAll(/href="\/cards\/(?!jp\/)([^"?]+)"/g)].map((match) => match[1])
   return {
-    id: `${setCode}-${number}`,
+    id: `${code}-${number}`,
     language: 'ja',
-    set: setCode,
-    number: String(number),
+    set: code,
+    number,
     name,
     category,
     hp: hp == undefined ? undefined : Number(hp),
+    types: types.length > 0 ? types : undefined,
     illustrator: illustrator || undefined,
     image,
-    source: `${host}/cards/jp/${setCode}/${number}`,
+    source: `${host}/cards/jp/${code}/${number}`,
     internationalPrints
   }
 }
 
-const scrapeCards = async () => {
-  if (!process.argv.includes('--refresh') && (await fileExists(cachePath))) {
-    console.log(`Using cached scrape ${cachePath}, pass --refresh to scrape again`)
+const scrapeSeries = async (code, refresh) => {
+  const cachePath = limitlessCachePathOf(code)
+  if (!refresh && (await fileExists(cachePath))) {
+    console.log(`${code}: using cached scrape ${cachePath}`)
     return JSON.parse(await readFile(cachePath, 'utf8'))
   }
-  const numbers = cardNumbersOfSet(await fetchHtml(`${host}/cards/jp/${setCode}`))
-  console.log(`${setCode}: ${numbers.length} cards`)
+  const numbers = cardNumbersOfSet(await fetchHtml(`${host}/cards/jp/${code}`), code)
+  console.log(`${code}: ${numbers.length} cards`)
 
   const cards = []
   for (const [index, number] of numbers.entries()) {
     await sleep(requestDelayMilliseconds)
-    const card = parseCard(await fetchHtml(`${host}/cards/jp/${setCode}/${number}?translate=en`), number)
+    const card = parseCard(await fetchHtml(`${host}/cards/jp/${code}/${number}?translate=en`), code, number)
     cards.push(card)
-    console.log(`[${index + 1}/${numbers.length}] #${number} ${card.name}: ${card.internationalPrints.length} international prints`)
+    console.log(`${code} [${index + 1}/${numbers.length}] #${number} ${card.name}: ${card.internationalPrints.length} international prints`)
   }
   await mkdir(path.dirname(cachePath), { recursive: true })
   await writeFile(cachePath, JSON.stringify(cards))
@@ -159,25 +173,46 @@ const classify = async (card, illustratorOf) => {
   return { reason: 'artwork', englishIllustrators: [...new Set(englishIllustrators)] }
 }
 
-const main = async () => {
-  const cards = await scrapeCards()
-  const illustratorOf = await createIllustratorLookup()
-
-  const exclusives = []
-  for (const card of cards) {
-    const classification = await classify(card, illustratorOf)
-    if (classification != undefined) {
-      const { internationalPrints, ...rest } = card
-      exclusives.push({ ...rest, ...classification, ...(classification.reason == 'text' ? {} : { internationalPrints }) })
-    }
+const selectedCodes = () => {
+  const argument = process.argv.find((value) => value.startsWith('--series='))
+  const codes = promoSeries.map((series) => series.code)
+  if (argument == undefined) {
+    return codes
   }
+  const requested = argument.slice('--series='.length).split(',')
+  const unknown = requested.filter((code) => !codes.includes(code))
+  if (unknown.length > 0) {
+    throw new Error(`Unknown series ${unknown.join(', ')}, known: ${codes.join(', ')}`)
+  }
+  return requested
+}
 
-  await mkdir(path.dirname(outputPath), { recursive: true })
-  await writeFile(outputPath, `${JSON.stringify(exclusives, null, 2)}\n`)
-  const countOf = (reason) => exclusives.filter((card) => card.reason == reason).length
-  console.log(
-    `${exclusives.length} of ${cards.length} cards are exclusive candidates (text: ${countOf('text')}, artwork: ${countOf('artwork')}), written to ${outputPath}`
-  )
+const main = async () => {
+  const refresh = process.argv.includes('--refresh')
+  const codes = selectedCodes()
+  let illustratorOf
+
+  for (const code of codes) {
+    const cards = await scrapeSeries(code, refresh)
+    illustratorOf ??= await createIllustratorLookup()
+
+    const candidates = []
+    for (const card of cards) {
+      const classification = await classify(card, illustratorOf)
+      if (classification != undefined) {
+        const { internationalPrints, ...rest } = card
+        candidates.push({ ...rest, ...classification, ...(classification.reason == 'text' ? {} : { internationalPrints }) })
+      }
+    }
+
+    const outputPath = candidatesPathOf(code)
+    await mkdir(path.dirname(outputPath), { recursive: true })
+    await writeFile(outputPath, `${JSON.stringify(candidates, null, 2)}\n`)
+    const countOf = (reason) => candidates.filter((card) => card.reason == reason).length
+    console.log(
+      `${code}: ${candidates.length} of ${cards.length} cards are exclusive candidates (text: ${countOf('text')}, artwork: ${countOf('artwork')}), written to ${outputPath}`
+    )
+  }
 }
 
 main().catch((error) => {

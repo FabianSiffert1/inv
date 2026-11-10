@@ -85,7 +85,7 @@ const main = async () => {
   }
 
   try {
-    sets.push(...(await writeExclusiveSets()))
+    sets.push(...(await writeExclusiveSets(sets)))
   } catch (error) {
     failedSets.push(...exclusiveSetIds)
     exclusiveSetIds.forEach((setId) => {

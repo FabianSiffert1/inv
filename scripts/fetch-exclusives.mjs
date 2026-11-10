@@ -5,7 +5,8 @@ import { writeIndexes } from './lib/indexes.mjs'
 const main = async () => {
   await ensureDirectories()
   const snapshot = await readSetsSnapshot()
-  const sets = [...snapshot.sets.filter((set) => !exclusiveSetIds.has(set.id)), ...(await writeExclusiveSets())]
+  const englishSets = snapshot.sets.filter((set) => !exclusiveSetIds.has(set.id))
+  const sets = [...englishSets, ...(await writeExclusiveSets(englishSets))]
   sets.sort((a, b) => a.releaseDate.localeCompare(b.releaseDate))
   await writeIndexes(await readCardsOfSets(sets))
   await writeSetsSnapshot(sets, { generatedAt: snapshot.generatedAt, eurPerUsd: snapshot.eurPerUsd })
