@@ -77,6 +77,18 @@ pm2 runs the job once right away, then every day at 04:00. `--no-autorestart` st
 restarting it after it exits, and `pm2 save` keeps it across reboots. Check a run with
 `pm2 logs inv-fetch-data`, or trigger one by hand with `pm2 restart inv-fetch-data`.
 
+The nightly job does not scrape Japanese exclusives; it only rebuilds their sets from the last
+scrape. New Japanese promos therefore only appear after a manual scrape, which should be repeated
+every few months, ideally after a Japanese promo wave. On the server, preferably in `tmux`:
+
+```
+npm run scrape-exclusives -- --refresh --series=MP
+npm run fetch-exclusives
+```
+
+`--series=MP` limits the run to the current promo series (Mega Evolution); older series no longer
+change. Drop it for a full rescrape of all series, which takes around 25 minutes.
+
 Each file is written to a temporary path and renamed into place, so the site keeps serving the
 previous data while a refresh runs, and a failed set keeps its previous file.
 
