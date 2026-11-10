@@ -10,6 +10,7 @@ import { useIsMobile } from '../../../util/ui/useIsMobile'
 import EraStrip from './EraStrip'
 import styles from './Selector.module.scss'
 import SetStrip from './SetStrip'
+import { NextIcon, PreviousIcon } from './StepIcons'
 
 interface SetSelectorProps {
   selectedSeries?: PokemonTCGSeries
@@ -27,6 +28,16 @@ export default function SetSelector(props: SetSelectorProps) {
   const [isEraDropdownOpen, setEraDropdownOpen] = useState(false)
   const [isSetDropdownOpen, setSetDropdownOpen] = useState(false)
   const { onSelectEra, onSelectSet } = props
+
+  const setsOfEra = useMemo(
+    () =>
+      (mainSets ?? []).filter((set) => set.series == props.selectedSet?.series).sort((a, b) => a.releaseDate.localeCompare(b.releaseDate)),
+    [mainSets, props.selectedSet?.series]
+  )
+  const selectedIndex = setsOfEra.findIndex((set) => set.id == props.selectedSet?.id)
+  const previousSet = selectedIndex > 0 ? setsOfEra[selectedIndex - 1] : undefined
+  const nextSet = selectedIndex >= 0 ? setsOfEra[selectedIndex + 1] : undefined
+  const showsStepButtons = selectedIndex >= 0
 
   const selectEra = useCallback(
     (series: PokemonTCGSeries) => {
@@ -71,6 +82,18 @@ export default function SetSelector(props: SetSelectorProps) {
         setOpen={openEraDropdown}
         isMobile={isMobile}
       />
+      {showsStepButtons && (
+        <button
+          type='button'
+          className={styles.stepButton}
+          aria-label={t.previousSet}
+          title={t.previousSet}
+          disabled={previousSet == undefined}
+          onClick={() => previousSet && onSelectSet(previousSet)}
+        >
+          <PreviousIcon />
+        </button>
+      )}
       <SetStrip
         pokemonSets={mainSets}
         currentlySelectedPokemonSeries={props.selectedSeries}
@@ -81,6 +104,18 @@ export default function SetSelector(props: SetSelectorProps) {
         cachedSetNames={cachedSetNames}
         isMobile={isMobile}
       />
+      {showsStepButtons && (
+        <button
+          type='button'
+          className={styles.stepButton}
+          aria-label={t.nextSet}
+          title={t.nextSet}
+          disabled={nextSet == undefined}
+          onClick={() => nextSet && onSelectSet(nextSet)}
+        >
+          <NextIcon />
+        </button>
+      )}
       {props.selectedSet && <CopyButton variant='share' value={setShareLink(props.selectedSet.id)} label={t.copyLinkToSet} />}
     </div>
   )
