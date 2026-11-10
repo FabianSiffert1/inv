@@ -20,6 +20,7 @@ export interface PokemonSet {
     logo?: string
   }
   cardImageBase?: string
+  cardImageFormat?: 'webp' | 'png'
 }
 
 export const setPath = (setId: string) => `/market?${new URLSearchParams({ set: setId })}`

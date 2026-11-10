@@ -44,6 +44,7 @@ npm run start       # serve dist/ on 0.0.0.0:3030 (what the server runs)
 npm run preview     # serve dist/ on localhost only
 npm run fetch-data  # refresh the set and card snapshot in data/
 npm run build-indexes  # rebuild pokemon, artist and search indexes from the card files, no network
+npm run fetch-exclusives  # rebuild the Japanese exclusives set from scripts/exclusives/exclusives.json
 npm run typecheck   # tsc for the app and for vite.config.ts
 npm run lint        # eslint
 npm run format      # prettier
@@ -100,6 +101,15 @@ and its hot-reload WebSocket makes phones prompt for local network access.
   writers and the file helpers live in `scripts/lib/`. `npm run build-indexes` reuses the index
   writers to regenerate `pokemon.json`, `artists.json`, `search.json` and the per-entry files from
   the card files already on disk, which is enough after a change to the index shape.
+- **Japanese exclusives**: Japanese SV promos that never came out in English, either because their
+  game text was never printed internationally or because every English print has a different
+  illustrator. `scripts/scrape-exclusives.mjs` builds the candidate list from Limitless TCG once
+  (cached in `data/limitless/`, `--refresh` scrapes again) and writes
+  `scripts/exclusives/exclusives.json`, which is committed and corrected by hand. `fetch-data` and
+  `npm run fetch-exclusives` turn that list into the set `svp-ja`: details from TCGdex `ja`, English
+  names from Limitless, card images downloaded once from Limitless as PNG into
+  `data/images/svp-ja/<number>/low.png` and `high.png`. Sets with PNG images carry
+  `cardImageFormat: 'png'`, and those cards carry `language: 'ja'`.
 - **TanStack Query** fetches the snapshot and persists it to IndexedDB so a revisit is instant.
   The set list is revalidated hourly; card queries are keyed by `generatedAt`, so a new snapshot
   drops the old cards. Only the eight most recently viewed card lists plus the sets behind your

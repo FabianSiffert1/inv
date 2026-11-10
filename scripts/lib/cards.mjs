@@ -181,4 +181,4 @@ export const withoutSharedCardmarketProducts = (cards, set) => {
 export const byTrendPriceDescending = (a, b) => (b.cardmarket?.prices?.trendPrice ?? -1) - (a.cardmarket?.prices?.trendPrice ?? -1)
 
 export const cardImageBaseOf = (cards) =>
-  cards.find((card) => card.images.small != undefined)?.images.small.replace(/\/[^/]+\/low\.webp$/, '')
+  cards.find((card) => card.images.small != undefined)?.images.small.replace(/\/[^/]+\/low\.(webp|png)$/, '')

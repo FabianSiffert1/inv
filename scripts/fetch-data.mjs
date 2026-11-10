@@ -1,6 +1,7 @@
 import path from 'node:path'
 import { byTrendPriceDescending, cardImageBaseOf, toCard, toSet, withoutSharedCardmarketProducts } from './lib/cards.mjs'
 import { mapConcurrently } from './lib/collections.mjs'
+import { exclusiveSetIds, writeExclusiveSets } from './lib/exclusives.mjs'
 import {
   cardsDirectory,
   ensureDirectories,
@@ -84,6 +85,18 @@ const main = async () => {
       }
       console.error(`${progress}: failed, keeping previous data`, error)
     }
+  }
+
+  try {
+    sets.push(...(await writeExclusiveSets()))
+  } catch (error) {
+    failedSets.push(...exclusiveSetIds)
+    exclusiveSetIds.forEach((setId) => {
+      if (previousSets.has(setId)) {
+        sets.push(previousSets.get(setId))
+      }
+    })
+    console.error('Exclusives: failed, keeping previous data', error)
   }
 
   sets.sort((a, b) => a.releaseDate.localeCompare(b.releaseDate))

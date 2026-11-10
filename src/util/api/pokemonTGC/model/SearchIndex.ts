@@ -33,7 +33,12 @@ export const toLightCard = (entry: SearchIndexEntry, set: PokemonSet): PokemonCa
   number: entry.number,
   rarity: entry.rarity,
   types: entry.type == undefined ? undefined : [entry.type],
-  images: { small: entry.noImage || set.cardImageBase == undefined ? undefined : `${set.cardImageBase}/${entry.number}/low.webp` },
+  images: {
+    small:
+      entry.noImage || set.cardImageBase == undefined
+        ? undefined
+        : `${set.cardImageBase}/${entry.number}/low.${set.cardImageFormat ?? 'webp'}`
+  },
   cardmarket: entry.trendPrice == undefined ? undefined : { prices: { trendPrice: entry.trendPrice } },
   tcgplayer: entry.marketPrice == undefined ? undefined : { prices: { normal: { market: entry.marketPrice } } }
 })
