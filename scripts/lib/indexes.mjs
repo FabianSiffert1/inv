@@ -118,6 +118,7 @@ const toSearchEntry = (card) => ({
   id: card.id,
   name: card.name,
   germanName: card.germanName,
+  language: card.language,
   setId: card.set.id,
   number: card.number,
   noImage: card.images.small == undefined ? true : undefined,

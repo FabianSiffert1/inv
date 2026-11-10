@@ -1,0 +1,10 @@
+@use 'globalDesignElements.module' as *;
+
+.badge {
+  @include surface($surfaceRadiusSmall);
+  @include pastel(var(--elementMetal), 50%);
+  @include typoFieldValue;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.55rem;
+  white-space: nowrap;
+}

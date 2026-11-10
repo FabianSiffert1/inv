@@ -5,6 +5,7 @@ export interface SearchIndexEntry {
   id: string
   name: string
   germanName?: string
+  language?: PokemonCard['language']
   setId: string
   number: string
   noImage?: boolean
@@ -29,6 +30,7 @@ export const toLightCard = (entry: SearchIndexEntry, set: PokemonSet): PokemonCa
   id: entry.id,
   name: entry.name,
   germanName: entry.germanName,
+  language: entry.language,
   set,
   number: entry.number,
   rarity: entry.rarity,

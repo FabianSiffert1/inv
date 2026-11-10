@@ -8,6 +8,8 @@ export type SortModeLabel = 'price' | 'number' | 'name' | 'rarity' | 'release' |
 
 export type UrgencyLabel = 'asap' | 'urgent' | 'normal' | 'later'
 
+export type CardLanguageLabel = 'ja'
+
 const en = {
   locale: 'en-US',
 
@@ -197,7 +199,11 @@ const en = {
   evolutionChain: 'Evolution chain',
   cards: 'Cards',
   series: 'Series',
-  legality: 'Legality'
+  legality: 'Legality',
+  cardLanguage: 'Language',
+  cardLanguages: {
+    ja: 'Japanese'
+  } as Record<CardLanguageLabel, string>
 }
 
 export type Strings = typeof en
@@ -391,7 +397,11 @@ const de: Strings = {
   evolutionChain: 'Entwicklungsreihe',
   cards: 'Karten',
   series: 'Serie',
-  legality: 'Legalität'
+  legality: 'Legalität',
+  cardLanguage: 'Sprache',
+  cardLanguages: {
+    ja: 'Japanisch'
+  }
 }
 
 export const stringsOf = (germanNames: boolean): Strings => (germanNames ? de : en)

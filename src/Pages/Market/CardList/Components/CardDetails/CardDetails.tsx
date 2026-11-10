@@ -172,6 +172,12 @@ export function SetInformation(props: PokemonCardProp) {
           <dt>{t.series}</dt>
           <dd>{seriesName}</dd>
         </div>
+        {props.card.language != undefined && (
+          <div className={styles.definitionRow}>
+            <dt>{t.cardLanguage}</dt>
+            <dd>{t.cardLanguages[props.card.language]}</dd>
+          </div>
+        )}
         {props.card.set.legalities?.unlimited && (
           <div className={styles.definitionRow}>
             <dt>{t.legality}</dt>

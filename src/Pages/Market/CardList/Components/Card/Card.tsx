@@ -1,5 +1,6 @@
 import { MouseEvent, useContext } from 'react'
 import { StarIcon } from '../../../../../Components/FavoriteButton/FavoriteButton'
+import { LanguageBadge } from '../../../../../Components/LanguageBadge/LanguageBadge'
 import { UrgencyBadge } from '../../../../../Components/UrgencyPicker/UrgencyPicker'
 import { PokemonCard } from '../../../../../util/api/pokemonTGC/model/PokemonCard'
 import { FavoritesContext } from '../../../../../util/ui/favorites/FavoritesProvider'
@@ -92,6 +93,7 @@ export function Card({
       </button>
       <div className={styles.cardInformationWrapper}>
         <div className={styles.cardName}>{cardName}</div>
+        <LanguageBadge language={card.language} />
         {print != undefined && <div className={styles.cardPrint}>{print}</div>}
         {showUrgency && <UrgencyBadge urgency={urgencyOf(card.id, print)} />}
         {showNumber && (
