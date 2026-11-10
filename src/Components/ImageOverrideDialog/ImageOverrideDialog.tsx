@@ -3,29 +3,44 @@ import { FormEvent, useContext, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { PokemonCard } from '../../util/api/pokemonTGC/model/PokemonCard'
 import { AdminContext } from '../../util/admin/AdminProvider'
-import { cardOverridesQueryKey, isValidImageUrl, useImageOverride } from '../../util/overrides/cardOverrides'
+import {
+  cardOverridesQueryKey,
+  isValidImageUrl,
+  useImageOverride,
+  useOriginalImageAvailable,
+  useRemoteImageOverride
+} from '../../util/overrides/cardOverrides'
 import { useLocalizedName, useStrings } from '../../util/ui/language/LanguageProvider'
 import { useModalBehaviour } from '../../util/ui/useModalBehaviour'
 import styles from './ImageOverrideDialog.module.scss'
 
 type CloudOverrides = typeof import('../../util/overrides/cloudOverrides')
 
-export function ImageOverrideButton({ card, className }: { card: PokemonCard; className?: string }) {
+export function AdminCardActions({ card, className }: { card: PokemonCard; className?: string }) {
   const { isAdmin } = useContext(AdminContext)
-  const t = useStrings()
-  const [isOpen, setOpen] = useState(false)
-
   if (!isAdmin) {
     return null
   }
+  return <AdminActions card={card} className={className} />
+}
+
+function AdminActions({ card, className }: { card: PokemonCard; className?: string }) {
+  const t = useStrings()
+  const [isOpen, setOpen] = useState(false)
+  const isOriginalAvailable = useOriginalImageAvailable(card.id)
 
   return (
-    <>
-      <button type='button' className={className} title={t.editCard} onClick={() => setOpen(true)}>
+    <div className={className}>
+      {isOriginalAvailable && (
+        <span className={styles.apiBadge} title={t.originalImageAvailableHint}>
+          {t.originalImageAvailable}
+        </span>
+      )}
+      <button type='button' className={styles.editChip} title={t.editCard} onClick={() => setOpen(true)}>
         {t.edit}
       </button>
       {isOpen && <ImageOverrideDialog card={card} onClose={() => setOpen(false)} />}
-    </>
+    </div>
   )
 }
 
@@ -37,14 +52,16 @@ function ImageOverrideDialog({ card, onClose }: { card: PokemonCard; onClose: ()
   const t = useStrings()
   const cardName = useLocalizedName(card)
   const queryClient = useQueryClient()
-  const override = useImageOverride(card.id)
+  const override = useRemoteImageOverride(card.id)
+  const shownOverride = useImageOverride(card.id)
+  const isOriginalAvailable = useOriginalImageAvailable(card.id)
   const [url, setUrl] = useState(override ?? '')
   const [saveState, setSaveState] = useState<SaveState>('idle')
   const [failedPreview, setFailedPreview] = useState<string | undefined>(undefined)
 
   const trimmed = url.trim()
   const isValid = isValidImageUrl(trimmed)
-  const preview = isValid ? trimmed : (override ?? card.images.small)
+  const preview = isValid && trimmed != override ? trimmed : (shownOverride ?? card.images.small)
   const canSave = isValid && trimmed != override && saveState != 'saving'
 
   const write = (action: (module: CloudOverrides) => Promise<void>) => {
@@ -101,6 +118,7 @@ function ImageOverrideDialog({ card, onClose }: { card: PokemonCard; onClose: ()
           />
         </label>
         <p className={styles.hint}>{t.imageOverrideHint}</p>
+        {isOriginalAvailable && <p className={styles.notice}>{t.originalImageAvailableHint}</p>}
         {saveState == 'failed' && (
           <p className={styles.error} role='alert'>
             {t.imageOverrideFailed}

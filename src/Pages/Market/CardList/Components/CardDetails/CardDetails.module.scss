@@ -72,20 +72,17 @@
   background-color: var(--card-background-color);
 }
 
-.adminButton {
-  @include surfaceInteractive($surfaceRadiusSmall);
-  @include pastel(var(--elementYellow), 60%);
-  @include typoFieldValue;
+.adminActions {
   position: absolute;
   top: 1rem;
   right: 4.25rem;
   z-index: $zSecondLevel;
-  padding: 0.3rem 0.7rem;
-  border: none;
-  color: var(--color);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-.cardDetailsContainer:has(.adminButton) {
+.cardDetailsContainer:has(.adminActions) {
   padding-top: 3.25rem;
 }
 

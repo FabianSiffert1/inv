@@ -36,13 +36,10 @@
   margin-left: auto;
 }
 
-.adminButton {
-  @include surfaceInteractive($surfaceRadiusSmall);
-  @include pastel(var(--elementYellow), 60%);
-  @include typoFieldValue;
-  padding: 0.4rem 0.8rem;
-  border: none;
-  color: var(--color);
+.adminActions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .closeButton {

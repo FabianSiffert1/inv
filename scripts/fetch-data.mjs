@@ -12,6 +12,7 @@ import {
   writeSetsSnapshot
 } from './lib/files.mjs'
 import { writeIndexes } from './lib/indexes.mjs'
+import { syncImageOverrides } from './lib/overrides.mjs'
 import { downloadSprite, fetchEurPerUsd, fetchGermanNames, get, isNotFound } from './lib/tcgdex.mjs'
 
 const excludedSeries = new Set(['tcgp'])
@@ -102,6 +103,10 @@ const main = async () => {
   console.log(eurPerUsd == undefined ? 'Exchange rate: unavailable' : `Exchange rate: 1 USD = ${eurPerUsd} EUR`)
   await writeSetsSnapshot(sets, { eurPerUsd })
   await downloadSprites(pokedexNumbers)
+  await syncImageOverrides().catch((error) => {
+    console.error('Image overrides: failed, keeping previous copies', error)
+    process.exitCode = 1
+  })
 
   if (failedSets.length > 0) {
     console.error(`Failed sets: ${failedSets.join(', ')}`)

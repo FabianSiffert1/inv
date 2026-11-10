@@ -111,6 +111,36 @@
   color: var(--secondary-color);
 }
 
+.notice {
+  @include surface($surfaceRadiusSmall);
+  @include pastel(var(--elementGreen), 45%);
+  margin: 0;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: var(--color);
+}
+
+.editChip,
+.apiBadge {
+  @include surface($surfaceRadiusSmall);
+  @include typoFieldValue;
+  padding: 0.3rem 0.7rem;
+  border: none;
+  color: var(--color);
+  white-space: nowrap;
+}
+
+.editChip {
+  @include surfaceInteractive($surfaceRadiusSmall);
+  @include pastel(var(--elementYellow), 60%);
+}
+
+.apiBadge {
+  @include pastel(var(--elementGreen), 55%);
+  font-size: 0.6rem;
+}
+
 .error {
   margin: 0;
   font-family: $monoFont;

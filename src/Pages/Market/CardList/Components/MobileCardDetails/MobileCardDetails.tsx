@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { ImageOverrideButton } from '../../../../../Components/ImageOverrideDialog/ImageOverrideDialog'
+import { AdminCardActions } from '../../../../../Components/ImageOverrideDialog/ImageOverrideDialog'
 import { UrgencyPicker } from '../../../../../Components/UrgencyPicker/UrgencyPicker'
 import { PokemonCard } from '../../../../../util/api/pokemonTGC/model/PokemonCard'
 import { useImageOverride } from '../../../../../util/overrides/cardOverrides'
@@ -34,7 +34,7 @@ export function MobileCardDetails(props: MobileCardDetailsProps) {
         <div className={styles.mobileCardDetailsHeader}>
           {props.navigation && <CardNavigation {...props.navigation} />}
           <div className={styles.headerActions}>
-            <ImageOverrideButton card={props.card} className={styles.adminButton} />
+            <AdminCardActions card={props.card} className={styles.adminActions} />
             <button type='button' className={styles.closeButton} aria-label={t.close} onClick={props.onClose}>
               ×
             </button>

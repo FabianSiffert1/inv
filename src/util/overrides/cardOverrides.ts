@@ -48,7 +48,47 @@ export const useCardOverrides = () =>
     staleTime: 1000 * 60 * 5
   })
 
-export const useImageOverride = (cardId: string): string | undefined => useCardOverrides().data?.images[cardId]
+interface LocalOverrides {
+  images: Record<string, { url: string; file: string }>
+  originalAvailable: string[]
+}
+
+const emptyLocalOverrides: LocalOverrides = { images: {}, originalAvailable: [] }
+
+const fetchLocalOverrides = async (signal?: AbortSignal): Promise<LocalOverrides> => {
+  const response = await fetch('/data/overrides.json', { signal })
+  if (response.status == 404) {
+    return emptyLocalOverrides
+  }
+  if (!response.ok) {
+    throw new Error(`${response.status} ${response.statusText} for local overrides`)
+  }
+  return { ...emptyLocalOverrides, ...((await response.json()) as Partial<LocalOverrides>) }
+}
+
+const useLocalOverrides = () =>
+  useQuery({
+    queryKey: ['overrides', 'local'],
+    queryFn: ({ signal }) => fetchLocalOverrides(signal),
+    staleTime: 1000 * 60 * 5
+  })
+
+export const useRemoteImageOverride = (cardId: string): string | undefined => useCardOverrides().data?.images[cardId]
+
+export const useImageOverride = (cardId: string): string | undefined => {
+  const remote = useRemoteImageOverride(cardId)
+  const local = useLocalOverrides().data?.images[cardId]
+  if (remote == undefined) {
+    return undefined
+  }
+  return local?.url == remote ? local.file : remote
+}
+
+export const useOriginalImageAvailable = (cardId: string): boolean => {
+  const hasOverride = useRemoteImageOverride(cardId) != undefined
+  const originalAvailable = useLocalOverrides().data?.originalAvailable.includes(cardId) ?? false
+  return hasOverride && originalAvailable
+}
 
 export const isValidImageUrl = (value: string): boolean => {
   try {

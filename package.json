@@ -17,6 +17,7 @@
     "build-indexes": "node scripts/build-indexes.mjs",
     "fetch-exclusives": "node scripts/fetch-exclusives.mjs",
     "scrape-exclusives": "node scripts/scrape-exclusives.mjs",
+    "fetch-overrides": "node scripts/fetch-overrides.mjs",
     "prepare": "husky"
   },
   "dependencies": {
