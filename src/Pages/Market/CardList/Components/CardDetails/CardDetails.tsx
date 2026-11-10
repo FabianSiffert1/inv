@@ -2,12 +2,14 @@ import { useContext, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { CopyButton } from '../../../../../Components/CopyButton/CopyButton'
 import { FavoriteButton } from '../../../../../Components/FavoriteButton/FavoriteButton'
+import { ImageOverrideEditor } from '../../../../../Components/ImageOverrideEditor/ImageOverrideEditor'
 import { UrgencyPicker } from '../../../../../Components/UrgencyPicker/UrgencyPicker'
 import { PokemonCard, PokemonCardProp } from '../../../../../util/api/pokemonTGC/model/PokemonCard'
 import { spriteUrl } from '../../../../../util/api/pokemonTGC/model/Pokemon'
 import { setPath } from '../../../../../util/api/pokemonTGC/model/PokemonSet'
 import { mainSetIdOf } from '../../../../../util/api/pokemonTGC/setGroups'
 import { formatSetReleaseDate } from '../../../../../util/format/date'
+import { useImageOverride } from '../../../../../util/overrides/cardOverrides'
 import { useLocalizedName, useStrings } from '../../../../../util/ui/language/LanguageProvider'
 import { SearchContext } from '../../../../../util/ui/search/SearchProvider'
 import { cardShareLink } from '../../../../../util/shareLinks'
@@ -39,7 +41,7 @@ export function CardDetails(props: CardDetailsProps) {
   const cardName = useLocalizedName(props.card)
   const t = useStrings()
   const [isZoomOpen, setZoomOpen] = useState(false)
-  const imageSources = [props.card.images.large, props.card.images.small]
+  const imageSources = [useImageOverride(props.card.id), props.card.images.large, props.card.images.small]
   const pokedexNumber = props.card.nationalPokedexNumbers?.[0]
 
   return (
@@ -61,6 +63,7 @@ export function CardDetails(props: CardDetailsProps) {
             <SetInformation card={props.card} />
             <UrgencyPicker card={props.card} print={props.print} />
             <CardPrices card={props.card} />
+            <ImageOverrideEditor card={props.card} />
           </div>
         </div>
       </div>

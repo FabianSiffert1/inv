@@ -3,6 +3,7 @@ import { StarIcon } from '../../../../../Components/FavoriteButton/FavoriteButto
 import { LanguageBadge } from '../../../../../Components/LanguageBadge/LanguageBadge'
 import { UrgencyBadge } from '../../../../../Components/UrgencyPicker/UrgencyPicker'
 import { PokemonCard } from '../../../../../util/api/pokemonTGC/model/PokemonCard'
+import { useImageOverride } from '../../../../../util/overrides/cardOverrides'
 import { FavoritesContext } from '../../../../../util/ui/favorites/FavoritesProvider'
 import { useLocalizedName, useStrings } from '../../../../../util/ui/language/LanguageProvider'
 import { printDisplayPrice } from '../../../../../util/cardPrice'
@@ -59,6 +60,7 @@ export function Card({
 }: CardWithDetailsProps) {
   const cardName = useLocalizedName(card)
   const { favorites, urgencyOf } = useContext(FavoritesContext)
+  const imageOverride = useImageOverride(card.id)
   const showFavoriteMark =
     !showUrgency && favorites.some((favorite) => favorite.cardId == card.id && (print == undefined || favorite.print == print))
 
@@ -80,7 +82,7 @@ export function Card({
       <button type='button' className={styles.card} onClick={onOpen}>
         <CardImage
           className={styles.cardImage}
-          sources={[card.images.small]}
+          sources={[imageOverride, card.images.small]}
           alt={cardName}
           pokedexNumber={card.nationalPokedexNumbers?.[0]}
           lazy

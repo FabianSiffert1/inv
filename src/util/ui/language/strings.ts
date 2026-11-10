@@ -203,7 +203,12 @@ const en = {
   cardLanguage: 'Language',
   cardLanguages: {
     ja: 'Japanese'
-  } as Record<CardLanguageLabel, string>
+  } as Record<CardLanguageLabel, string>,
+  imageOverride: 'Replacement image',
+  imageOverrideUrl: 'Image URL',
+  imageOverrideFailed: 'Could not save the image URL.',
+  save: 'Save',
+  remove: 'Remove'
 }
 
 export type Strings = typeof en
@@ -401,7 +406,12 @@ const de: Strings = {
   cardLanguage: 'Sprache',
   cardLanguages: {
     ja: 'Japanisch'
-  }
+  },
+  imageOverride: 'Ersatzbild',
+  imageOverrideUrl: 'Bild-URL',
+  imageOverrideFailed: 'Die Bild-URL konnte nicht gespeichert werden.',
+  save: 'Speichern',
+  remove: 'Entfernen'
 }
 
 export const stringsOf = (germanNames: boolean): Strings => (germanNames ? de : en)

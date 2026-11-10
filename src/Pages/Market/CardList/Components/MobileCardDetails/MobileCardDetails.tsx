@@ -1,6 +1,8 @@
 import { useRef, useState } from 'react'
+import { ImageOverrideEditor } from '../../../../../Components/ImageOverrideEditor/ImageOverrideEditor'
 import { UrgencyPicker } from '../../../../../Components/UrgencyPicker/UrgencyPicker'
 import { PokemonCard } from '../../../../../util/api/pokemonTGC/model/PokemonCard'
+import { useImageOverride } from '../../../../../util/overrides/cardOverrides'
 import { useLocalizedName, useStrings } from '../../../../../util/ui/language/LanguageProvider'
 import { useModalBehaviour } from '../../../../../util/ui/useModalBehaviour'
 import { CardBaseDetails, CardNavigation, CardNavigationProps, SetInformation } from '../CardDetails/CardDetails'
@@ -22,7 +24,7 @@ export function MobileCardDetails(props: MobileCardDetailsProps) {
   const cardName = useLocalizedName(props.card)
   const t = useStrings()
   const [isZoomOpen, setZoomOpen] = useState(false)
-  const imageSources = [props.card.images.large, props.card.images.small]
+  const imageSources = [useImageOverride(props.card.id), props.card.images.large, props.card.images.small]
   const pokedexNumber = props.card.nationalPokedexNumbers?.[0]
 
   return (
@@ -45,6 +47,7 @@ export function MobileCardDetails(props: MobileCardDetailsProps) {
           <SetInformation card={props.card} />
           <UrgencyPicker card={props.card} print={props.print} />
           <CardPrices card={props.card} />
+          <ImageOverrideEditor card={props.card} />
         </div>
       </div>
       {isZoomOpen && <ImageZoom sources={imageSources} alt={cardName} pokedexNumber={pokedexNumber} onClose={() => setZoomOpen(false)} />}

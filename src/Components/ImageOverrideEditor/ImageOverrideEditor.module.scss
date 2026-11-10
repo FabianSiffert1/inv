@@ -1,0 +1,69 @@
+@use 'globalDesignElements.module' as *;
+
+.panel {
+  @include surface($surfaceRadiusSmall);
+  @include pastel(var(--elementMetal), 45%);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  min-width: 0;
+  padding: 0.8rem 0.9rem;
+}
+
+.panelHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--card-border-color);
+}
+
+.panelTitle {
+  @include typoFieldValue;
+}
+
+.input {
+  @include surface($surfaceRadiusSmall);
+  @include pastel(var(--elementBlue), 25%);
+  @include typoFieldValue;
+  width: 100%;
+  min-width: 0;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--card-border-color);
+  color: var(--color);
+
+  &:focus-visible {
+    outline: 2px solid var(--marker);
+    outline-offset: 2px;
+  }
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.button {
+  @include surfaceInteractive($surfaceRadiusSmall);
+  @include pastel(var(--elementBlue), 55%);
+  @include typoFieldValue;
+  padding: 0.3rem 0.7rem;
+  border: none;
+  color: var(--color);
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+}
+
+.remove {
+  @include pastel(var(--elementRed), 55%);
+}
+
+.error {
+  @include typoFieldLabel;
+  margin: 0;
+  color: var(--secondary-color);
+}
