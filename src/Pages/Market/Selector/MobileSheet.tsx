@@ -1,4 +1,4 @@
-import { ReactNode, useRef } from 'react'
+import { CSSProperties, ReactNode, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { useStrings } from '../../../util/ui/language/LanguageProvider'
 import { useModalBehaviour } from '../../../util/ui/useModalBehaviour'
@@ -39,6 +39,7 @@ export default function MobileSheet(props: MobileSheetProps) {
                 <button
                   type='button'
                   className={isSelected ? `${styles.option} ${styles.optionSelected}` : styles.option}
+                  style={option.tint ? ({ '--tint': option.tint } as CSSProperties) : undefined}
                   onClick={() => props.onSelect(option.id)}
                 >
                   {option.imageUrl && (
@@ -50,7 +51,10 @@ export default function MobileSheet(props: MobileSheetProps) {
                       onError={(event) => (event.currentTarget.hidden = true)}
                     />
                   )}
-                  <span className={styles.optionLabel}>{option.label}</span>
+                  <span className={styles.optionLabel}>
+                    {option.label}
+                    {option.detail && <span className={styles.optionDetail}>{option.detail}</span>}
+                  </span>
                   {props.cachedIds?.includes(option.id) && <span className={styles.cachedDot} role='img' aria-label={t.storedOffline} />}
                 </button>
               </li>

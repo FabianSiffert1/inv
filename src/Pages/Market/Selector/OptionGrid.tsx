@@ -5,6 +5,8 @@ import styles from './OptionGrid.module.scss'
 export interface OptionGridItem {
   id: string
   label: string
+  detail?: string
+  tint?: string
   imageUrl?: string
 }
 
@@ -66,6 +68,7 @@ export default function OptionGrid(props: OptionGridProps) {
             role='option'
             aria-selected={isSelected}
             className={isSelected ? `${styles.item} ${styles.selected}` : styles.item}
+            style={option.tint ? ({ '--tint': option.tint } as React.CSSProperties) : undefined}
             onClick={() => props.onSelect(option.id)}
             onKeyDown={(event) => handleKeyDown(event, index)}
           >
@@ -78,7 +81,10 @@ export default function OptionGrid(props: OptionGridProps) {
                 onError={(event) => (event.currentTarget.hidden = true)}
               />
             )}
-            <span className={styles.itemLabel}>{option.label}</span>
+            <span className={styles.itemText}>
+              <span className={styles.itemLabel}>{option.label}</span>
+              {option.detail && <span className={styles.itemDetail}>{option.detail}</span>}
+            </span>
             {props.cachedIds?.includes(option.id) && <span className={styles.cachedDot} role='img' aria-label={t.storedOffline} />}
           </button>
         )

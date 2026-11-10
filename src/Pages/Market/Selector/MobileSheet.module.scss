@@ -62,7 +62,10 @@
 .optionList {
   list-style: none;
   margin: 0;
-  padding: 0.35rem 0 1.5rem 0;
+  padding: 0.75rem 1rem calc(1.5rem + env(safe-area-inset-bottom, 0px)) 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
   overflow-y: auto;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
@@ -75,28 +78,38 @@
 }
 
 .option {
+  @include surface($surfaceRadiusSmall);
+  @include pastel(var(--tint, var(--elementBlue)), 25%);
   display: flex;
   align-items: center;
   gap: 0.75rem;
   width: 100%;
   min-height: 3rem;
-  padding: 0.65rem 1.25rem;
+  padding: 0.6rem 1rem;
   cursor: pointer;
   border: none;
-  background: none;
   font-family: inherit;
   font-size: 1rem;
   text-align: left;
   color: var(--color);
+  box-shadow: 0 0.15rem 0.5rem color-mix(in srgb, var(--color) 10%, transparent);
+
+  &:focus-visible {
+    outline: 2px solid var(--marker);
+    outline-offset: 3px;
+  }
 }
 
 .option:active {
-  background-color: var(--card-background-color);
+  @include pastel(var(--tint, var(--elementBlue)), 45%);
+  transform: scale(0.98);
 }
 
 .optionSelected {
+  @include pastel(var(--tint, var(--elementYellow)), 65%);
   font-weight: bold;
-  box-shadow: inset 0.18rem 0 0 var(--marker);
+  outline: 1.5px solid var(--marker);
+  outline-offset: 2px;
 }
 
 .optionImage {
@@ -107,8 +120,18 @@
 }
 
 .optionLabel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
   flex: 1 1 auto;
   min-width: 0;
+}
+
+.optionDetail {
+  @include typoFieldValue;
+  font-size: 0.6875rem;
+  font-weight: 400;
+  color: var(--secondary-color);
 }
 
 .cachedDot {

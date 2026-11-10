@@ -1,8 +1,11 @@
 import { useContext } from 'react'
 import { PokemonSet, PokemonSetName, PokemonTCGSeries } from '../../../util/api/pokemonTGC/model/PokemonSet'
 import { LanguageContext, localizedName, useStrings } from '../../../util/ui/language/LanguageProvider'
+import { formatSetReleaseDate } from '../../../util/format/date'
+import { Strings } from '../../../util/ui/language/strings'
 import Dropdown from './Dropdown'
 import MobileSheet from './MobileSheet'
+import { nameTint } from './nameTint'
 import { OptionGridItem } from './OptionGrid'
 
 interface SetStripProps {
@@ -16,19 +19,26 @@ interface SetStripProps {
   isMobile: boolean
 }
 
-export const setOptionsOfSeries = (pokemonSets?: PokemonSet[], series?: PokemonTCGSeries, germanNames = false): OptionGridItem[] =>
+export const setOptionsOfSeries = (
+  pokemonSets: PokemonSet[] | undefined,
+  series: PokemonTCGSeries | undefined,
+  germanNames: boolean,
+  t: Strings
+): OptionGridItem[] =>
   (pokemonSets ?? [])
     .filter((pokemonSet) => pokemonSet.series == series)
     .sort((a, b) => b.releaseDate.localeCompare(a.releaseDate))
     .map((pokemonSet) => ({
       id: pokemonSet.name,
-      label: localizedName(pokemonSet, germanNames)
+      label: localizedName(pokemonSet, germanNames),
+      detail: [pokemonSet.ptcgoCode, formatSetReleaseDate(pokemonSet.releaseDate, t)].filter((part) => part != undefined).join(' · '),
+      tint: nameTint(pokemonSet.name)
     }))
 
 export default function SetStrip(props: SetStripProps) {
   const { germanNames } = useContext(LanguageContext)
   const t = useStrings()
-  const options = setOptionsOfSeries(props.pokemonSets, props.currentlySelectedPokemonSeries, germanNames)
+  const options = setOptionsOfSeries(props.pokemonSets, props.currentlySelectedPokemonSeries, germanNames, t)
 
   return (
     <>

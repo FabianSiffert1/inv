@@ -15,7 +15,7 @@
   min-width: 0;
   max-width: 100%;
   @include surfaceInteractive($surfaceRadiusSmall);
-  @include pastel(var(--elementBlue));
+  @include pastel(var(--tint, var(--elementBlue)));
   padding: 0.5rem 0.9rem;
   font-family: inherit;
   font-size: 0.95rem;
@@ -34,7 +34,7 @@
 }
 
 .triggerOpen {
-  @include pastel(var(--elementBlue), 50%);
+  @include pastel(var(--tint, var(--elementBlue)), 50%);
   outline: 1px solid var(--card-border-color);
 }
 

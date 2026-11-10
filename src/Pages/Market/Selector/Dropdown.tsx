@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useRef } from 'react'
+import { CSSProperties, ReactNode, useEffect, useRef } from 'react'
 import styles from './Dropdown.module.scss'
 import OptionGrid, { OptionGridItem } from './OptionGrid'
 
@@ -57,6 +57,7 @@ export default function Dropdown(props: DropdownProps) {
         aria-expanded={props.isOpen}
         aria-haspopup='listbox'
         aria-label={props.ariaLabel}
+        style={selectedOption?.tint ? ({ '--tint': selectedOption.tint } as CSSProperties) : undefined}
         disabled={props.disabled}
         onClick={() => props.setOpen(!props.isOpen)}
       >

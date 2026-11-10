@@ -3,6 +3,7 @@ import { PokemonSet, PokemonTCGSeries } from '../../../util/api/pokemonTGC/model
 import { LanguageContext, useStrings } from '../../../util/ui/language/LanguageProvider'
 import Dropdown from './Dropdown'
 import MobileSheet from './MobileSheet'
+import { nameTint } from './nameTint'
 import { OptionGridItem } from './OptionGrid'
 
 interface EraStripProps {
@@ -29,7 +30,11 @@ export const eraOptions = (pokemonSets?: PokemonSet[], germanNames = false): Opt
 
   return Array.from(earliestReleaseDateOfSeries.entries())
     .sort((a, b) => b[1].localeCompare(a[1]))
-    .map(([series]) => ({ id: series, label: germanNames ? (germanNameOfSeries.get(series) ?? series) : series }))
+    .map(([series]) => ({
+      id: series,
+      label: germanNames ? (germanNameOfSeries.get(series) ?? series) : series,
+      tint: nameTint(series)
+    }))
 }
 
 export default function EraStrip(props: EraStripProps) {
