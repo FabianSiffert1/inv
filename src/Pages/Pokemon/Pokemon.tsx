@@ -190,14 +190,17 @@ function PokemonCards(props: PokemonCardsProps) {
         <div className={styles.pageTitle}>
           <img
             key={pokemon.number}
-            className={styles.sprite}
+            className={`${styles.sprite} ${styles.spriteLarge}`}
             src={spriteUrl(pokemon.number)}
             alt=''
             onError={(event) => (event.currentTarget.hidden = true)}
           />
-          <h1 className={styles.pageHeadline}>{localizedName(pokemon, germanNames)}</h1>
-          <span className={styles.pageMeta}>#{pokemon.number.toString().padStart(4, '0')}</span>
-          <span className={styles.pageCount}>{t.cardCount(pokemon.cardCount)}</span>
+          <div className={styles.pageHeadlineStack}>
+            <h1 className={styles.pageHeadline}>{localizedName(pokemon, germanNames)}</h1>
+            <span className={styles.pageMeta}>
+              #{pokemon.number.toString().padStart(4, '0')} · {t.cardCount(pokemon.cardCount)}
+            </span>
+          </div>
         </div>
       )}
       {pokemon && props.pokemonIndex && <EvolutionChain pokemon={pokemon} pokemonIndex={props.pokemonIndex} />}

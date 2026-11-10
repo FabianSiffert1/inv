@@ -23,10 +23,31 @@
   }
 }
 
+.spriteLarge {
+  width: 5.2rem;
+  height: 5.2rem;
+  margin: -0.975rem -0.65rem -0.975rem 0;
+
+  @media (max-width: $smallScreen - 1px) {
+    margin-bottom: 0;
+  }
+}
+
 .pageHeadline {
   @include typoDisplay;
   margin: 0;
   font-size: 1.4rem;
+}
+
+.pageHeadlineStack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+
+  .pageMeta {
+    font-size: 0.72rem;
+  }
 }
 
 .pageMeta {
