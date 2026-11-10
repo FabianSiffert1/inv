@@ -8,6 +8,8 @@ interface ContextProps {
 
 export const AdminContext = createContext<ContextProps>({ isAdmin: false })
 
+const isLocalhost = ['localhost', '127.0.0.1', '[::1]'].includes(window.location.hostname)
+
 interface Props {
   children?: React.ReactNode
 }
@@ -39,7 +41,7 @@ const AdminProvider: React.FC<Props> = ({ children }) => {
 
   return (
     <AdminContext.Provider value={{ isAdmin }}>
-      {isAdmin && <StoredOverrideCleanup />}
+      {isAdmin && !isLocalhost && <StoredOverrideCleanup />}
       {children}
     </AdminContext.Provider>
   )
