@@ -10,9 +10,24 @@ service cloud.firestore {
       return data.keys().hasOnly(['favorites']) && data.favorites is map;
     }
 
+    function isAdmin() {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/roles/$(request.auth.uid))
+        && get(/databases/$(database)/documents/roles/$(request.auth.uid)).data.admin == true;
+    }
+
     match /users/{uid} {
       allow read, delete: if isOwner(uid);
       allow create, update: if isOwner(uid) && isUserDocument(request.resource.data);
+    }
+
+    match /roles/{uid} {
+      allow read: if isOwner(uid);
+    }
+
+    match /config/{document} {
+      allow read: if true;
+      allow write: if isAdmin();
     }
 
     match /{document=**} {

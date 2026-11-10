@@ -235,7 +235,8 @@ sit next to the plain card favorite. Entries without `print` are the card itself
 - **Offline**: Firestore's persistent cache is enabled and shared across tabs. The list renders from
   disk on revisit, toggles work without a connection and sync when it returns.
 - **Rules**: a user may read, create, update and delete only `users/<their own uid>`, and only when
-  the document holds exactly one key, `favorites`, holding a map. Everything else is denied.
+  the document holds exactly one key, `favorites`, holding a map. Apart from the admin rules below,
+  everything else is denied.
 - **Merge**: on the first sign-in on a device that already has guest favorites, a dialog offers to
   add them to the account. Confirming adds only the cards the account lacks and clears the device
   copy once Firestore has acknowledged the write. Dismissing leaves the device copy untouched and
@@ -245,6 +246,18 @@ sit next to the plain card favorite. Entries without `print` are the card itself
 Code: `src/util/ui/favorites/cloudFavorites.ts` holds the Firestore calls,
 `FavoritesProvider.tsx` next to it switches between local and cloud and runs the merge,
 `src/util/firebase/app.ts` initialises the SDK.
+
+### Admin
+
+There is a single role, admin, meant for the site owner. It is granted by hand in the Firebase
+Console: create the document `roles/<uid>` with the boolean field `admin: true`. The uid is shown
+under Authentication → Users. There is no UI to grant or revoke the role.
+
+- **Rules**: a signed-in user may read only their own `roles/<uid>`; nobody can write roles from
+  the app. Documents under `config/` are readable by everyone, including guests, and writable only
+  by users whose role document has `admin: true`.
+- **Code**: `src/util/admin/AdminProvider.tsx` exposes `isAdmin` through `AdminContext`. It only
+  loads Firestore for signed-in users, so guests download nothing extra.
 
 ## Known gaps
 

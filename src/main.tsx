@@ -16,6 +16,7 @@ import Search from './Pages/Search/Search'
 import { SetsSnapshot } from './util/api/pokemonTGC/querys'
 import { isNotFoundError } from './util/api/pokemonTGC/querys'
 import { isFavoriteSetId } from './util/ui/favorites/favoriteSets'
+import AdminProvider from './util/admin/AdminProvider'
 import AuthProvider from './util/auth/AuthProvider'
 import FavoritesProvider from './util/ui/favorites/FavoritesProvider'
 import LanguageProvider from './util/ui/language/LanguageProvider'
@@ -142,9 +143,11 @@ root.render(
         <LanguageProvider>
           <SearchProvider>
             <AuthProvider>
-              <FavoritesProvider>
-                <RouterProvider router={router} />
-              </FavoritesProvider>
+              <AdminProvider>
+                <FavoritesProvider>
+                  <RouterProvider router={router} />
+                </FavoritesProvider>
+              </AdminProvider>
             </AuthProvider>
           </SearchProvider>
         </LanguageProvider>
