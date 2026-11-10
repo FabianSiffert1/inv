@@ -6,6 +6,7 @@ import { SearchIndexEntry } from './model/SearchIndex'
 
 export interface SetsSnapshot {
   generatedAt: string
+  indexedAt?: string
   eurPerUsd?: number
   sets: PokemonSet[]
 }

@@ -88,8 +88,9 @@ and its hot-reload WebSocket makes phones prompt for local network access.
 ## How it works
 
 - **React + Vite + TypeScript**, SCSS modules for styling.
-- **Snapshot** in `data/`: `sets.json` holds every set plus a `generatedAt` timestamp and
-  `eurPerUsd`, the ECB reference rate fetched from Frankfurter during the run (the previous value is
+- **Snapshot** in `data/`: `sets.json` holds every set plus a `generatedAt` timestamp (when
+  prices were fetched), an `indexedAt` timestamp (when the card files and indexes were last
+  written, including by `build-indexes` and `fetch-exclusives`) and `eurPerUsd`, the ECB reference rate fetched from Frankfurter during the run (the previous value is
   kept if that request fails). Price sorting uses it to compare TCGplayer prices with Cardmarket
   ones, falling back to a fixed rate when it is missing.
   `cards/<setId>.json` holds each set's cards sorted by trend price. `pokemon.json` and
@@ -111,8 +112,8 @@ and its hot-reload WebSocket makes phones prompt for local network access.
   `data/images/svp-ja/<number>/low.png` and `high.png`. Sets with PNG images carry
   `cardImageFormat: 'png'`, and those cards carry `language: 'ja'`.
 - **TanStack Query** fetches the snapshot and persists it to IndexedDB so a revisit is instant.
-  The set list is revalidated hourly; card queries are keyed by `generatedAt`, so a new snapshot
-  drops the old cards. Only the eight most recently viewed card lists plus the sets behind your
+  The set list is revalidated hourly; card and index queries are keyed by `indexedAt`
+  (falling back to `generatedAt`), so any rebuild drops the old cards and indexes. Only the eight most recently viewed card lists plus the sets behind your
   favorites are persisted, to keep the cache small; the search index is never persisted. The
   persisted cache carries a `buster` string in `main.tsx`. Bump it whenever the shape of
   `sets.json` or the card files changes, so browsers discard the old copy instead of running new

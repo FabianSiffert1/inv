@@ -20,6 +20,8 @@ import { setIdsOfGroup } from './setGroups'
 
 const setsSnapshotStaleTime = 1000 * 60 * 60
 
+const snapshotVersionOf = (snapshot?: SetsSnapshot): string | undefined => snapshot?.indexedAt ?? snapshot?.generatedAt
+
 const useSetsSnapshot = <TData = SetsSnapshot,>(select?: (snapshot: SetsSnapshot) => TData) =>
   useQuery<SetsSnapshot, Error, TData>({
     queryKey: ['sets', 'snapshot'],
@@ -33,19 +35,19 @@ const useSetsSnapshot = <TData = SetsSnapshot,>(select?: (snapshot: SetsSnapshot
 export const useSnapshotCacheEviction = () => {
   const queryClient = useQueryClient()
   const { data: snapshot } = useSetsSnapshot()
-  const generatedAt = snapshot?.generatedAt
+  const version = snapshotVersionOf(snapshot)
 
   useEffect(() => {
-    if (generatedAt == undefined) {
+    if (version == undefined) {
       return
     }
     queryClient.removeQueries({
       predicate: (query) => {
         const key = query.queryKey
-        return key[0] != 'sets' && key[key.length - 1] != generatedAt
+        return key[0] != 'sets' && key[key.length - 1] != version
       }
     })
-  }, [queryClient, generatedAt])
+  }, [queryClient, version])
 }
 
 export const useAllSets = () => useSetsSnapshot<PokemonSet[]>((snapshot) => snapshot.sets)
@@ -54,11 +56,11 @@ export const useEurPerUsd = (): number => useSetsSnapshot((snapshot) => snapshot
 
 export const useCardsOfSet = (setName?: PokemonSetName) => {
   const { data: snapshot } = useSetsSnapshot()
-  const generatedAt = snapshot?.generatedAt
+  const version = snapshotVersionOf(snapshot)
   const set = snapshot?.sets.find((candidate) => candidate.name == setName)
 
   return useQuery<PokemonCard[]>({
-    queryKey: ['cards', 'set', setName, generatedAt],
+    queryKey: ['cards', 'set', setName, version],
     queryFn: ({ signal }) => fetchAllCardsOfASet(set?.id as string, signal),
     enabled: set != undefined,
     staleTime: Infinity
@@ -68,7 +70,7 @@ export const useCardsOfSet = (setName?: PokemonSetName) => {
 const cardsOfSetQuery = (setId: string, snapshot?: SetsSnapshot) => {
   const setName = snapshot?.sets.find((candidate) => candidate.id == setId)?.name
   return {
-    queryKey: ['cards', 'set', setName, snapshot?.generatedAt],
+    queryKey: ['cards', 'set', setName, snapshotVersionOf(snapshot)],
     queryFn: ({ signal }: { signal?: AbortSignal }) => fetchAllCardsOfASet(setId, signal),
     enabled: setName != undefined,
     staleTime: Infinity
@@ -106,61 +108,61 @@ export const useCardsOfSetGroup = (setId?: string) => {
 
 export const usePokemonIndex = () => {
   const { data: snapshot } = useSetsSnapshot()
-  const generatedAt = snapshot?.generatedAt
+  const version = snapshotVersionOf(snapshot)
 
   return useQuery<Pokemon[]>({
-    queryKey: ['pokemon', 'index', generatedAt],
+    queryKey: ['pokemon', 'index', version],
     queryFn: ({ signal }) => fetchPokemonIndex(signal),
-    enabled: generatedAt != undefined,
+    enabled: version != undefined,
     staleTime: Infinity
   })
 }
 
 export const useArtistIndex = () => {
   const { data: snapshot } = useSetsSnapshot()
-  const generatedAt = snapshot?.generatedAt
+  const version = snapshotVersionOf(snapshot)
 
   return useQuery<Artist[]>({
-    queryKey: ['artists', 'index', generatedAt],
+    queryKey: ['artists', 'index', version],
     queryFn: ({ signal }) => fetchArtistIndex(signal),
-    enabled: generatedAt != undefined,
+    enabled: version != undefined,
     staleTime: Infinity
   })
 }
 
 export const useCardsOfArtist = (slug?: string) => {
   const { data: snapshot } = useSetsSnapshot()
-  const generatedAt = snapshot?.generatedAt
+  const version = snapshotVersionOf(snapshot)
 
   return useQuery<PokemonCard[]>({
-    queryKey: ['cards', 'artist', slug, generatedAt],
+    queryKey: ['cards', 'artist', slug, version],
     queryFn: ({ signal }) => fetchCardsOfArtist(slug as string, signal),
-    enabled: slug != undefined && generatedAt != undefined,
+    enabled: slug != undefined && version != undefined,
     staleTime: Infinity
   })
 }
 
 export const useCardsOfPokemon = (pokedexNumber?: number) => {
   const { data: snapshot } = useSetsSnapshot()
-  const generatedAt = snapshot?.generatedAt
+  const version = snapshotVersionOf(snapshot)
 
   return useQuery<PokemonCard[]>({
-    queryKey: ['cards', 'pokemon', pokedexNumber, generatedAt],
+    queryKey: ['cards', 'pokemon', pokedexNumber, version],
     queryFn: ({ signal }) => fetchCardsOfPokemon(pokedexNumber as number, signal),
-    enabled: pokedexNumber != undefined && generatedAt != undefined,
+    enabled: pokedexNumber != undefined && version != undefined,
     staleTime: Infinity
   })
 }
 
 export const useSearchIndex = (enabled: boolean) => {
   const { data: snapshot } = useSetsSnapshot()
-  const generatedAt = snapshot?.generatedAt
+  const version = snapshotVersionOf(snapshot)
 
   return useQuery<SearchIndexEntry[], Error, SearchableEntry[]>({
-    queryKey: ['search', 'index', generatedAt],
+    queryKey: ['search', 'index', version],
     queryFn: ({ signal }) => fetchSearchIndex(signal),
     select: prepareSearchIndex,
-    enabled: enabled && generatedAt != undefined,
+    enabled: enabled && version != undefined,
     staleTime: Infinity
   })
 }

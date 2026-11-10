@@ -47,4 +47,4 @@ export const readCardsOfSets = async (sets) => {
 }
 
 export const writeSetsSnapshot = (sets, { generatedAt = new Date().toISOString(), eurPerUsd } = {}) =>
-  writeJsonAtomically(setsFile, { generatedAt, eurPerUsd, sets })
+  writeJsonAtomically(setsFile, { generatedAt, indexedAt: new Date().toISOString(), eurPerUsd, sets })
