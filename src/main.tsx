@@ -138,7 +138,11 @@ const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 
 root.render(
   <React.StrictMode>
-    <PersistQueryClientProvider client={queryClient} persistOptions={persistOptions}>
+    <PersistQueryClientProvider
+      client={queryClient}
+      persistOptions={persistOptions}
+      onSuccess={() => queryClient.invalidateQueries({ queryKey: ['sets', 'snapshot'] })}
+    >
       <ThemeProvider>
         <LanguageProvider>
           <SearchProvider>
