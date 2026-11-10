@@ -1,8 +1,12 @@
-import React, { createContext, useCallback, useMemo, useState } from 'react'
+import React, { createContext, useCallback, useEffect, useMemo, useState } from 'react'
 import { PokemonCard } from '../../api/pokemonTGC/model/PokemonCard'
 import { variantLabels } from '../../cardVariants'
 
+const searchDelayMs = 200
+
 interface ContextProps {
+  input: string
+  setInput: (input: string) => void
   query: string
   setQuery: (query: string) => void
   isSearchOpen: boolean
@@ -11,6 +15,8 @@ interface ContextProps {
 }
 
 export const SearchContext = createContext<ContextProps>({
+  input: '',
+  setInput: () => {},
   query: '',
   setQuery: () => {},
   isSearchOpen: false,
@@ -23,19 +29,34 @@ interface Props {
 }
 
 const SearchProvider: React.FC<Props> = ({ children }) => {
-  const [query, setQuery] = useState('')
+  const [input, setInput] = useState('')
+  const [query, setDebouncedQuery] = useState('')
   const [isSearchOpen, setSearchOpen] = useState(false)
+
+  useEffect(() => {
+    if (input.trim() == '') {
+      setDebouncedQuery(input)
+      return
+    }
+    const timeout = window.setTimeout(() => setDebouncedQuery(input), searchDelayMs)
+    return () => window.clearTimeout(timeout)
+  }, [input])
+
+  const setQuery = useCallback((nextQuery: string) => {
+    setInput(nextQuery)
+    setDebouncedQuery(nextQuery)
+  }, [])
 
   const openSearch = useCallback(() => setSearchOpen(true), [])
 
   const closeSearch = useCallback(() => {
     setSearchOpen(false)
     setQuery('')
-  }, [])
+  }, [setQuery])
 
   const contextValue = useMemo(
-    () => ({ query, setQuery, isSearchOpen, openSearch, closeSearch }),
-    [query, isSearchOpen, openSearch, closeSearch]
+    () => ({ input, setInput, query, setQuery, isSearchOpen, openSearch, closeSearch }),
+    [input, query, setQuery, isSearchOpen, openSearch, closeSearch]
   )
 
   return <SearchContext.Provider value={contextValue}>{children}</SearchContext.Provider>

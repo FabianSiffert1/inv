@@ -9,7 +9,7 @@ interface SearchToggleProps {
 }
 
 export default function SearchToggle({ floating = false }: SearchToggleProps) {
-  const { query, setQuery, isSearchOpen, openSearch, closeSearch } = useContext(SearchContext)
+  const { input, setInput, isSearchOpen, openSearch, closeSearch } = useContext(SearchContext)
   const inputRef = useRef<HTMLInputElement>(null)
   const t = useStrings()
   const label = isSearchOpen ? t.closeSearch : t.searchCards
@@ -37,8 +37,8 @@ export default function SearchToggle({ floating = false }: SearchToggleProps) {
         type='search'
         placeholder={t.searchPlaceholder}
         aria-label={t.searchCards}
-        value={query}
-        onChange={(event) => setQuery(event.target.value)}
+        value={input}
+        onChange={(event) => setInput(event.target.value)}
         onKeyDown={handleKeyDown}
         tabIndex={isSearchOpen ? 0 : -1}
         aria-hidden={!isSearchOpen}
