@@ -29,7 +29,7 @@ apply and win on conflict.
 - When the shape of `sets.json` or the card files changes: bump `buster` in `src/main.tsx`, update
   the model in `src/util/api/pokemonTGC/model/`, and extend the Snapshot section of the README.
 - Firestore rules live in `firestore.rules` and are deployed by hand:
-  `npx firebase deploy --only firestore:rules`. Favorites are keyed by card id, or `cardId#print`
+  `npx firebase-tools deploy --only firestore:rules`. Favorites are keyed by card id, or `cardId#print`
   for one printing.
 
 ## Code conventions

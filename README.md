@@ -197,8 +197,8 @@ To set up a new Firebase project:
 4. Deploy the rules:
 
 ```
-npx firebase login
-npx firebase deploy --only firestore:rules
+npx firebase-tools login
+npx firebase-tools deploy --only firestore:rules
 ```
 
 `.firebaserc` names the project and `firebase.json` points at the rules file.
@@ -258,6 +258,11 @@ under Authentication → Users. There is no UI to grant or revoke the role.
   by users whose role document has `admin: true`.
 - **Code**: `src/util/admin/AdminProvider.tsx` exposes `isAdmin` through `AdminContext`. It only
   loads Firestore for signed-in users, so guests download nothing extra.
+- **Replacement images**: an admin can set an image URL for any card in its details. They live in
+  `config/cardOverrides` as `images: { <cardId>: <url> }`. Every visitor reads that document through
+  the Firestore REST API with a plain `fetch` (`src/util/overrides/cardOverrides.ts`), so guests
+  still never load the Firebase SDK. The replacement is tried first; if it fails to load, the card
+  falls back to its TCGdex image.
 
 ## Known gaps
 
