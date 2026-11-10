@@ -1,12 +1,11 @@
 import path from 'node:path'
 import { rename, writeFile } from 'node:fs/promises'
-import { animatedSpritesDirectory, fileExists, spritesDirectory } from './files.mjs'
+import { fileExists, spritesDirectory } from './files.mjs'
 
 const host = 'https://api.tcgdex.net/v2'
 const maximumAttempts = 5
 const requestTimeoutMilliseconds = 30_000
 const spriteHost = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon'
-const animatedSpriteHost = `${spriteHost}/other/showdown`
 const speciesNamesUrl = 'https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/pokemon_species_names.csv'
 const exchangeRateUrl = 'https://api.frankfurter.dev/v1/latest?base=USD&symbols=EUR'
 const englishLanguageId = '9'
@@ -80,10 +79,6 @@ const downloadFile = async (url, filePath) => {
 
 export const downloadSprite = (pokedexNumber) =>
   downloadFile(`${spriteHost}/${pokedexNumber}.png`, path.join(spritesDirectory, `${pokedexNumber}.png`))
-
-export const downloadAnimatedSprite = (pokedexNumber) =>
-  downloadFile(`${animatedSpriteHost}/${pokedexNumber}.gif`, path.join(animatedSpritesDirectory, `${pokedexNumber}.gif`))
-
 const parseCsvLine = (line) => {
   const fields = []
   let field = ''

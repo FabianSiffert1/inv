@@ -12,7 +12,7 @@ import {
   writeSetsSnapshot
 } from './lib/files.mjs'
 import { writeIndexes } from './lib/indexes.mjs'
-import { downloadAnimatedSprite, downloadSprite, fetchEurPerUsd, fetchGermanNames, get, isNotFound } from './lib/tcgdex.mjs'
+import { downloadSprite, fetchEurPerUsd, fetchGermanNames, get, isNotFound } from './lib/tcgdex.mjs'
 
 const excludedSeries = new Set(['tcgp'])
 const cardConcurrency = 8
@@ -52,9 +52,6 @@ const downloadSprites = async (pokedexNumbers) => {
   if (missingSprites.length > 0) {
     console.error(`Missing sprites: ${missingSprites.join(', ')}`)
   }
-
-  const animatedResults = await mapConcurrently(sortedPokedexNumbers, cardConcurrency, downloadAnimatedSprite)
-  console.log(`Animated sprites: ${animatedResults.filter(Boolean).length}/${sortedPokedexNumbers.length} available`)
 }
 
 const main = async () => {

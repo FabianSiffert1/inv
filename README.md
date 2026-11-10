@@ -29,8 +29,8 @@ cards from `data/`, which `npm run fetch-data` downloads. Run it once before sta
 
 TCGdex needs no API key. Prices are only available per card, so a run requests every card of every
 set individually and takes a while. Pokémon TCG Pocket sets are skipped, as they have no market
-prices. The run also downloads a static sprite for every Pokémon that has cards, plus an animated
-one where PokeAPI has it, into `data/sprites/`.
+prices. The run also downloads a static sprite for every Pokémon that has cards into
+`data/sprites/`.
 
 Sign-in works out of the box against the Firebase project named in `.env`. For your own project,
 see [Accounts](#accounts).
@@ -152,8 +152,7 @@ and its hot-reload WebSocket makes phones prompt for local network access.
   Each cell is the trend or market price and links to that printing's product page. The bold row
   is the price the grid shows; the sort and the totals use it too. The set view sums those prices
   into a set value under the status line, next to the set's release month.
-- **Sprites** are PokeAPI's 96×96 PNGs. Pokémon detail pages show the animated Showdown GIF when
-  one exists and fall back to the PNG otherwise, or when the system asks for reduced motion.
+- **Sprites** are PokeAPI's 96×96 PNGs, scaled with `image-rendering: pixelated`.
 - **Favorites** live in `localStorage` for guests. Signed-in users get them from Firestore instead.
   Firebase is loaded lazily, so guests never download it. The star next to a card name favorites the
   card; the small stars in the Prices table favorite one printing, which then shows on the favorites
@@ -229,6 +228,5 @@ Code: `src/util/ui/favorites/cloudFavorites.ts` holds the Firestore calls,
 
 - There is no test suite.
 - Prices are whatever TCGdex reports and are not validated. See the price timestamp for their age.
-- Animated sprites are missing for some Pokémon above #1000 and are not used in the grids.
 - A card removed from the account can be offered again by the merge dialog on a device that still
   holds it as a guest favorite, since the device cannot tell "new here" from "deleted there".
