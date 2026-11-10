@@ -29,6 +29,22 @@
   flex: 0 0 auto;
 }
 
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-left: auto;
+}
+
+.adminButton {
+  @include surfaceInteractive($surfaceRadiusSmall);
+  @include pastel(var(--elementYellow), 60%);
+  @include typoFieldValue;
+  padding: 0.4rem 0.8rem;
+  border: none;
+  color: var(--color);
+}
+
 .closeButton {
   @include surfaceInteractive($surfaceRadiusSmall);
   @include pastel(var(--elementPeach), 50%);

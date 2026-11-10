@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { ImageOverrideEditor } from '../../../../../Components/ImageOverrideEditor/ImageOverrideEditor'
+import { ImageOverrideButton } from '../../../../../Components/ImageOverrideDialog/ImageOverrideDialog'
 import { UrgencyPicker } from '../../../../../Components/UrgencyPicker/UrgencyPicker'
 import { PokemonCard } from '../../../../../util/api/pokemonTGC/model/PokemonCard'
 import { useImageOverride } from '../../../../../util/overrides/cardOverrides'
@@ -33,9 +33,12 @@ export function MobileCardDetails(props: MobileCardDetailsProps) {
       <div className={styles.cardDetailsContainer} ref={containerRef} role='dialog' aria-modal='true' aria-label={cardName}>
         <div className={styles.mobileCardDetailsHeader}>
           {props.navigation && <CardNavigation {...props.navigation} />}
-          <button type='button' className={styles.closeButton} aria-label={t.close} onClick={props.onClose}>
-            ×
-          </button>
+          <div className={styles.headerActions}>
+            <ImageOverrideButton card={props.card} className={styles.adminButton} />
+            <button type='button' className={styles.closeButton} aria-label={t.close} onClick={props.onClose}>
+              ×
+            </button>
+          </div>
         </div>
         <div className={styles.scrollArea}>
           <div className={styles.cardImageAndBaseInfo}>
@@ -47,7 +50,6 @@ export function MobileCardDetails(props: MobileCardDetailsProps) {
           <SetInformation card={props.card} />
           <UrgencyPicker card={props.card} print={props.print} />
           <CardPrices card={props.card} />
-          <ImageOverrideEditor card={props.card} />
         </div>
       </div>
       {isZoomOpen && <ImageZoom sources={imageSources} alt={cardName} pokedexNumber={pokedexNumber} onClose={() => setZoomOpen(false)} />}

@@ -258,7 +258,9 @@ under Authentication → Users. There is no UI to grant or revoke the role.
   by users whose role document has `admin: true`.
 - **Code**: `src/util/admin/AdminProvider.tsx` exposes `isAdmin` through `AdminContext`. It only
   loads Firestore for signed-in users, so guests download nothing extra.
-- **Replacement images**: an admin can set an image URL for any card in its details. They live in
+- **Replacement images**: an admin gets an "Edit" chip next to the close button of a card's details, which
+  opens a dialog to set or remove an image URL for that card. Admins also see a golden Master Ball
+  and an "Admin mode" badge in the account menu. The URLs live in
   `config/cardOverrides` as `images: { <cardId>: <url> }`. Every visitor reads that document through
   the Firestore REST API with a plain `fetch` (`src/util/overrides/cardOverrides.ts`), so guests
   still never load the Firebase SDK. The replacement is tried first; if it fails to load, the card

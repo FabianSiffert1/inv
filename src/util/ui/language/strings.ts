@@ -207,6 +207,12 @@ const en = {
   imageOverride: 'Replacement image',
   imageOverrideUrl: 'Image URL',
   imageOverrideFailed: 'Could not save the image URL.',
+  imageOverrideHint: 'Shown instead of the card image for everyone. If it fails to load, the original image is used.',
+  imageOverridePreviewFailed: 'Image could not be loaded',
+  editCard: 'Edit card',
+  edit: 'Edit',
+  adminMode: 'Admin mode',
+  cancel: 'Cancel',
   save: 'Save',
   remove: 'Remove'
 }
@@ -410,6 +416,12 @@ const de: Strings = {
   imageOverride: 'Ersatzbild',
   imageOverrideUrl: 'Bild-URL',
   imageOverrideFailed: 'Die Bild-URL konnte nicht gespeichert werden.',
+  imageOverrideHint: 'Wird für alle statt des Kartenbilds angezeigt. Lädt es nicht, erscheint das Originalbild.',
+  imageOverridePreviewFailed: 'Bild konnte nicht geladen werden',
+  editCard: 'Karte bearbeiten',
+  edit: 'Bearbeiten',
+  adminMode: 'Admin-Modus',
+  cancel: 'Abbrechen',
   save: 'Speichern',
   remove: 'Entfernen'
 }

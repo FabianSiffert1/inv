@@ -1,16 +1,18 @@
 import { ReactNode, useContext, useEffect, useRef, useState } from 'react'
+import { AdminContext } from '../../util/admin/AdminProvider'
 import { AuthContext } from '../../util/auth/AuthProvider'
 import { LanguageContext, useStrings } from '../../util/ui/language/LanguageProvider'
 import { ThemeContext } from '../../util/ui/theme/ThemeProvider'
 import { PretzelIcon, TeacupIcon } from '../LanguageToggle/LanguageIcons'
 import { EspeonIcon, UmbreonIcon } from '../ThemeToggle/ThemeIcons'
-import { MasterBallIcon, PokeBallIcon, SignOutIcon } from './HeaderMenuIcons'
+import { GoldenMasterBallIcon, MasterBallIcon, PokeBallIcon, SignOutIcon } from './HeaderMenuIcons'
 import styles from './HeaderMenu.module.scss'
 
 export default function HeaderMenu() {
   const { status, user, error, signIn, signOut } = useContext(AuthContext)
   const { darkTheme, toggleTheme } = useContext(ThemeContext)
   const { germanNames, toggleLanguage } = useContext(LanguageContext)
+  const { isAdmin } = useContext(AdminContext)
   const t = useStrings()
   const [isOpen, setOpen] = useState(false)
   const wrapperRef = useRef<HTMLDivElement>(null)
@@ -50,6 +52,7 @@ export default function HeaderMenu() {
 
   const isSignedIn = status == 'signedIn'
   const label = isSignedIn ? t.menuSignedInAs(user?.email ?? user?.displayName ?? t.account) : t.menu
+  const accountIcon = isAdmin ? <GoldenMasterBallIcon /> : <MasterBallIcon />
 
   return (
     <div className={styles.menu} ref={wrapperRef}>
@@ -63,7 +66,7 @@ export default function HeaderMenu() {
         aria-expanded={isOpen}
         aria-haspopup='dialog'
       >
-        {isSignedIn ? <MasterBallIcon /> : <PokeBallIcon />}
+        {isSignedIn ? accountIcon : <PokeBallIcon />}
       </button>
       {isOpen && (
         <div className={styles.panel} role='dialog' aria-label={t.menu}>
@@ -77,12 +80,11 @@ export default function HeaderMenu() {
           {isSignedIn ? (
             <>
               <div className={styles.account}>
-                <span className={styles.rowIcon}>
-                  <MasterBallIcon />
-                </span>
+                <span className={styles.rowIcon}>{accountIcon}</span>
                 <div className={styles.accountDetails}>
                   <div className={styles.name}>{user?.displayName}</div>
                   <div className={styles.email}>{user?.email}</div>
+                  {isAdmin && <span className={styles.adminBadge}>{t.adminMode}</span>}
                 </div>
               </div>
               <MenuRow icon={<SignOutIcon />} onClick={() => void signOut()} className={styles.signOut}>

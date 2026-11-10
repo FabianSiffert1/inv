@@ -2,7 +2,7 @@ import { useContext, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { CopyButton } from '../../../../../Components/CopyButton/CopyButton'
 import { FavoriteButton } from '../../../../../Components/FavoriteButton/FavoriteButton'
-import { ImageOverrideEditor } from '../../../../../Components/ImageOverrideEditor/ImageOverrideEditor'
+import { ImageOverrideButton } from '../../../../../Components/ImageOverrideDialog/ImageOverrideDialog'
 import { UrgencyPicker } from '../../../../../Components/UrgencyPicker/UrgencyPicker'
 import { PokemonCard, PokemonCardProp } from '../../../../../util/api/pokemonTGC/model/PokemonCard'
 import { spriteUrl } from '../../../../../util/api/pokemonTGC/model/Pokemon'
@@ -52,6 +52,7 @@ export function CardDetails(props: CardDetailsProps) {
           <button type='button' className={styles.closeButton} aria-label={t.close} onClick={props.onClose}>
             ×
           </button>
+          <ImageOverrideButton card={props.card} className={styles.adminButton} />
           <div className={styles.imageColumn}>
             <button type='button' className={styles.cardLargeImage} onClick={() => setZoomOpen(true)} aria-label={t.zoomInto(cardName)}>
               <CardImage sources={imageSources} alt={cardName} pokedexNumber={pokedexNumber} />
@@ -63,7 +64,6 @@ export function CardDetails(props: CardDetailsProps) {
             <SetInformation card={props.card} />
             <UrgencyPicker card={props.card} print={props.print} />
             <CardPrices card={props.card} />
-            <ImageOverrideEditor card={props.card} />
           </div>
         </div>
       </div>

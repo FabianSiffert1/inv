@@ -72,6 +72,23 @@
   background-color: var(--card-background-color);
 }
 
+.adminButton {
+  @include surfaceInteractive($surfaceRadiusSmall);
+  @include pastel(var(--elementYellow), 60%);
+  @include typoFieldValue;
+  position: absolute;
+  top: 1rem;
+  right: 4.25rem;
+  z-index: $zSecondLevel;
+  padding: 0.3rem 0.7rem;
+  border: none;
+  color: var(--color);
+}
+
+.cardDetailsContainer:has(.adminButton) {
+  padding-top: 3.25rem;
+}
+
 .imageColumn {
   grid-column: 1;
   grid-row: 1;

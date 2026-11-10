@@ -1,0 +1,155 @@
+@use 'globalDesignElements.module' as *;
+
+.wrapper {
+  position: fixed;
+  inset: 0;
+  z-index: $zOverlay;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background-color: var(--scrim-color);
+  backdrop-filter: blur(0.25rem);
+  -webkit-backdrop-filter: blur(0.25rem);
+}
+
+.dialog {
+  @include surface;
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 28rem;
+  max-height: calc(100dvh - 2rem);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  margin: 0;
+  padding: 1.5rem;
+  background-color: var(--background-color);
+  border: 1px solid var(--card-border-color);
+  box-shadow: 0 0.75rem 2rem var(--shadow-color);
+}
+
+.headline {
+  @include typoDisplay;
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.subtitle {
+  margin: 0.15rem 0 0;
+  font-family: $monoFont;
+  font-size: 0.75rem;
+  color: var(--secondary-color);
+}
+
+.preview {
+  @include surface($surfaceRadiusSmall);
+  @include pastel(var(--elementEggshell), 35%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 12rem;
+  padding: 0.75rem;
+
+  img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 0.4rem;
+  }
+}
+
+.previewMissing {
+  @include typoFieldLabel;
+  color: var(--secondary-color);
+  text-align: center;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.label {
+  @include typoFieldLabel;
+  color: var(--secondary-color);
+}
+
+.input {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--card-border-color);
+  border-radius: $surfaceRadiusSmall;
+  background-color: var(--card-background-color);
+  font-family: $monoFont;
+  font-size: 0.85rem;
+  color: var(--color);
+
+  &::placeholder {
+    color: var(--secondary-color);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--marker);
+    outline-offset: 2px;
+  }
+}
+
+.hint {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: var(--secondary-color);
+}
+
+.error {
+  margin: 0;
+  font-family: $monoFont;
+  font-size: 0.8rem;
+  color: var(--elementRed);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  padding-top: 0.25rem;
+}
+
+.primaryButton,
+.secondaryButton,
+.removeButton {
+  @include surfaceInteractive($surfaceRadiusSmall);
+  @include typoFieldValue;
+  padding: 0.6rem 1.1rem;
+  border: none;
+  color: var(--color);
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+}
+
+.primaryButton {
+  @include pastel(var(--elementLavender), 60%);
+}
+
+.secondaryButton {
+  @include pastel(var(--elementPeach), 50%);
+}
+
+.removeButton {
+  @include pastel(var(--elementRed), 50%);
+  margin-right: auto;
+}

@@ -93,6 +93,21 @@ export function MasterBallIcon() {
   return <PixelIcon rows={masterBallRows} />
 }
 
+const gold = '#D9A514'
+const goldHighlight = '#F5D76E'
+const goldSpot = '#A8740E'
+
+const goldenMasterBallRows: PixelRow[] = masterBallRows.map(([y, x, width, fill]) => [
+  y,
+  x,
+  width,
+  fill == masterPurple ? gold : fill == '#9D63C2' ? goldHighlight : fill == masterPink ? goldSpot : fill
+])
+
+export function GoldenMasterBallIcon() {
+  return <PixelIcon rows={goldenMasterBallRows} />
+}
+
 const signOutRows: [y: number, x: number, width: number][] = [
   [1, 2, 7],
   [2, 2, 2],
