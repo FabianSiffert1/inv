@@ -1,6 +1,6 @@
-export type Urgency = 'urgent' | 'normal' | 'later'
+export type Urgency = 'asap' | 'urgent' | 'normal' | 'later'
 
-export const urgencies: Urgency[] = ['urgent', 'normal', 'later']
+export const urgencies: Urgency[] = ['asap', 'urgent', 'normal', 'later']
 
 export const isUrgency = (value: unknown): value is Urgency => urgencies.some((urgency) => urgency == value)
 

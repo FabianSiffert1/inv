@@ -80,6 +80,7 @@ const nameSections = (entries: CardEntry[], germanNames: boolean): CardSection[]
   })
 
 const urgencyHeaderClassNames: Record<Urgency, string> = {
+  asap: styles.priorityTop,
   urgent: styles.priorityHigh,
   normal: styles.priorityMedium,
   later: styles.priorityLow

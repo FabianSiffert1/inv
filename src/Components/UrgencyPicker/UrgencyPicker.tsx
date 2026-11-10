@@ -11,6 +11,7 @@ interface UrgencyPickerProps {
 }
 
 const urgencyClassNames: Record<Urgency, string> = {
+  asap: styles.asap,
   urgent: styles.urgent,
   normal: styles.normal,
   later: styles.later

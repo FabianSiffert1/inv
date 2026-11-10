@@ -12,7 +12,7 @@ export type SortMode = 'price' | 'number' | 'name' | 'rarity' | 'release' | 'urg
 
 export const sortModes: SortMode[] = ['price', 'number', 'name', 'rarity', 'release', 'urgency']
 
-const urgencyRanks: Record<Urgency, number> = { urgent: 0, normal: 1, later: 2 }
+const urgencyRanks: Record<Urgency, number> = { asap: 0, urgent: 1, normal: 2, later: 3 }
 
 type SortScope = 'browse' | 'favorites'
 

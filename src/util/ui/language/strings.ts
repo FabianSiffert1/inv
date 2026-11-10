@@ -6,7 +6,7 @@ export type ReleaseAge = 'under6Months' | 'sixTo12Months' | 'oneTo2Years' | 'two
 
 export type SortModeLabel = 'price' | 'number' | 'name' | 'rarity' | 'release' | 'urgency'
 
-export type UrgencyLabel = 'urgent' | 'normal' | 'later'
+export type UrgencyLabel = 'asap' | 'urgent' | 'normal' | 'later'
 
 const en = {
   locale: 'en-US',
@@ -67,6 +67,7 @@ const en = {
   removeFromFavorites: (print?: string) => (print == undefined ? 'Remove from favorites' : `Remove ${print} from favorites`),
   purchaseUrgency: 'Purchase priority',
   urgencies: {
+    asap: 'ASAP',
     urgent: 'High',
     normal: 'Medium',
     later: 'Low'
@@ -260,6 +261,7 @@ const de: Strings = {
   removeFromFavorites: (print?: string) => (print == undefined ? 'Aus Favoriten entfernen' : `${print} aus Favoriten entfernen`),
   purchaseUrgency: 'Kaufpriorität',
   urgencies: {
+    asap: 'ASAP',
     urgent: 'Hoch',
     normal: 'Mittel',
     later: 'Niedrig'

@@ -43,6 +43,10 @@
   font-weight: 700;
 }
 
+.asap {
+  @include pastel(var(--elementLavender), 60%);
+}
+
 .urgent {
   @include pastel(var(--elementRed), 60%);
 }
