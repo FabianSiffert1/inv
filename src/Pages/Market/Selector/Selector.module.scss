@@ -10,3 +10,26 @@
     width: 100%;
   }
 }
+
+.filter {
+  @include surface($surfaceRadiusSmall);
+  @include pastel(var(--elementBlue), 25%);
+  display: block;
+  width: 100%;
+  margin-bottom: 0.9rem;
+  padding: 0.5rem 0.8rem;
+  border: 1px solid var(--card-border-color);
+  font-family: inherit;
+  font-size: 1rem;
+  color: var(--color);
+
+  &:focus-visible {
+    outline: 2px solid var(--marker);
+    outline-offset: 2px;
+  }
+}
+
+.sheetFilter {
+  width: auto;
+  margin: 0.75rem 1.25rem 0.25rem 1.25rem;
+}
