@@ -6,3 +6,6 @@ const overridesDocument = () => doc(firestore, 'config', 'cardOverrides')
 export const setImageOverride = (cardId: string, url: string) => setDoc(overridesDocument(), { images: { [cardId]: url } }, { merge: true })
 
 export const removeImageOverride = (cardId: string) => updateDoc(overridesDocument(), new FieldPath('images', cardId), deleteField())
+
+export const markOverridesStored = (storedValues: Record<string, string>) =>
+  setDoc(overridesDocument(), { images: storedValues }, { merge: true })

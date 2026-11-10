@@ -60,7 +60,7 @@ export function Card({
 }: CardWithDetailsProps) {
   const cardName = useLocalizedName(card)
   const { favorites, urgencyOf } = useContext(FavoritesContext)
-  const imageOverride = useImageOverride(card.id)
+  const imageOverride = useImageOverride(card.id)?.source
   const showFavoriteMark =
     !showUrgency && favorites.some((favorite) => favorite.cardId == card.id && (print == undefined || favorite.print == print))
 

@@ -121,7 +121,23 @@
   color: var(--color);
 }
 
+.storedNotice {
+  @include surface($surfaceRadiusSmall);
+  @include pastel(var(--elementBlue), 35%);
+  margin: 0;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: var(--color);
+}
+
+.storedBadge {
+  @include pastel(var(--elementBlue), 45%);
+  font-size: 0.6rem;
+}
+
 .editChip,
+.storedBadge,
 .apiBadge {
   @include surface($surfaceRadiusSmall);
   @include typoFieldValue;

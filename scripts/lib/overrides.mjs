@@ -49,27 +49,27 @@ const fetchImageOverrides = async () => {
   )
 }
 
-const fileNameOf = (cardId, url, extension) => {
-  const safeId = cardId.replace(/[^A-Za-z0-9.-]/g, '_')
-  const hash = createHash('sha1').update(url).digest('hex').slice(0, 10)
-  return `${safeId}-${hash}.${extension}`
-}
+const storedPrefix = 'local:'
+
+const urlHashOf = (url) => createHash('sha1').update(url).digest('hex').slice(0, 10)
+
+const fileNameOf = (cardId, urlHash, extension) => `${cardId.replace(/[^A-Za-z0-9.-]/g, '_')}-${urlHash}.${extension}`
 
 const readManifest = async () => ((await fileExists(manifestFile)) ? JSON.parse(await readFile(manifestFile, 'utf8')) : { images: {} })
 
-const downloadImage = async (cardId, url) => {
+const downloadImage = async (cardId, url, urlHash) => {
   const response = await fetch(url, { signal: AbortSignal.timeout(requestTimeoutMilliseconds) }).catch(() => undefined)
   if (!response?.ok) {
-    console.error(`Override ${cardId}: ${url} failed with ${response?.status ?? 'no response'}`)
+    console.error(`Override ${cardId}: download failed with ${response?.status ?? 'no response'}`)
     return undefined
   }
   const contentType = response.headers.get('content-type')?.split(';')[0].trim()
   const extension = extensionsByContentType[contentType]
   if (extension == undefined) {
-    console.error(`Override ${cardId}: ${url} is ${contentType ?? 'of unknown type'}, not a PNG, JPEG or WebP image`)
+    console.error(`Override ${cardId}: download is ${contentType ?? 'of unknown type'}, not a PNG, JPEG or WebP image`)
     return undefined
   }
-  const fileName = fileNameOf(cardId, url, extension)
+  const fileName = fileNameOf(cardId, urlHash, extension)
   await mkdir(overridesDirectory, { recursive: true })
   await writeFile(path.join(overridesDirectory, fileName), Buffer.from(await response.arrayBuffer()))
   return fileName
@@ -92,15 +92,25 @@ export const syncImageOverrides = async () => {
   const previous = await readManifest()
   const images = {}
 
-  for (const [cardId, url] of Object.entries(overrides)) {
+  for (const [cardId, value] of Object.entries(overrides)) {
+    if (value.startsWith(storedPrefix)) {
+      const fileName = value.slice(storedPrefix.length)
+      if (await fileExists(path.join(overridesDirectory, fileName))) {
+        images[cardId] = { fileName }
+      } else {
+        console.error(`Override ${cardId}: stored file ${fileName} is missing`)
+      }
+      continue
+    }
+    const urlHash = urlHashOf(value)
     const stored = previous.images?.[cardId]
-    if (stored?.url == url && (await fileExists(path.join(overridesDirectory, stored.fileName)))) {
+    if (stored?.urlHash == urlHash && (await fileExists(path.join(overridesDirectory, stored.fileName)))) {
       images[cardId] = stored
       continue
     }
-    const fileName = await downloadImage(cardId, url)
+    const fileName = await downloadImage(cardId, value, urlHash)
     if (fileName != undefined) {
-      images[cardId] = { url, fileName, file: `/data/images/overrides/${fileName}` }
+      images[cardId] = { fileName, urlHash }
     }
   }
 

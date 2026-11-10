@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { AuthContext } from '../auth/AuthProvider'
+import StoredOverrideCleanup from '../overrides/StoredOverrideCleanup'
 
 interface ContextProps {
   isAdmin: boolean
@@ -36,7 +37,12 @@ const AdminProvider: React.FC<Props> = ({ children }) => {
     }
   }, [uid])
 
-  return <AdminContext.Provider value={{ isAdmin }}>{children}</AdminContext.Provider>
+  return (
+    <AdminContext.Provider value={{ isAdmin }}>
+      {isAdmin && <StoredOverrideCleanup />}
+      {children}
+    </AdminContext.Provider>
+  )
 }
 
 export default AdminProvider

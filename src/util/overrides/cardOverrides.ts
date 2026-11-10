@@ -48,8 +48,10 @@ export const useCardOverrides = () =>
     staleTime: 1000 * 60 * 5
   })
 
-interface LocalOverrides {
-  images: Record<string, { url: string; file: string }>
+export const storedOverridePrefix = 'local:'
+
+export interface LocalOverrides {
+  images: Record<string, { fileName: string; urlHash?: string }>
   originalAvailable: string[]
 }
 
@@ -66,26 +68,55 @@ const fetchLocalOverrides = async (signal?: AbortSignal): Promise<LocalOverrides
   return { ...emptyLocalOverrides, ...((await response.json()) as Partial<LocalOverrides>) }
 }
 
-const useLocalOverrides = () =>
+export const useLocalOverrides = () =>
   useQuery({
     queryKey: ['overrides', 'local'],
     queryFn: ({ signal }) => fetchLocalOverrides(signal),
     staleTime: 1000 * 60 * 5
   })
 
-export const useRemoteImageOverride = (cardId: string): string | undefined => useCardOverrides().data?.images[cardId]
+export const urlHashOf = async (url: string): Promise<string> => {
+  const digest = await crypto.subtle.digest('SHA-1', new TextEncoder().encode(url))
+  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0'))
+    .join('')
+    .slice(0, 10)
+}
 
-export const useImageOverride = (cardId: string): string | undefined => {
-  const remote = useRemoteImageOverride(cardId)
+const useUrlHash = (url?: string) =>
+  useQuery({
+    queryKey: ['urlHash', url],
+    queryFn: () => urlHashOf(url as string),
+    enabled: url != undefined,
+    staleTime: Infinity
+  }).data
+
+const localImagePath = (fileName: string) => `/data/images/overrides/${fileName}`
+
+export interface ImageOverride {
+  source: string
+  isStored: boolean
+  pendingUrl?: string
+}
+
+export const useImageOverride = (cardId: string): ImageOverride | undefined => {
+  const value = useCardOverrides().data?.images[cardId]
   const local = useLocalOverrides().data?.images[cardId]
-  if (remote == undefined) {
+  const pendingUrl = value != undefined && !value.startsWith(storedOverridePrefix) ? value : undefined
+  const urlHash = useUrlHash(pendingUrl)
+  if (value == undefined) {
     return undefined
   }
-  return local?.url == remote ? local.file : remote
+  if (pendingUrl == undefined) {
+    return { source: localImagePath(value.slice(storedOverridePrefix.length)), isStored: true }
+  }
+  if (local?.urlHash != undefined && local.urlHash == urlHash) {
+    return { source: localImagePath(local.fileName), isStored: true, pendingUrl }
+  }
+  return { source: pendingUrl, isStored: false, pendingUrl }
 }
 
 export const useOriginalImageAvailable = (cardId: string): boolean => {
-  const hasOverride = useRemoteImageOverride(cardId) != undefined
+  const hasOverride = useCardOverrides().data?.images[cardId] != undefined
   const originalAvailable = useLocalOverrides().data?.originalAvailable.includes(cardId) ?? false
   return hasOverride && originalAvailable
 }

@@ -3,13 +3,7 @@ import { FormEvent, useContext, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { PokemonCard } from '../../util/api/pokemonTGC/model/PokemonCard'
 import { AdminContext } from '../../util/admin/AdminProvider'
-import {
-  cardOverridesQueryKey,
-  isValidImageUrl,
-  useImageOverride,
-  useOriginalImageAvailable,
-  useRemoteImageOverride
-} from '../../util/overrides/cardOverrides'
+import { cardOverridesQueryKey, isValidImageUrl, useImageOverride, useOriginalImageAvailable } from '../../util/overrides/cardOverrides'
 import { useLocalizedName, useStrings } from '../../util/ui/language/LanguageProvider'
 import { useModalBehaviour } from '../../util/ui/useModalBehaviour'
 import styles from './ImageOverrideDialog.module.scss'
@@ -28,9 +22,15 @@ function AdminActions({ card, className }: { card: PokemonCard; className?: stri
   const t = useStrings()
   const [isOpen, setOpen] = useState(false)
   const isOriginalAvailable = useOriginalImageAvailable(card.id)
+  const isStored = useImageOverride(card.id)?.isStored == true
 
   return (
     <div className={className}>
+      {isStored && (
+        <span className={styles.storedBadge} title={t.storedOnServerHint}>
+          {t.storedOnServer}
+        </span>
+      )}
       {isOriginalAvailable && (
         <span className={styles.apiBadge} title={t.originalImageAvailableHint}>
           {t.originalImageAvailable}
@@ -52,17 +52,17 @@ function ImageOverrideDialog({ card, onClose }: { card: PokemonCard; onClose: ()
   const t = useStrings()
   const cardName = useLocalizedName(card)
   const queryClient = useQueryClient()
-  const override = useRemoteImageOverride(card.id)
-  const shownOverride = useImageOverride(card.id)
+  const override = useImageOverride(card.id)
+  const pendingUrl = override?.pendingUrl
   const isOriginalAvailable = useOriginalImageAvailable(card.id)
-  const [url, setUrl] = useState(override ?? '')
+  const [url, setUrl] = useState(pendingUrl ?? '')
   const [saveState, setSaveState] = useState<SaveState>('idle')
   const [failedPreview, setFailedPreview] = useState<string | undefined>(undefined)
 
   const trimmed = url.trim()
   const isValid = isValidImageUrl(trimmed)
-  const preview = isValid && trimmed != override ? trimmed : (shownOverride ?? card.images.small)
-  const canSave = isValid && trimmed != override && saveState != 'saving'
+  const preview = isValid && trimmed != pendingUrl ? trimmed : (override?.source ?? card.images.small)
+  const canSave = isValid && trimmed != pendingUrl && saveState != 'saving'
 
   const write = (action: (module: CloudOverrides) => Promise<void>) => {
     setSaveState('saving')
@@ -118,6 +118,7 @@ function ImageOverrideDialog({ card, onClose }: { card: PokemonCard; onClose: ()
           />
         </label>
         <p className={styles.hint}>{t.imageOverrideHint}</p>
+        {override?.isStored && <p className={styles.storedNotice}>{t.storedOnServerHint}</p>}
         {isOriginalAvailable && <p className={styles.notice}>{t.originalImageAvailableHint}</p>}
         {saveState == 'failed' && (
           <p className={styles.error} role='alert'>

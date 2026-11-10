@@ -46,7 +46,6 @@ npm run fetch-data  # refresh the set and card snapshot in data/
 npm run build-indexes  # rebuild pokemon, artist and search indexes from the card files, no network
 npm run scrape-exclusives  # scrape Japanese promo exclusives from Limitless TCG, server only, see below
 npm run fetch-exclusives  # rebuild the Japanese exclusives sets from the scrape plus corrections
-npm run fetch-overrides  # download admin replacement images into data/, also part of fetch-data
 npm run typecheck   # tsc for the app and for vite.config.ts
 npm run lint        # eslint
 npm run format      # prettier
@@ -259,23 +258,9 @@ under Authentication → Users. There is no UI to grant or revoke the role.
   by users whose role document has `admin: true`.
 - **Code**: `src/util/admin/AdminProvider.tsx` exposes `isAdmin` through `AdminContext`. It only
   loads Firestore for signed-in users, so guests download nothing extra.
-- **Replacement images**: an admin gets an "Edit" chip next to the close button of a card's details, which
-  opens a dialog to set or remove an image URL for that card. Admins also see a golden Master Ball
-  and an "Admin mode" badge in the account menu. The URLs live in
-  `config/cardOverrides` as `images: { <cardId>: <url> }`. Every visitor reads that document through
-  the Firestore REST API with a plain `fetch` (`src/util/overrides/cardOverrides.ts`), so guests
-  still never load the Firebase SDK. The replacement is tried first; if it fails to load, the card
-  falls back to its TCGdex image.
-- **Local copies**: `npm run fetch-overrides`, which `fetch-data` also runs nightly, reads the same
-  document through the REST API (project id and API key from `.env`), downloads each image once into
-  `data/images/overrides/<cardId>-<url hash>.<ext>` (PNG, JPEG or WebP) and writes
-  `data/overrides.json`. The app shows the local copy whenever its URL matches the current override,
-  and the remote URL until the next run. Copies of removed overrides are deleted. The hash in the
-  file name keeps the 30-day image cache from serving an old picture after the URL changes.
-- **API image badge**: the same run checks whether the card's TCGdex image now loads and lists those
-  cards under `originalAvailable` in `data/overrides.json`. Admins then see an "API image" badge next
-  to the Edit chip and a note in the dialog, as a hint that the replacement may no longer be needed.
-  The replacement still wins until it is removed.
+- **Replacement images**: an admin gets an "Edit" chip next to the close button of a card's details,
+  which opens a dialog to replace that card's image. Admins also see a golden Master Ball and an
+  "Admin mode" badge in the account menu.
 
 ## Known gaps
 

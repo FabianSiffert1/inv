@@ -24,7 +24,7 @@ export function MobileCardDetails(props: MobileCardDetailsProps) {
   const cardName = useLocalizedName(props.card)
   const t = useStrings()
   const [isZoomOpen, setZoomOpen] = useState(false)
-  const imageSources = [useImageOverride(props.card.id), props.card.images.large, props.card.images.small]
+  const imageSources = [useImageOverride(props.card.id)?.source, props.card.images.large, props.card.images.small]
   const pokedexNumber = props.card.nationalPokedexNumbers?.[0]
 
   return (
