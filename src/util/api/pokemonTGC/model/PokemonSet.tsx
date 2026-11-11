@@ -23,6 +23,8 @@ export interface PokemonSet {
   cardImageFormat?: 'webp' | 'png'
 }
 
+export const japaneseExclusivesSeries: PokemonTCGSeries = 'Japanese Exclusives'
+
 export const setPath = (setId: string) => `/market?${new URLSearchParams({ set: setId })}`
 
 export const cardPath = (setId: string, cardId: string) => `/market?${new URLSearchParams({ set: setId, card: cardId })}`

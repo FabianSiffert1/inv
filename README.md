@@ -128,8 +128,9 @@ and its hot-reload WebSocket makes phones prompt for local network access.
   `fetch-data` and `npm run fetch-exclusives` turn candidates plus corrections into one set per
   series (`svp-ja`, `swshp-ja`, …), skipping series that have not been scraped. Types come from
   Limitless, Pokédex numbers from TCGdex `ja` where it has the series (`SV-P`, `M-P`) and otherwise
-  from the PokéAPI species names. Each set takes the release date and German series name of the
-  earliest English set of its era. Card images are downloaded once from Limitless as PNG into
+  from the PokéAPI species names. All sets share the era `Japanese Exclusives`, listed last, and
+  each takes the release date of the earliest English set of its original era. Card images are
+  downloaded once from Limitless as PNG into
   `data/images/<setId>/<number>/low.png` and `high.png`. These sets carry `cardImageFormat: 'png'`,
   and their cards carry `language: 'ja'`.
 - **TanStack Query** fetches the snapshot and persists it to IndexedDB so a revisit is instant.

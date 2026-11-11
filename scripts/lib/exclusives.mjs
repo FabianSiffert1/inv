@@ -34,6 +34,9 @@ export const promoSeries = [
   { code: 'BWP', setId: 'bwp-ja', name: 'Japanese BW Promos', germanName: 'Japanische Schwarz & Weiß Promos', series: 'Black & White' }
 ]
 
+export const exclusivesSeries = 'Japanese Exclusives'
+export const exclusivesGermanSeries = 'Japanische Exklusivkarten'
+
 export const exclusiveSetIds = new Set(promoSeries.map((series) => series.setId))
 
 export const limitlessCacheDirectory = path.join(dataDirectory, 'limitless')
@@ -151,8 +154,8 @@ export const writeExclusiveSets = async (referenceSets) => {
       id: series.setId,
       name: series.name,
       germanName: series.germanName,
-      series: series.series,
-      germanSeries: reference.germanSeries,
+      series: exclusivesSeries,
+      germanSeries: exclusivesGermanSeries,
       printedTotal: exclusives.length,
       total: exclusives.length,
       releaseDate: reference.releaseDate,

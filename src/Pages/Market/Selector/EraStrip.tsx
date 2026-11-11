@@ -1,5 +1,5 @@
 import { useContext } from 'react'
-import { PokemonSet, PokemonTCGSeries } from '../../../util/api/pokemonTGC/model/PokemonSet'
+import { japaneseExclusivesSeries, PokemonSet, PokemonTCGSeries } from '../../../util/api/pokemonTGC/model/PokemonSet'
 import { LanguageContext, useStrings } from '../../../util/ui/language/LanguageProvider'
 import Dropdown from './Dropdown'
 import MobileSheet from './MobileSheet'
@@ -29,7 +29,7 @@ export const eraOptions = (pokemonSets?: PokemonSet[], germanNames = false): Opt
   })
 
   return Array.from(earliestReleaseDateOfSeries.entries())
-    .sort((a, b) => b[1].localeCompare(a[1]))
+    .sort((a, b) => Number(a[0] == japaneseExclusivesSeries) - Number(b[0] == japaneseExclusivesSeries) || b[1].localeCompare(a[1]))
     .map(([series]) => ({
       id: series,
       label: germanNames ? (germanNameOfSeries.get(series) ?? series) : series,
